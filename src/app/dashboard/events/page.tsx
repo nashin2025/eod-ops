@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EventsClient from "./events-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function EventsPage() {
   const supabase = await createClient();
@@ -19,10 +20,12 @@ export default async function EventsPage() {
   const { data: islands } = await supabase.from("islands").select("*").order("atoll").order("name");
 
   return (
-    <EventsClient
-      user={user}
-      events={events || []}
-      islands={islands || []}
-    />
+    <DashboardLayout user={user}>
+      <EventsClient
+        user={user}
+        events={events || []}
+        islands={islands || []}
+      />
+    </DashboardLayout>
   );
 }

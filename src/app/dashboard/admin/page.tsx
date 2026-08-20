@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import AdminClient from "./admin-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -35,10 +36,12 @@ export default async function AdminPage() {
   });
 
   return (
-    <AdminClient
-      currentUser={user}
-      users={users?.map(mapUser) || []}
-      pendingUsers={pendingUsers?.map(mapUser) || []}
-    />
+    <DashboardLayout user={user}>
+      <AdminClient
+        currentUser={user}
+        users={users?.map(mapUser) || []}
+        pendingUsers={pendingUsers?.map(mapUser) || []}
+      />
+    </DashboardLayout>
   );
 }

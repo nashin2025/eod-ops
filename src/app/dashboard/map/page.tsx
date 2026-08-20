@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MapClient from "./map-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function MapPage() {
   const supabase = await createClient();
@@ -14,10 +15,12 @@ export default async function MapPage() {
   const { data: islands } = await supabase.from("islands").select("*");
 
   return (
-    <MapClient
-      user={user}
-      events={events || []}
-      islands={islands || []}
-    />
+    <DashboardLayout user={user}>
+      <MapClient
+        user={user}
+        events={events || []}
+        islands={islands || []}
+      />
+    </DashboardLayout>
   );
 }

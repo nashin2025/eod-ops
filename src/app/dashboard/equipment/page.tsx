@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import EquipmentClient from "./equipment-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function EquipmentPage() {
   const supabase = await createClient();
@@ -19,10 +20,12 @@ export default async function EquipmentPage() {
   const { data: islands } = await supabase.from("islands").select("*").order("atoll").order("name");
 
   return (
-    <EquipmentClient
-      user={user}
-      equipment={equipment || []}
-      islands={islands || []}
-    />
+    <DashboardLayout user={user}>
+      <EquipmentClient
+        user={user}
+        equipment={equipment || []}
+        islands={islands || []}
+      />
+    </DashboardLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProfileClient from "./profile-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -32,6 +33,8 @@ export default async function ProfilePage() {
   };
 
   return (
-    <ProfileClient user={userData} />
+    <DashboardLayout user={user}>
+      <ProfileClient user={userData} />
+    </DashboardLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MembersClient from "./members-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -27,9 +28,11 @@ export default async function MembersPage() {
   }));
 
   return (
-    <MembersClient
-      currentUser={user}
-      users={usersData}
-    />
+    <DashboardLayout user={user}>
+      <MembersClient
+        currentUser={user}
+        users={usersData}
+      />
+    </DashboardLayout>
   );
 }
