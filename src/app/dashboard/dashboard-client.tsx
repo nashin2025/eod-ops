@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Calendar, Users, MapPin, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
@@ -68,15 +68,28 @@ export default function DashboardClient({
     })
     .slice(0, 6);
 
+  const getStatusStyles = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+      case "scheduled":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+      case "completed":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+      default:
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+    }
+  };
+
   return (
-    <div className="p-2 sm:p-4 lg:p-6">
+    <div className="p-2 sm:p-4 lg:p-6 animate-fade-in">
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-2">Overview of events and activities across Maldives</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
-        <Card>
+        <Card className="card-neo dark:card-mono">
           <CardContent className="p-3 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -88,7 +101,7 @@ export default function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="card-neo dark:card-mono">
           <CardContent className="p-3 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -100,7 +113,7 @@ export default function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="card-neo dark:card-mono">
           <CardContent className="p-3 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -112,7 +125,7 @@ export default function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="card-neo dark:card-mono">
           <CardContent className="p-3 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -131,7 +144,7 @@ export default function DashboardClient({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-sm border rounded px-2 py-1"
+            className="input-neo dark:input-mono text-sm"
           >
             <option value="date">Sort by Date</option>
             <option value="atoll">Sort by Atoll</option>
@@ -140,15 +153,15 @@ export default function DashboardClient({
         </div>
 
         {recentEvents.length === 0 ? (
-          <Card>
+          <Card className="card-neo dark:card-mono">
             <CardContent className="p-6 text-center text-muted-foreground">
               No events yet. Create your first event to get started!
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {recentEvents.map((event) => (
-              <Card key={event.id}>
+          <div className="space-y-4 animate-stagger-in">
+            {recentEvents.map((event, index) => (
+              <Card key={event.id} className="card-neo dark:card-mono" style={{ animationDelay: `${index * 60}ms` }}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -156,17 +169,7 @@ export default function DashboardClient({
                       <p className="text-sm text-muted-foreground">
                         {event.atoll} - {event.island}
                       </p>
-                      <span
-                        className={`inline-block mt-2 px-2 py-1 text-xs rounded ${
-                          event.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : event.status === "scheduled"
-                            ? "bg-blue-100 text-blue-800"
-                            : event.status === "completed"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
+                      <span className={`inline-block mt-2 px-2 py-1 text-xs rounded ${getStatusStyles(event.status)}`}>
                         {event.status}
                       </span>
                     </div>
@@ -174,6 +177,7 @@ export default function DashboardClient({
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleEventExpansion(event.id)}
+                      className="btn-neo-secondary dark:btn-mono-secondary"
                     >
                       {expandedEvents.has(event.id) ? (
                         <ChevronUp className="h-4 w-4" />
@@ -184,7 +188,7 @@ export default function DashboardClient({
                   </div>
 
                   {expandedEvents.has(event.id) && (
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-4 pt-4 border-t border-border">
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-muted-foreground">Event Location</p>
