@@ -285,36 +285,36 @@ export default function AdminClient({
   };
 
   const getActiveBadge = (isActive: boolean) => (
-    <Badge variant={isActive ? "default" : "secondary"} className="text-xs">
-      {isActive ? "Active" : "Inactive"}
-    </Badge>
-  );
+      <Badge variant={isActive ? "accent" : "default"} className="text-xs">
+        {isActive ? "Active" : "Inactive"}
+      </Badge>
+    );
 
-  const getRoleBadge = (role: string) => (
-    <Badge variant="secondary" className="text-xs capitalize">{role}</Badge>
-  );
+    const getRoleBadge = (role: string) => (
+      <Badge variant="default" className="text-xs capitalize">{role}</Badge>
+    );
 
-  const getApprovalBadge = (status: string) => (
-    <Badge 
-      variant={status === "approved" ? "default" : status === "rejected" ? "destructive" : "secondary"}
-      className="text-xs capitalize"
-    >
-      {status}
-    </Badge>
-  );
+    const getApprovalBadge = (status: string) => (
+      <Badge
+        variant={status === "approved" ? "success" : status === "rejected" ? "danger" : "default"}
+        className="text-xs capitalize"
+      >
+        {status}
+      </Badge>
+    );
 
-  const getEventStatusBadge = (status: string) => (
-    <Badge 
-      variant={
-        status === "active" ? "default" :
-        status === "scheduled" ? "secondary" :
-        status === "completed" ? "outline" : "destructive"
-      }
-      className="text-xs capitalize"
-    >
-      {status}
-    </Badge>
-  );
+    const getEventStatusBadge = (status: string) => (
+      <Badge
+        variant={
+          status === "active" ? "success" :
+          status === "scheduled" ? "accent" :
+          status === "completed" ? "default" : "danger"
+        }
+        className="text-xs capitalize"
+      >
+        {status}
+      </Badge>
+    );
 
   const renderUserRow = (user: User, isCurrentUser: boolean) => (
     <div key={user.id} className="flex items-center justify-between p-4 border-b border-border hover:bg-muted/30 transition-colors">
@@ -459,7 +459,7 @@ export default function AdminClient({
         ) : "Unknown"}
       </td>
       <td className="px-5 py-3">
-        <Badge variant="secondary" className="text-xs capitalize">{log.action.replace("_", " ")}</Badge>
+        <Badge variant="default" className="text-xs capitalize">{log.action.replace("_", " ")}</Badge>
       </td>
       <td className="px-5 py-3 text-sm text-foreground">
         {log.target_user ? (

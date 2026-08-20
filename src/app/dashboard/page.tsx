@@ -45,16 +45,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardLayout user={user}>
-      <DashboardClient
-        user={user}
-        events={events || []}
-        users={usersData}
-        activeEventsCount={activeEvents.length}
-        completedEventsCount={completedEvents.length}
-        visitedIslands={islandVisits}
-        atollsVisited={atollsVisited}
-        teamMembersCount={users?.length || 0}
-      />
+      <DashboardClient />
     </DashboardLayout>
   );
 }

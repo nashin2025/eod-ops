@@ -2,17 +2,16 @@
 
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Sun, Moon, Monitor } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   return (
-    <div className="theme-toggle-unified" role="group" aria-label="Theme">
+    <div className="theme-toggle" role="group" aria-label="Theme">
       {(["light", "dark", "system"] as const).map((t) => (
         <button
           key={t}
-          className={`tt-btn-unified ${theme === t ? "active" : ""}`}
+          className={`theme-toggle-btn ${theme === t ? "active" : ""}`}
           onClick={() => setTheme(t)}
           aria-label={t === "system" ? "System theme" : t === "light" ? "Light mode" : "Dark mode"}
           aria-pressed={theme === t}
@@ -38,9 +37,9 @@ export function ThemeToggleCompact() {
   };
 
   return (
-    <div className="theme-toggle-unified" role="group" aria-label="Theme">
+    <div className="theme-toggle" role="group" aria-label="Theme">
       <button
-        className={`tt-btn-unified ${resolvedTheme === "light" ? "active" : ""}`}
+        className={`theme-toggle-btn ${resolvedTheme === "light" ? "active" : ""}`}
         onClick={toggleTheme}
         aria-label={resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         aria-pressed={resolvedTheme === "dark"}
@@ -48,7 +47,7 @@ export function ThemeToggleCompact() {
         <Sun className="h-4 w-4" />
       </button>
       <button
-        className={`tt-btn-unified ${resolvedTheme === "dark" ? "active" : ""}`}
+        className={`theme-toggle-btn ${resolvedTheme === "dark" ? "active" : ""}`}
         onClick={toggleTheme}
         aria-label={resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         aria-pressed={resolvedTheme === "dark"}
