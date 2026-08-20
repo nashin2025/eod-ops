@@ -32,11 +32,21 @@ export default async function DashboardPage() {
   const activeEvents = events?.filter(e => e.status === "active" || e.status === "scheduled") || [];
   const completedEvents = events?.filter(e => e.status === "completed") || [];
 
+  // Map snake_case DB columns to camelCase for client component
+  const usersData = (users || []).map(u => ({
+    ...u,
+    firstName: u.first_name ?? null,
+    lastName: u.last_name ?? null,
+    email: u.email,
+    role: u.role,
+    createdAt: u.created_at ?? new Date().toISOString(),
+  }));
+
   return (
     <DashboardClient
       user={user}
       events={events || []}
-      users={users || []}
+      users={usersData}
       activeEventsCount={activeEvents.length}
       completedEventsCount={completedEvents.length}
       visitedIslands={islandVisits}
