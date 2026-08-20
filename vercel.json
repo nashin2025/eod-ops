@@ -1,4 +1,8 @@
 {
+  "buildCommand": "pnpm run build",
+  "devCommand": "pnpm run dev",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
   "routes": [
     {
       "src": "/api/chat/(.*)",
@@ -7,5 +11,6 @@
         "Cache-Control": "no-cache"
       }
     }
-  ]
+  ],
+  "outputDirectory": ".next"
 }
