@@ -206,6 +206,7 @@ ALTER TABLE user_milestones ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Users are viewable by authenticated users" ON users FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can insert own profile" ON users FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = id);
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE TO authenticated USING (auth.uid()::text = id);
 
 -- Events policies
