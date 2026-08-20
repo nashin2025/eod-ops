@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import DashboardClient from "./dashboard-client";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -43,15 +44,17 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <DashboardClient
-      user={user}
-      events={events || []}
-      users={usersData}
-      activeEventsCount={activeEvents.length}
-      completedEventsCount={completedEvents.length}
-      visitedIslands={islandVisits}
-      atollsVisited={atollsVisited}
-      teamMembersCount={users?.length || 0}
-    />
+    <DashboardLayout user={user}>
+      <DashboardClient
+        user={user}
+        events={events || []}
+        users={usersData}
+        activeEventsCount={activeEvents.length}
+        completedEventsCount={completedEvents.length}
+        visitedIslands={islandVisits}
+        atollsVisited={atollsVisited}
+        teamMembersCount={users?.length || 0}
+      />
+    </DashboardLayout>
   );
 }
