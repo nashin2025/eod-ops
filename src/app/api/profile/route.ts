@@ -11,9 +11,23 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
+    
+    // Map camelCase frontend fields to snake_case database columns
+    const updateData: Record<string, unknown> = {};
+    if (body.firstName !== undefined) updateData.first_name = body.firstName;
+    if (body.first_name !== undefined) updateData.first_name = body.first_name;
+    if (body.lastName !== undefined) updateData.last_name = body.lastName;
+    if (body.last_name !== undefined) updateData.last_name = body.last_name;
+    if (body.email !== undefined) updateData.email = body.email;
+    if (body.mobile !== undefined) updateData.mobile = body.mobile;
+    if (body.serviceNumber !== undefined) updateData.service_number = body.serviceNumber;
+    if (body.service_number !== undefined) updateData.service_number = body.service_number;
+    if (body.profileImageUrl !== undefined) updateData.profile_image_url = body.profileImageUrl;
+    if (body.profile_image_url !== undefined) updateData.profile_image_url = body.profile_image_url;
+
     const { data, error } = await supabase
       .from("users")
-      .update(body)
+      .update(updateData)
       .eq("id", user.id)
       .select()
       .single();
