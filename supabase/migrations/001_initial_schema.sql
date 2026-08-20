@@ -205,11 +205,18 @@ ALTER TABLE island_visit_equipment ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_milestones ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
+DROP POLICY IF EXISTS "Users are viewable by authenticated users" ON users;
+DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users are viewable by authenticated users" ON users FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Users can insert own profile" ON users FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = id);
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE TO authenticated USING (auth.uid()::text = id);
 
 -- Events policies
+DROP POLICY IF EXISTS "Events are viewable by authenticated users" ON events;
+DROP POLICY IF EXISTS "Authenticated users can create events" ON events;
+DROP POLICY IF EXISTS "Users can update own events" ON events;
+DROP POLICY IF EXISTS "Admins can delete events" ON events;
 CREATE POLICY "Events are viewable by authenticated users" ON events FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can create events" ON events FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Users can update own events" ON events FOR UPDATE TO authenticated USING (auth.uid()::text = created_by);
@@ -218,17 +225,26 @@ CREATE POLICY "Admins can delete events" ON events FOR DELETE TO authenticated U
 );
 
 -- Islands policies
+DROP POLICY IF EXISTS "Islands are viewable by authenticated users" ON islands;
+DROP POLICY IF EXISTS "Only admins can manage islands" ON islands;
 CREATE POLICY "Islands are viewable by authenticated users" ON islands FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Only admins can manage islands" ON islands FOR ALL TO authenticated USING (
   EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid()::text AND users.role = 'admin')
 );
 
 -- Event participants policies
+DROP POLICY IF EXISTS "Event participants viewable by authenticated users" ON event_participants;
+DROP POLICY IF EXISTS "Authenticated users can join events" ON event_participants;
+DROP POLICY IF EXISTS "Users can leave events" ON event_participants;
 CREATE POLICY "Event participants viewable by authenticated users" ON event_participants FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can join events" ON event_participants FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Users can leave events" ON event_participants FOR DELETE TO authenticated USING (auth.uid()::text = user_id);
 
 -- Equipment policies
+DROP POLICY IF EXISTS "Equipment viewable by authenticated users" ON equipment;
+DROP POLICY IF EXISTS "Authenticated users can create equipment" ON equipment;
+DROP POLICY IF EXISTS "Users can update equipment" ON equipment;
+DROP POLICY IF EXISTS "Admins and coordinators can delete equipment" ON equipment;
 CREATE POLICY "Equipment viewable by authenticated users" ON equipment FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can create equipment" ON equipment FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Users can update equipment" ON equipment FOR UPDATE TO authenticated USING (true);
@@ -237,14 +253,21 @@ CREATE POLICY "Admins and coordinators can delete equipment" ON equipment FOR DE
 );
 
 -- Equipment transfers policies
+DROP POLICY IF EXISTS "Transfers viewable by authenticated users" ON equipment_transfers;
+DROP POLICY IF EXISTS "Authenticated users can create transfers" ON equipment_transfers;
 CREATE POLICY "Transfers viewable by authenticated users" ON equipment_transfers FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can create transfers" ON equipment_transfers FOR INSERT TO authenticated WITH CHECK (true);
 
 -- Equipment audit log policies
+DROP POLICY IF EXISTS "Audit log viewable by authenticated users" ON equipment_audit_log;
+DROP POLICY IF EXISTS "Authenticated users can create audit entries" ON equipment_audit_log;
 CREATE POLICY "Audit log viewable by authenticated users" ON equipment_audit_log FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can create audit entries" ON equipment_audit_log FOR INSERT TO authenticated WITH CHECK (true);
 
 -- Chat messages policies
+DROP POLICY IF EXISTS "Chat messages viewable by authenticated users" ON chat_messages;
+DROP POLICY IF EXISTS "Authenticated users can send messages" ON chat_messages;
+DROP POLICY IF EXISTS "Admins can delete messages" ON chat_messages;
 CREATE POLICY "Chat messages viewable by authenticated users" ON chat_messages FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can send messages" ON chat_messages FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = user_id);
 CREATE POLICY "Admins can delete messages" ON chat_messages FOR DELETE TO authenticated USING (
@@ -252,18 +275,28 @@ CREATE POLICY "Admins can delete messages" ON chat_messages FOR DELETE TO authen
 );
 
 -- User chat read status policies
+DROP POLICY IF EXISTS "Users can view own read status" ON user_chat_read_status;
+DROP POLICY IF EXISTS "Users can insert own read status" ON user_chat_read_status;
+DROP POLICY IF EXISTS "Users can update own read status" ON user_chat_read_status;
 CREATE POLICY "Users can view own read status" ON user_chat_read_status FOR SELECT TO authenticated USING (auth.uid()::text = user_id);
 CREATE POLICY "Users can insert own read status" ON user_chat_read_status FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = user_id);
 CREATE POLICY "Users can update own read status" ON user_chat_read_status FOR UPDATE TO authenticated USING (auth.uid()::text = user_id);
 
 -- Island visits policies
+DROP POLICY IF EXISTS "Island visits viewable by authenticated users" ON island_visits;
+DROP POLICY IF EXISTS "Authenticated users can create visits" ON island_visits;
 CREATE POLICY "Island visits viewable by authenticated users" ON island_visits FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Authenticated users can create visits" ON island_visits FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = user_id);
 
 -- Island visit equipment policies
+DROP POLICY IF EXISTS "Visit equipment viewable by authenticated users" ON island_visit_equipment;
 CREATE POLICY "Visit equipment viewable by authenticated users" ON island_visit_equipment FOR SELECT TO authenticated USING (true);
 
 -- User milestones policies
+DROP POLICY IF EXISTS "Users can view own milestones" ON user_milestones;
+DROP POLICY IF EXISTS "Admins can view all milestones" ON user_milestones;
+DROP POLICY IF EXISTS "System can create milestones" ON user_milestones;
+DROP POLICY IF EXISTS "Admins can manage milestones" ON user_milestones;
 CREATE POLICY "Users can view own milestones" ON user_milestones FOR SELECT TO authenticated USING (auth.uid()::text = user_id);
 CREATE POLICY "Admins can view all milestones" ON user_milestones FOR SELECT TO authenticated USING (
   EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid()::text AND users.role = 'admin')
