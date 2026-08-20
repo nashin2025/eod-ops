@@ -1,26 +1,6 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development' || process.env.VERCEL === '1',
-  buildExcludes: [
-    /middleware-manifest\.json$/,
-    /build-manifest\.json$/,
-    /react-loadable-manifest\.json$/,
-    /.*\.map$/,
-    /.*\.html$/,
-    /_middleware\.js$/,
-    /page_client-reference-manifest\.js$/,
-    /server\/app\/.*_client-reference-manifest\.js$/,
-    /_client-reference-manifest\.js$/,
-  ],
-  publicExcludes: ['**/*.map', '**/*.html'],
-});
-
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
@@ -39,4 +19,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = nextConfig;
