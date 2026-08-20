@@ -13,6 +13,8 @@ const withPWA = require('next-pwa')({
     /_middleware\.js$/,
     /page_client-reference-manifest\.js$/,
     /server\/app\/.*_client-reference-manifest\.js$/,
+    /\(dashboard\)\/page_client-reference-manifest\.js$/,
+    /_client-reference-manifest\.js$/,
   ],
   publicExcludes: ['**/*.map', '**/*.html'],
 });
