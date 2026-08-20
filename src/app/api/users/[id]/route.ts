@@ -3,11 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,7 +17,7 @@ export async function GET(
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", resolvedParams.id)
       .single();
 
     if (error) throw error;
@@ -30,18 +31,19 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    
+
     // Map camelCase frontend fields to snake_case database columns
     const updateData: Record<string, unknown> = {};
     if (body.role !== undefined) updateData.role = body.role;
@@ -62,7 +64,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from("users")
       .update(updateData)
-      .eq("id", params.id)
+      .eq("id", resolvedParams.id)
       .select()
       .single();
 
@@ -77,11 +79,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -90,7 +93,7 @@ export async function DELETE(
     const { error } = await supabase
       .from("users")
       .delete()
-      .eq("id", params.id);
+      .eq("id", resolvedParams.id);
 
     if (error) throw error;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon, Monitor } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {

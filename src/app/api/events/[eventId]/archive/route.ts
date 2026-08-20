@@ -3,11 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,7 +18,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from("events")
       .update({ ...body, status: "archived", updated_at: new Date().toISOString() })
-      .eq("id", params.eventId)
+      .eq("id", resolvedParams.eventId)
       .select()
       .single();
 

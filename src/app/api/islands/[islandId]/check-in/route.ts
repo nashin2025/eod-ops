@@ -3,11 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { islandId: string } }
+  { params }: { params: Promise<{ islandId: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,7 +20,7 @@ export async function POST(
     const { data: visit, error } = await supabase
       .from("island_visits")
       .insert({
-        island_id: params.islandId,
+        island_id: resolvedParams.islandId,
         user_id: user.id,
         visit_type: "manual",
       })

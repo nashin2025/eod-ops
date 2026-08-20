@@ -5,35 +5,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart3,
+  ChartBar,
   Calendar,
   Users,
-  Map,
+  MapPin,
   Package,
   Archive,
-  Settings,
-  Menu,
+  Gear,
+  List,
   X,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
+  Log,
+  CaretLeft,
+  CaretRight,
   User,
-  MessageCircle,
-  Search,
   Bell,
-  ChevronDown,
+  CaretDown,
   Plus,
-} from "lucide-react";
+  MagnifyingGlass,
+} from "@phosphor-icons/react";
 import { signOut } from "@/lib/supabase/auth";
 import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 const navItems = [
   { section: "MAIN", items: [
-    { icon: BarChart3, label: "Overview", path: "/dashboard" },
+    { icon: ChartBar, label: "Overview", path: "/dashboard" },
     { icon: Calendar, label: "Events", path: "/dashboard/events" },
     { icon: Users, label: "Members", path: "/dashboard/members" },
-    { icon: Map, label: "Island Map", path: "/dashboard/map" },
+    { icon: MapPin, label: "Island Map", path: "/dashboard/map" },
   ]},
   { section: "ANALYTICS", items: [
     { icon: Package, label: "Equipment", path: "/dashboard/equipment" },
@@ -41,7 +40,7 @@ const navItems = [
   ]},
   { section: "ACCOUNT", items: [
     { icon: User, label: "My Profile", path: "/dashboard/profile" },
-    { icon: Settings, label: "Admin Panel", path: "/dashboard/admin" },
+    { icon: Gear, label: "Admin Panel", path: "/dashboard/admin" },
   ]},
 ];
 
@@ -105,13 +104,10 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
     .toUpperCase() || user.email?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="flex min-h-screen bg-background" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="flex min-h-screen bg-background" style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}>
       {/* Sidebar */}
       <aside
-        className={`
-          fixed lg:relative top-0 left-0 z-30 min-h-screen transition-all duration-300
-          ${sidebarCollapsed ? "w-18" : "w-72"}
-        `}
+        className={`fixed lg:relative top-0 left-0 z-30 min-h-screen transition-all duration-300 ${sidebarCollapsed ? "w-18" : "w-72"}`}
         style={{
           background: resolvedTheme === "dark" ? "var(--sidebar-bg-dark)" : "var(--sidebar-bg)",
           borderRight: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
@@ -145,7 +141,6 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
             {!sidebarCollapsed && (
               <>
                 <span className="text-xl font-bold text-foreground">EOD-Ops</span>
-                <span className="text-xs text-tertiary font-medium uppercase tracking-wider" style={{ letterSpacing: "0.08em" }}>Event Ops</span>
               </>
             )}
           </div>
@@ -153,7 +148,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
           {/* Search */}
           {!sidebarCollapsed && (
             <div className="relative" style={{ marginBottom: "var(--space-3)" }}>
-              <Search
+              <MagnifyingGlass
                 className="absolute left-3 top-1/2"
                 style={{
                   transform: "translateY(calc(-50% + 1px))",
@@ -198,14 +193,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                     <Link key={item.path} href={item.path}>
                       <Button
                         variant="ghost"
-                        className={`
-                          w-full justify-start gap-3 rounded-xl transition-all duration-200
-                          ${isActive
-                            ? "text-accent"
-                            : "text-muted-foreground hover:text-foreground"
-                          }
-                          ${sidebarCollapsed ? "justify-center" : "h-11 px-3"}
-                        `}
+                        className={`w-full justify-start gap-3 rounded-xl transition-all duration-200 ${isActive ? "text-accent" : "text-muted-foreground hover:text-foreground"} ${sidebarCollapsed ? "justify-center" : "h-11 px-3"}`}
                         style={{
                           background: isActive
                             ? resolvedTheme === "dark"
@@ -265,21 +253,18 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                   </p>
                   <p className="text-xs text-tertiary truncate" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>{user.email}</p>
                 </div>
-                <ChevronDown className="h-4 w-4 text-tertiary" style={{ transform: "translateY(1px)" }} />
+                <CaretDown className="h-4 w-4 text-tertiary" style={{ transform: "translateY(1px)" }} />
               </div>
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={`
-                rounded-xl transition-all duration-200 mx-auto
-                ${sidebarCollapsed ? "rotate-180" : ""}
-              `}
+              className={`rounded-xl transition-all duration-200 mx-auto ${sidebarCollapsed ? "rotate-180" : ""}`}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               style={{ width: 40, height: 40 }}
             >
-              {sidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+              {sidebarCollapsed ? <CaretRight className="h-5 w-5" /> : <CaretLeft className="h-5 w-5" />}
             </Button>
           </div>
         </nav>
@@ -308,13 +293,13 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 style={{ height: LAYOUT.topBarControlHeight, width: LAYOUT.topBarControlHeight }}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
               </Button>
               <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb" style={{ lineHeight: "1", gap: LAYOUT.breadcrumbSepGap }}>
                 <Link href="/dashboard" className="text-tertiary hover:text-foreground transition-colors" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>
                   Dashboard
                 </Link>
-                <ChevronRight className="h-3.5 w-3.5 text-tertiary flex-shrink-0" style={{ transform: "translateY(1px)", width: 14, height: 14 }} />
+                <CaretRight className="h-3.5 w-3.5 text-tertiary flex-shrink-0" style={{ transform: "translateY(1px)", width: 14, height: 14 }} />
                 <span className="text-foreground font-medium" style={{ color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)" }}>
                   {navItems.flatMap(s => s.items).find(i => i.path === pathname)?.label || "Overview"}
                 </span>
@@ -348,11 +333,11 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                 </Button>
                 {notificationsOpen && (
                   <div className="absolute right-0 top-full mt-2 w-80 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
-                    <div className="p-space-5 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
+                    <div className="p-5 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
                       <h3 className="font-semibold">Notifications</h3>
                     </div>
                     <div className="max-h-64 overflow-y-auto">
-                      <div className="p-space-4 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
+                      <div className="p-4 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0" style={{ background: "var(--accent)" }}>
                             📋
@@ -365,7 +350,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                         </div>
                       </div>
                     </div>
-                    <div className="p-space-3 border-t" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
+                    <div className="p-3 border-t" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
                       <a href="#" className="text-sm text-accent hover:underline block text-center">View all notifications</a>
                     </div>
                   </div>
@@ -401,7 +386,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                 </Button>
                 {userMenuOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
-                    <div className="p-space-3 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
+                    <div className="p-3 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
                       <p className="text-sm font-medium text-foreground truncate">{user.user_metadata?.full_name || "User"}</p>
                       <p className="text-xs text-tertiary truncate">{user.email}</p>
                     </div>
@@ -409,11 +394,11 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
                       <User className="h-4 w-4" /> Profile
                     </Link>
                     <Link href="/dashboard/admin" className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-lg mx-2 my-1">
-                      <Settings className="h-4 w-4" /> Admin Panel
+                      <Gear className="h-4 w-4" /> Admin Panel
                     </Link>
                     <hr className="border-border my-1 mx-2" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }} />
                     <button onClick={() => signOut()} className="flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-lg mx-2 my-1 w-full">
-                      <LogOut className="h-4 w-4" /> Sign Out
+                      <Log className="h-4 w-4" /> Sign Out
                     </button>
                   </div>
                 )}

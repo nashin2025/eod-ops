@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter, usePathname } from "next/navigation";
-import { Calendar, Users, MapPin, CheckCircle, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Activity, BarChart3, PieChart, DollarSign, ShoppingCart, Clock, ArrowUpRight, ArrowDownRight, Minus, Plus, Search, Bell, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, User, LogOut, Settings, Archive, Package, Map, MessageCircle } from "lucide-react";
+import { Calendar, Users, MapPin, CheckCircle, CaretDown, CaretUp, TrendUp, TrendDown, ActivityIcon, ChartBar, ChartPie, CurrencyDollar, ShoppingCart, Clock, ArrowUpRight, ArrowDownRight, Minus, Plus, MagnifyingGlass, List, X, CaretLeft, CaretRight, User, Log, Gear, Archive, Package, MapPin as MapPinIcon, ChatCircle, MagnifyingGlass as SearchIcon } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
@@ -52,7 +52,7 @@ const kpiData: KPIData[] = [
     value: "$48,294",
     delta: 12.4,
     deltaLabel: "vs last month",
-    icon: <DollarSign className="h-5 w-5" />,
+    icon: <CurrencyDollar className="h-5 w-5" />,
     trend: "up",
     sparkline: [28, 24, 26, 18, 20, 12, 14, 8, 6],
     iconColor: "var(--accent)",
@@ -72,7 +72,7 @@ const kpiData: KPIData[] = [
     value: "3.42%",
     delta: -1.1,
     deltaLabel: "vs last month",
-    icon: <TrendingUp className="h-5 w-5" />,
+    icon: <TrendUp className="h-5 w-5" />,
     trend: "down",
     sparkline: [10, 14, 12, 18, 16, 22, 20, 24, 26],
     iconColor: "var(--danger)",
@@ -123,9 +123,9 @@ const quickActions = [
 ];
 
 const activityItems = [
-  { id: 1, dotColor: "var(--success)", text: "<strong>Sarah M.</strong> upgraded to Pro Annual", time: "2 minutes ago" },
-  { id: 2, dotColor: "var(--warning)", text: "Weekly <strong>analytics report</strong> is ready", time: "1 hour ago" },
-  { id: 3, dotColor: "var(--accent)", text: "<strong>3 new invites</strong> pending approval", time: "3 hours ago" },
+  { id: 1, dotColor: "var(--success)", text: "Sarah M. upgraded to Pro Annual", time: "2 minutes ago" },
+  { id: 2, dotColor: "var(--warning)", text: "Weekly analytics report is ready", time: "1 hour ago" },
+  { id: 3, dotColor: "var(--accent)", text: "3 new invites pending approval", time: "3 hours ago" },
 ];
 
 // Layout constants matching the 8-point spacing scale
@@ -203,7 +203,7 @@ export default function DashboardClient({
   };
 
   return (
-    <div className="flex min-h-screen bg-background" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="flex min-h-screen bg-background" style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}>
       {/* Main Content Area - Dashboard Layout is now handled by DashboardLayout wrapper */}
       <main className="flex-1 pt-20 pb-8 lg:pb-0 animate-fade-in" style={{ padding: `0 ${LAYOUT.pagePadding}px ${LAYOUT.pagePadding}px` }}>
         {/* Hero */}
@@ -224,14 +224,14 @@ export default function DashboardClient({
               color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
               lineHeight: 1.2,
             }}>
-              Good morning, {user.user_metadata?.full_name?.split(" ")[0] || "Alex"} 👋
+              Good morning, {user.user_metadata?.full_name?.split(" ")[0] || "Alex"}
             </h1>
             <p style={{
               color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
               marginTop: "var(--space-1)",
               fontSize: 14,
             }}>
-              Here&apos;s what&apos;s happening with your business today.
+              Here's what's happening with your business today.
             </p>
           </div>
           <Button className="btn-primary">
@@ -508,58 +508,24 @@ export default function DashboardClient({
                 </div>
               </div>
             </div>
-            <div className="donut-wrap" style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--space-6)",
-              flex: 1,
-            }}>
+            <div className="donut-wrap" style={{ display: "flex", alignItems: "center", gap: "var(--space-6)", flex: 1 }}>
               <svg className="donut" viewBox="0 0 42 42" style={{ width: 160, height: 160, flexShrink: 0 }}>
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke={resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"} strokeWidth="5" />
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--accent)" strokeWidth="5" strokeDasharray="42 58" strokeDashoffset="25" strokeLinecap="round" />
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke="color-mix(in srgb, var(--accent) 60%, var(--text-primary))" strokeWidth="5" strokeDasharray="28 72" strokeDashoffset="-17" strokeLinecap="round" />
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke={resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)"} strokeWidth="5" strokeDasharray="18 82" strokeDashoffset="-45" strokeLinecap="round" />
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke={resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)"} strokeWidth="5" strokeDasharray="12 88" strokeDashoffset="-63" strokeLinecap="round" />
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke={resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"} strokeWidth="5"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--accent)" strokeWidth="5" strokeDasharray="42 58" strokeDashoffset="25" strokeLinecap="round"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="color-mix(in srgb, var(--accent) 60%, var(--text-primary))" strokeWidth="5" strokeDasharray="28 72" strokeDashoffset="-17" strokeLinecap="round"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--text-secondary)" strokeWidth="5" strokeDasharray="18 82" strokeDashoffset="-45" strokeLinecap="round"/>
+                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--text-tertiary)" strokeWidth="5" strokeDasharray="12 88" strokeDashoffset="-63" strokeLinecap="round"/>
                 <text x="21" y="19.5" textAnchor="middle" fill={resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)"} fontSize="5" fontWeight="700" fontFamily="Inter" dominantBaseline="central">84.2K</text>
                 <text x="21" y="24.5" textAnchor="middle" fill={resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)"} fontSize="2.8" fontFamily="Inter" dominantBaseline="central">visitors</text>
               </svg>
-              <div className="donut-legend" style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--space-3)",
-                flex: 1,
-                minWidth: 0,
-              }}>
-                {trafficSources.map((source, i) => (
-                  <div key={i} className="donut-item" style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "var(--space-2)",
-                    fontSize: 13,
-                  }}>
-                    <div className="donut-item-left" style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "var(--space-2)",
-                      color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                      minWidth: 0,
-                    }}>
-                      <span className="legend-dot" style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: source.color,
-                        flexShrink: 0,
-                      }}></span>
-                      <span>{source.label}</span>
+              <div className="donut-legend" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", flex: 1, minWidth: 0 }}>
+                {trafficSources.map((source, idx) => (
+                  <div key={idx} className="donut-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-2)", fontSize: 13 }}>
+                    <div className="donut-item-left" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)", minWidth: 0 }}>
+                      <span className="legend-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: source.color, flexShrink: 0 }}></span>
+                      {source.label}
                     </div>
-                    <span className="donut-item-val tabular" style={{
-                      fontWeight: 700,
-                      color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
-                      fontVariantNumeric: "tabular-nums",
-                      flexShrink: 0,
-                    }}>
+                    <span className="donut-item-val" style={{ fontWeight: 700, color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
                       {source.value}%
                     </span>
                   </div>
@@ -569,19 +535,16 @@ export default function DashboardClient({
           </div>
         </div>
 
-        {/* Bottom Grid - Table + Quick Actions/Activity */}
+        {/* Table + bottom row */}
         <div className="bottom-grid" style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
           gap: "var(--space-5)",
           marginTop: LAYOUT.chartsToTableGap,
         }}>
-          {/* Table - 8 cols */}
           <div className="card" style={{
             gridColumn: "span 8",
             padding: LAYOUT.cardPadding,
-            display: "flex",
-            flexDirection: "column",
           }}>
             <div className="card-header" style={{
               display: "flex",
@@ -622,189 +585,65 @@ export default function DashboardClient({
                 View all →
               </a>
             </div>
-            <div className="table-wrap" style={{
-              overflowX: "auto",
-              margin: `0 calc(-1 * ${LAYOUT.cardPadding}px)`,
-              padding: `0 ${LAYOUT.cardPadding}px`,
-              marginTop: `calc(-1 * var(--space-2))`,
-            }}>
+            <div className="table-wrap" style={{ overflowX: "auto", margin: `0 ${-LAYOUT.cardPadding}px`, padding: `0 ${LAYOUT.cardPadding}px`, marginTop: `calc(-1 * var(--space-2))` }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
-                    <th style={{
-                      textAlign: "left",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                      padding: `0 var(--space-3) var(--space-3)`,
-                      whiteSpace: "nowrap",
-                    }}>
-                      Customer
-                    </th>
-                    <th style={{
-                      textAlign: "left",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                      padding: `0 var(--space-3) var(--space-3)`,
-                      whiteSpace: "nowrap",
-                    }}>
-                      Plan
-                    </th>
-                    <th style={{
-                      textAlign: "right",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                      padding: `0 var(--space-3) var(--space-3)`,
-                      whiteSpace: "nowrap",
-                    }}>
-                      Amount
-                    </th>
-                    <th style={{
-                      textAlign: "left",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                      padding: `0 var(--space-3) var(--space-3)`,
-                      whiteSpace: "nowrap",
-                    }}>
-                      Status
-                    </th>
-                    <th style={{
-                      textAlign: "left",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                      padding: `0 var(--space-3) var(--space-3)`,
-                      whiteSpace: "nowrap",
-                    }}>
-                      Date
-                    </th>
+                    <th style={{ textAlign: "left", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", padding: `0 var(--space-3) var(--space-3)`, whiteSpace: "nowrap" }}>Customer</th>
+                    <th style={{ textAlign: "left", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", padding: `0 var(--space-3) var(--space-3)`, whiteSpace: "nowrap" }}>Plan</th>
+                    <th style={{ textAlign: "right", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", padding: `0 var(--space-3) var(--space-3)`, whiteSpace: "nowrap" }}>Amount</th>
+                    <th style={{ textAlign: "left", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", padding: `0 var(--space-3) var(--space-3)`, whiteSpace: "nowrap" }}>Status</th>
+                    <th style={{ textAlign: "left", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", padding: `0 0 var(--space-3)`, whiteSpace: "nowrap" }}>Date</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {recentTransactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td style={{
-                        padding: `var(--space-3) var(--space-3)`,
-                        borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-                        fontSize: 13,
-                        color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                        verticalAlign: "middle",
-                      }}>
-                        <div className="customer-cell" style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "var(--space-2)",
-                        }}>
-                          <div className="avatar" style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: "50%",
-                            background: tx.avatarColor,
-                            display: "grid",
-                            placeItems: "center",
-                            color: "white",
-                            fontWeight: 700,
-                            fontSize: 12,
+                  {recentTransactions.map((tx) => {
+                    const borderColor = resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)";
+                    const textColorSecondary = resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)";
+                    const textColorPrimary = resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)";
+                    const textColorTertiary = resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)";
+                    const statusColor = tx.statusType === "success" ? "var(--success)" : tx.statusType === "pending" ? "var(--warning)" : "var(--danger)";
+                    const statusBg = tx.statusType === "success" ? "color-mix(in srgb, var(--success) 14%, transparent)" : tx.statusType === "pending" ? "color-mix(in srgb, var(--warning) 14%, transparent)" : "color-mix(in srgb, var(--danger) 14%, transparent)";
+                    return (
+                      <tr key={tx.id}>
+                        <td style={{ padding: "var(--space-3) var(--space-3)", borderTop: `1px solid ${borderColor}`, fontSize: 13, color: textColorSecondary, verticalAlign: "middle" }}>
+                          <div className="customer-cell" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                            <div className="avatar" style={{ width: 32, height: 32, borderRadius: "50%", background: tx.avatarColor, display: "grid", placeItems: "center", color: "white", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{tx.avatar}</div>
+                            <div>
+                              <div className="customer-name" style={{ fontWeight: 600, color: textColorPrimary, fontSize: 13, lineHeight: 1.2 }}>{tx.customer}</div>
+                              <div className="customer-email" style={{ fontSize: 11.5, color: textColorTertiary, marginTop: 2, lineHeight: 1.2 }}>{tx.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: "var(--space-3) var(--space-3)", borderTop: `1px solid ${borderColor}`, fontSize: 13, color: textColorSecondary }}>{tx.plan}</td>
+                        <td className="amount tabular" style={{ fontWeight: 700, color: textColorPrimary, fontVariantNumeric: "tabular-nums", textAlign: "right", display: "block", padding: "var(--space-3) var(--space-3)", borderTop: `1px solid ${borderColor}` }}>{tx.amount}</td>
+                        <td style={{ padding: "var(--space-3) var(--space-3)", borderTop: `1px solid ${borderColor}` }}>
+                          <span className={`status-pill ${tx.statusType}`} style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "var(--space-1)",
+                            padding: "var(--space-1) var(--space-2)",
+                            borderRadius: "999px",
+                            fontSize: 11,
+                            fontWeight: 600,
+                            lineHeight: 1.3,
+                            whiteSpace: "nowrap",
+                            color: statusColor,
+                            background: statusBg,
                           }}>
-                            {tx.avatar}
-                          </div>
-                          <div>
-                            <div className="customer-name" style={{
-                              fontWeight: 600,
-                              color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
-                              fontSize: 13,
-                              lineHeight: 1.2,
-                            }}>
-                              {tx.customer}
-                            </div>
-                            <div className="customer-email" style={{
-                              fontSize: 11.5,
-                              color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                              marginTop: 2,
-                              lineHeight: 1.2,
-                            }}>
-                              {tx.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{
-                        padding: `var(--space-3) var(--space-3)`,
-                        borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-                        fontSize: 13,
-                        color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                        verticalAlign: "middle",
-                      }}>
-                        {tx.plan}
-                      </td>
-                      <td className="amount tabular" style={{
-                        padding: `var(--space-3) var(--space-3)`,
-                        borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-                        fontSize: 13,
-                        color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
-                        fontWeight: 700,
-                        fontVariantNumeric: "tabular-nums",
-                        textAlign: "right",
-                        verticalAlign: "middle",
-                      }}>
-                        {tx.amount}
-                      </td>
-                      <td style={{
-                        padding: `var(--space-3) var(--space-3)`,
-                        borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-                        verticalAlign: "middle",
-                      }}>
-                        <span className="status-pill" style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "var(--space-1)",
-                          padding: "var(--space-1) var(--space-2)",
-                          borderRadius: 9999,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          lineHeight: 1.3,
-                          whiteSpace: "nowrap",
-                          color: tx.statusType === "success" ? "var(--success)" : tx.statusType === "pending" ? "var(--warning)" : "var(--danger)",
-                          background: tx.statusType === "success"
-                            ? "color-mix(in srgb, var(--success) 14%, transparent)"
-                            : tx.statusType === "pending"
-                            ? "color-mix(in srgb, var(--warning) 14%, transparent)"
-                            : "color-mix(in srgb, var(--danger) 14%, transparent)",
-                        }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "currentColor", flexShrink: 0 }} />
-                          {tx.status}
-                        </span>
-                      </td>
-                      <td style={{
-                        padding: `var(--space-3) var(--space-3)`,
-                        borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-                        fontSize: 13,
-                        color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                        verticalAlign: "middle",
-                      }}>
-                        {tx.date}
-                      </td>
-                    </tr>
-                  ))}
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "currentColor", flexShrink: 0 }} />
+                            {tx.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: "var(--space-3) 0", borderTop: `1px solid ${borderColor}`, fontSize: 13, color: textColorSecondary }}>{tx.date}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Quick Actions + Activity - 4 cols */}
           <div className="card" style={{
             gridColumn: "span 4",
             padding: LAYOUT.cardPadding,
@@ -837,13 +676,9 @@ export default function DashboardClient({
                 </div>
               </div>
             </div>
-            <div className="actions-grid" style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "var(--space-3)",
-            }}>
-              {quickActions.map((action, i) => (
-                <button key={i} className="action-tile" style={{
+            <div className="actions-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+              {quickActions.map((action, idx) => (
+                <button key={idx} className="action-tile" style={{
                   padding: "var(--space-4) var(--space-3)",
                   borderRadius: 14,
                   display: "flex",
@@ -853,9 +688,9 @@ export default function DashboardClient({
                   transition: "all 0.2s ease",
                   textAlign: "left",
                   cursor: "pointer",
-                  background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "var(--card-bg)",
+                  background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "transparent",
                   border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
-                  boxShadow: resolvedTheme === "dark" ? "none" : "var(--neu-raised-sm)",
+                  boxShadow: resolvedTheme === "light" ? "var(--neu-raised-sm)" : "none",
                 }}>
                   <div className="action-icon" style={{
                     width: 36,
@@ -865,49 +700,21 @@ export default function DashboardClient({
                     placeItems: "center",
                     color: "var(--accent)",
                     background: resolvedTheme === "dark" ? "var(--accent-soft-dark)" : "var(--accent-soft)",
-                    boxShadow: resolvedTheme === "dark" ? "none" : "var(--neu-raised-sm)",
+                    boxShadow: resolvedTheme === "light" ? "var(--neu-raised-sm)" : "none",
                   }}>
                     {action.icon}
                   </div>
-                  <div className="action-label" style={{
-                    fontWeight: 600,
-                    fontSize: 13,
-                    color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
-                    lineHeight: 1.3,
-                  }}>
-                    {action.label}
-                  </div>
-                  <div className="action-desc" style={{
-                    fontSize: 11,
-                    color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                    lineHeight: 1.3,
-                  }}>
-                    {action.desc}
-                  </div>
+                  <div className="action-label" style={{ fontWeight: 600, fontSize: 13, color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)", lineHeight: 1.3 }}>{action.label}</div>
+                  <div className="action-desc" style={{ fontSize: 11, color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", lineHeight: 1.3 }}>{action.desc}</div>
                 </button>
               ))}
             </div>
 
-            <div className="activity-section" style={{
-              marginTop: "var(--space-5)",
-              paddingTop: "var(--space-5)",
-              borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}`,
-            }}>
-              <div className="card-title" style={{
-                fontSize: 14,
-                marginBottom: "var(--space-3)",
-                fontWeight: 700,
-                color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)",
-              }}>
-                Recent Activity
-              </div>
-              <div className="activity-list" style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--space-1)",
-              }}>
-                {activityItems.map((activity) => (
-                  <div key={activity.id} className="activity-item" style={{
+            <div className="activity-section" style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-5)", borderTop: `1px solid ${resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)"}` }}>
+              <div className="card-title" style={{ fontSize: 14, marginBottom: "var(--space-3)", color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)" }}>Recent Activity</div>
+              <div className="activity-list" style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+                {activityItems.map((item) => (
+                  <div key={item.id} className="activity-item" style={{
                     display: "flex",
                     alignItems: "flex-start",
                     gap: "var(--space-3)",
@@ -916,29 +723,12 @@ export default function DashboardClient({
                     transition: "background 0.2s",
                     background: "transparent",
                   }}>
-                    <div className="activity-dot" style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      marginTop: 7,
-                      flexShrink: 0,
-                      background: activity.dotColor,
-                    }}></div>
+                    <div className="activity-dot" style={{ width: 8, height: 8, borderRadius: "50%", marginTop: 7, flexShrink: 0, background: item.dotColor }}></div>
                     <div style={{ flex: 1 }}>
-                      <div className="activity-text" style={{
-                        fontSize: 13,
-                        color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                        lineHeight: 1.4,
-                      }}>
-                        {activity.text}
+                      <div className="activity-text" style={{ fontSize: 13, color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)", lineHeight: 1.4 }}>
+                        {item.text}
                       </div>
-                      <div className="activity-time" style={{
-                        fontSize: 11,
-                        color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                        marginTop: 2,
-                      }}>
-                        {activity.time}
-                      </div>
+                      <div className="activity-time" style={{ fontSize: 11, color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)", marginTop: 2 }}>{item.time}</div>
                     </div>
                   </div>
                 ))}

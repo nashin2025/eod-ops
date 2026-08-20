@@ -17,6 +17,15 @@ const nextConfig = {
     };
     return config;
   },
+  turbopack: {
+    resolveAlias: {
+      '@': './src',
+      '@/components': './src/components',
+      '@/lib': './src/lib',
+      '@/types': './src/types',
+      '@/app': './src/app',
+    },
+  },
 };
 
 module.exports = nextConfig;

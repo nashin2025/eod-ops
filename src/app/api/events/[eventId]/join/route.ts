@@ -3,17 +3,18 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const resolvedParams = await params;
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { eventId } = params;
+    const { eventId } = resolvedParams;
 
     const { data: existing, error: checkError } = await supabase
       .from("event_participants")
