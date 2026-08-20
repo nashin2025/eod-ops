@@ -252,7 +252,7 @@ CREATE POLICY "Admins can delete messages" ON chat_messages FOR DELETE TO authen
 
 -- User chat read status policies
 CREATE POLICY "Users can view own read status" ON user_chat_read_status FOR SELECT TO authenticated USING (auth.uid()::text = user_id);
-CREATE POLICY "Users can update own read status" ON user_chat_read_status FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = user_id);
+CREATE POLICY "Users can insert own read status" ON user_chat_read_status FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = user_id);
 CREATE POLICY "Users can update own read status" ON user_chat_read_status FOR UPDATE TO authenticated USING (auth.uid()::text = user_id);
 
 -- Island visits policies
