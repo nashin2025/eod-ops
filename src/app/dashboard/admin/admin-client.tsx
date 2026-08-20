@@ -82,10 +82,20 @@ export default function AdminClient({
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
-    await fetch(`/api/users/${userId}/role`, {
+    await fetch(`/api/users/${userId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: newRole }),
+      credentials: "include",
+    });
+    router.refresh();
+  };
+
+  const handleApprovalChange = async (userId: string, newStatus: string) => {
+    await fetch(`/api/users/${userId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ approval_status: newStatus }),
       credentials: "include",
     });
     router.refresh();
@@ -180,6 +190,19 @@ export default function AdminClient({
                         <SelectItem value="attachment">Attachment</SelectItem>
                       </SelectContent>
                     </Select>
+                    <Select
+                      value={user.approvalStatus}
+                      onValueChange={(value) => handleApprovalChange(user.id, value)}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -216,21 +239,19 @@ export default function AdminClient({
                       <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleApprove(user.id)}
+                      <Select
+                        value={user.approvalStatus}
+                        onValueChange={(value) => handleApprovalChange(user.id, value)}
                       >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleReject(user.id)}
-                      >
-                        <XCircle className="h-4 w-4 mr-1" />
-                        Reject
-                      </Button>
+                        <SelectTrigger className="w-[160px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 ))}
