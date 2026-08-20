@@ -6,6 +6,19 @@
 
 @layer base {
   :root {
+    /* ============================================
+       SPACING SCALE - 8-point grid (4px base)
+       ============================================ */
+    --space-1: 4px;   /* Tight: icon-label gaps, badge offsets */
+    --space-2: 8px;   /* Compact: chip padding, related text lines */
+    --space-3: 12px;  /* Small: button/input padding, nav icon-text */
+    --space-4: 16px;  /* Standard: card padding, label-control gap */
+    --space-5: 20px;  /* Card gaps: between cards, standard card pad */
+    --space-6: 24px;  /* Page padding, large card pad, section gaps */
+    --space-7: 32px;  /* Major section breaks */
+    --space-8: 40px;  /* Large section dividers, hero breathing room */
+    --space-9: 48px;  /* Hero/welcome blocks, major page separators */
+
     /* LIGHT MODE - Neomorphism / Soft UI */
     /* Single base color: #E0E5EC (Cool Clay) */
     --background: 224 20% 89%;        /* #E0E5EC */
@@ -34,6 +47,13 @@
     --shadow-dark: 163 177 198 / 0.5;
     --shadow-inset-light: 255 255 255 / 0.5;
     --shadow-inset-dark: 163 177 198 / 0.4;
+
+    /* Chart colors */
+    --chart-1: 245 57% 70%;   /* Accent */
+    --chart-2: 142 76% 36%;   /* Green */
+    --chart-3: 217 91% 60%;   /* Blue */
+    --chart-4: 38 92% 50%;    /* Orange */
+    --chart-5: 280 65% 60%;   /* Purple */
   }
 
   .dark {
@@ -65,17 +85,100 @@
     --shadow-md-dark: 0 0 0 / 0.4;
     --shadow-lg-dark: 0 0 0 / 0.5;
     --shadow-xl-dark: 0 0 0 / 0.6;
+
+    /* Chart colors */
+    --chart-1: 142 76% 36%;   /* Green */
+    --chart-2: 217 91% 60%;   /* Blue */
+    --chart-3: 38 92% 50%;    /* Orange */
+    --chart-4: 280 65% 60%;   /* Purple */
+    --chart-5: 340 75% 55%;   /* Pink */
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
+}
+
+/* ============================================
+   SPACING UTILITIES (using CSS custom properties)
+   ============================================ */
+@layer utilities {
+  .p-space-1 { padding: var(--space-1); }
+  .p-space-2 { padding: var(--space-2); }
+  .p-space-3 { padding: var(--space-3); }
+  .p-space-4 { padding: var(--space-4); }
+  .p-space-5 { padding: var(--space-5); }
+  .p-space-6 { padding: var(--space-6); }
+  .p-space-7 { padding: var(--space-7); }
+  .p-space-8 { padding: var(--space-8); }
+  .p-space-9 { padding: var(--space-9); }
+
+  .px-space-1 { padding-left: var(--space-1); padding-right: var(--space-1); }
+  .px-space-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
+  .px-space-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+  .px-space-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+  .px-space-5 { padding-left: var(--space-5); padding-right: var(--space-5); }
+  .px-space-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+  .px-space-7 { padding-left: var(--space-7); padding-right: var(--space-7); }
+  .px-space-8 { padding-left: var(--space-8); padding-right: var(--space-8); }
+  .px-space-9 { padding-left: var(--space-9); padding-right: var(--space-9); }
+
+  .py-space-1 { padding-top: var(--space-1); padding-bottom: var(--space-1); }
+  .py-space-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+  .py-space-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+  .py-space-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+  .py-space-5 { padding-top: var(--space-5); padding-bottom: var(--space-5); }
+  .py-space-6 { padding-top: var(--space-6); padding-bottom: var(--space-6); }
+  .py-space-7 { padding-top: var(--space-7); padding-bottom: var(--space-7); }
+  .py-space-8 { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .py-space-9 { padding-top: var(--space-9); padding-bottom: var(--space-9); }
+
+  .gap-space-1 { gap: var(--space-1); }
+  .gap-space-2 { gap: var(--space-2); }
+  .gap-space-3 { gap: var(--space-3); }
+  .gap-space-4 { gap: var(--space-4); }
+  .gap-space-5 { gap: var(--space-5); }
+  .gap-space-6 { gap: var(--space-6); }
+  .gap-space-7 { gap: var(--space-7); }
+  .gap-space-8 { gap: var(--space-8); }
+  .gap-space-9 { gap: var(--space-9); }
+
+  .m-space-1 { margin: var(--space-1); }
+  .m-space-2 { margin: var(--space-2); }
+  .m-space-3 { margin: var(--space-3); }
+  .m-space-4 { margin: var(--space-4); }
+  .m-space-5 { margin: var(--space-5); }
+  .m-space-6 { margin: var(--space-6); }
+  .m-space-7 { margin: var(--space-7); }
+  .m-space-8 { margin: var(--space-8); }
+  .m-space-9 { margin: var(--space-9); }
+
+  .mt-space-1 { margin-top: var(--space-1); }
+  .mt-space-2 { margin-top: var(--space-2); }
+  .mt-space-3 { margin-top: var(--space-3); }
+  .mt-space-4 { margin-top: var(--space-4); }
+  .mt-space-5 { margin-top: var(--space-5); }
+  .mt-space-6 { margin-top: var(--space-6); }
+  .mt-space-7 { margin-top: var(--space-7); }
+  .mt-space-8 { margin-top: var(--space-8); }
+  .mt-space-9 { margin-top: var(--space-9); }
+
+  .mb-space-1 { margin-bottom: var(--space-1); }
+  .mb-space-2 { margin-bottom: var(--space-2); }
+  .mb-space-3 { margin-bottom: var(--space-3); }
+  .mb-space-4 { margin-bottom: var(--space-4); }
+  .mb-space-5 { margin-bottom: var(--space-5); }
+  .mb-space-6 { margin-bottom: var(--space-6); }
+  .mb-space-7 { margin-bottom: var(--space-7); }
+  .mb-space-8 { margin-bottom: var(--space-8); }
+  .mb-space-9 { margin-bottom: var(--space-9); }
 }
 
 /* LIGHT MODE - Neomorphic Utilities */
@@ -174,7 +277,7 @@
 
   /* Neomorphic card */
   .card-neo {
-    @apply bg-background p-6 rounded-2xl;
+    @apply bg-background p-space-6 rounded-2xl;
     box-shadow: 
       -4px -4px 10px var(--shadow-light),
       4px 4px 10px var(--shadow-dark);
@@ -235,7 +338,7 @@
 /* DARK MODE - Monochromatic Utilities */
 @layer utilities {
   .dark .card-mono {
-    @apply bg-card border border-border p-6 rounded-2xl;
+    @apply bg-card border border-border p-space-6 rounded-2xl;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     transition: all 200ms ease;
     cursor: pointer;
@@ -386,3 +489,35 @@
     @apply bg-border rounded-full;
   }
 }
+
+/* ============================================
+   LAYOUT CONSTANTS (for reference in components)
+   ============================================ */
+/* 
+  Page outer padding: var(--space-6) = 24px
+  Sidebar width (expanded): 288px (18rem) = w-72
+  Sidebar width (collapsed): 72px (4.5rem) = w-18
+  Sidebar horizontal padding: 18px (intentional, matches icon visual weight)
+  Sidebar vertical padding: var(--space-6) = 24px
+  Top bar height: 68px target
+  Top bar horizontal padding: var(--space-5) = 20px
+  Top bar action cluster gap: 10px
+  Top bar control height: 40px
+  Main content gap between sidebar: 0 (edge-to-edge)
+  Card outer padding: var(--space-6) = 24px
+  KPI card padding: var(--space-5) = 20px (24px also acceptable)
+  Gap between cards in row: var(--space-5) = 20px
+  Gap between major sections: var(--space-7) = 32px
+  Top bar -> Hero gap: var(--space-6) = 24px
+  Hero -> KPI gap: var(--space-6) = 24px
+  KPI -> Charts gap: var(--space-7) = 32px
+  Charts -> Table gap: var(--space-7) = 32px
+  Grid columns: 12-col, KPI: 3-col each, Charts: 8+4, Bottom: 8+4
+  Sidebar nav item height: 44px
+  Sidebar brand logo: 40x40px
+  Top bar breadcrumb separator: 14x14, gap 8px each side
+  Notification dot: 8px diameter, 8px from top/right
+  Tabular numerals: font-variant-numeric: tabular-nums
+  Uppercase labels: letter-spacing: 0.08em
+  Icon-text gaps: nav=12px, buttons=8px, list items=10px
+*/

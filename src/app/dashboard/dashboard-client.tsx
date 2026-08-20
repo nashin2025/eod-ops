@@ -132,6 +132,33 @@ const recentActivity = [
   { id: 5, type: "alert", title: "Low inventory alert", description: "Diving equipment running low", time: "5 hours ago", avatar: "⚠", color: "#F59E0B" },
 ];
 
+// Layout constants matching the 8-point spacing scale
+const LAYOUT = {
+  pagePadding: 24,           // --space-6
+  sidebarWidthExpanded: 288, // w-72
+  sidebarWidthCollapsed: 72, // w-18
+  sidebarPaddingH: 18,       // intentional
+  sidebarPaddingV: 24,       // --space-6
+  topBarHeight: 68,          // target
+  topBarPaddingH: 20,        // --space-5
+  topBarActionGap: 10,       // 10px
+  topBarControlHeight: 40,   // 40px
+  cardPadding: 24,           // --space-6
+  kpiCardPadding: 20,        // --space-5
+  cardRowGap: 20,            // --space-5
+  sectionGap: 32,            // --space-7
+  topBarToHeroGap: 24,       // --space-6
+  heroToKpiGap: 24,          // --space-6
+  kpiToChartsGap: 32,        // --space-7
+  chartsToTableGap: 32,      // --space-7
+  navItemHeight: 44,         // 44px tap-friendly
+  brandLogoSize: 40,         // 40x40
+  breadcrumbSepSize: 14,     // 14x14
+  breadcrumbSepGap: 8,       // 8px each side
+  notifDotSize: 8,           // 8px diameter
+  notifDotOffset: 8,         // 8px from top/right
+} as const;
+
 export default function DashboardClient({
   user,
   events,
@@ -214,6 +241,28 @@ export default function DashboardClient({
     }).join(" ");
   };
 
+  // Sidebar style object
+  const sidebarStyle = {
+    boxShadow: sidebarCollapsed 
+      ? "none" 
+      : resolvedTheme === "dark"
+        ? "0 4px 6px rgba(0, 0, 0, 0.4)"
+        : "0 1px 3px rgba(163, 177, 198, 0.3)",
+  };
+
+  // Top bar style object
+  const topBarStyle = {
+    left: sidebarCollapsed ? LAYOUT.sidebarWidthCollapsed : LAYOUT.sidebarWidthExpanded,
+    boxShadow: resolvedTheme === "light"
+      ? "0 1px 3px rgba(163, 177, 198, 0.3)"
+      : "0 1px 3px rgba(0, 0, 0, 0.3)",
+  };
+
+  // Main content style
+  const mainStyle = {
+    marginLeft: sidebarCollapsed ? LAYOUT.sidebarWidthCollapsed : LAYOUT.sidebarWidthExpanded,
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -221,22 +270,21 @@ export default function DashboardClient({
         className={`
           fixed lg:relative top-0 left-0 z-30 bg-card border-r border-border min-h-screen transition-all duration-300
           ${sidebarCollapsed ? "w-18" : "w-72"}
-          dark:shadow-xl
         `}
-        style={{ 
-          boxShadow: sidebarCollapsed ? "none" : "0 4px 6px rgba(0, 0, 0, 0.05)"
-        }}
+        style={sidebarStyle}
       >
-        <nav className="p-4 space-y-6 h-full flex flex-col">
+        <nav className="p-space-6 space-y-6 h-full flex flex-col" style={{ paddingLeft: LAYOUT.sidebarPaddingH, paddingRight: LAYOUT.sidebarPaddingH }}>
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center flex-col" 
-                 style={{ 
-                   background: 'hsl(var(--background))',
-                   boxShadow: resolvedTheme === "dark" 
-                     ? "0 2px 8px rgba(0,0,0,0.4)" 
-                     : "inset 2px 2px 4px var(--shadow-inset-dark), inset -2px -2px 4px var(--shadow-inset-light)"
-                 }}>
+            <div 
+              className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center flex-col"
+              style={{
+                background: 'hsl(var(--background))',
+                boxShadow: resolvedTheme === "dark"
+                  ? "0 2px 8px rgba(0,0,0,0.4)"
+                  : "inset 2px 2px 4px var(--shadow-inset-dark), inset -2px -2px 4px var(--shadow-inset-light)"
+              }}
+            >
               <div className="w-5 h-5 rounded-full" style={{ background: 'hsl(var(--accent))' }} />
               <div className="w-1.5 h-1.5 rounded-full bg-white/70 mt-0.5" />
             </div>
@@ -253,6 +301,7 @@ export default function DashboardClient({
                 type="text"
                 placeholder="Search..."
                 className="input-neo dark:input-mono pl-10 w-full"
+                style={{ height: LAYOUT.navItemHeight }}
               />
             </div>
           )}
@@ -262,7 +311,7 @@ export default function DashboardClient({
             {navItems.map((section) => (
               <div key={section.section} className="space-y-1">
                 {!sidebarCollapsed && (
-                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-3 mb-2">
                     {section.section}
                   </p>
                 )}
@@ -274,18 +323,19 @@ export default function DashboardClient({
                         variant="ghost"
                         className={`
                           w-full justify-start gap-3 rounded-xl transition-all duration-200
-                          ${isActive 
-                            ? "text-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.1)]" 
+                          ${isActive
+                            ? "text-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.1)]"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                           }
-                          ${sidebarCollapsed ? "justify-center p-3" : "p-3"}
+                          ${sidebarCollapsed ? "justify-center p-3" : "h-11 px-3"}
                         `}
                         style={{
                           borderLeft: isActive ? "4px solid hsl(var(--accent))" : "none",
                           borderRadius: isActive ? "0 12px 12px 0" : "12px",
+                          height: LAYOUT.navItemHeight,
                         }}
                       >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        <item.icon className="h-5 w-5 flex-shrink-0" style={{ transform: "translateY(1px)" }} />
                         {!sidebarCollapsed && <span>{item.label}</span>}
                       </Button>
                     </a>
@@ -296,11 +346,13 @@ export default function DashboardClient({
           </div>
 
           {/* User Profile & Collapse Toggle */}
-          <div className="border-t border-border pt-4 space-y-3">
+          <div className="border-t border-border pt-4 space-y-4">
             {!sidebarCollapsed && (
               <div className="flex items-center gap-3 p-3 rounded-xl bg-[hsl(var(--muted)/0.3)]">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
-                     style={{ background: 'hsl(var(--accent)/0.15)' }}>
+                <div 
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
+                  style={{ background: 'hsl(var(--accent)/0.15)' }}
+                >
                   {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -321,6 +373,7 @@ export default function DashboardClient({
                 ${sidebarCollapsed ? "rotate-180" : ""}
               `}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              style={{ width: 40, height: 40 }}
             >
               {sidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
             </Button>
@@ -329,20 +382,14 @@ export default function DashboardClient({
       </aside>
 
       {/* Main Content */}
-      <div className={`
-        flex-1 flex flex-col min-h-screen 
-        ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-72"}
-      `}>
+      <div className="flex-1 flex flex-col min-h-screen" style={mainStyle}>
         {/* Top Bar */}
-        <header className="fixed top-0 left-0 lg:left-72 lg:left-[calc(72px+72px)] right-0 z-20 bg-card/80 backdrop-blur-sm border-b border-border transition-all duration-300"
-              style={{ 
-                left: sidebarCollapsed ? "72px" : "288px",
-                boxShadow: resolvedTheme === "light" 
-                  ? "0 1px 3px rgba(163, 177, 198, 0.3)" 
-                  : "0 1px 3px rgba(0, 0, 0, 0.3)"
-              }}>
-          <div className="px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
+        <header 
+          className="fixed top-0 left-0 right-0 z-20 bg-card/80 backdrop-blur-sm border-b border-border transition-all duration-300"
+          style={topBarStyle}
+        >
+          <div className="px-space-5 py-4" style={{ height: LAYOUT.topBarHeight }}>
+            <div className="flex items-center justify-between gap-4 h-full">
               {/* Breadcrumbs & Mobile Menu */}
               <div className="flex items-center gap-4 flex-1">
                 <Button
@@ -350,12 +397,13 @@ export default function DashboardClient({
                   size="sm"
                   className="lg:hidden"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  style={{ height: LAYOUT.topBarControlHeight, width: LAYOUT.topBarControlHeight }}
                 >
                   {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </Button>
-                <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
+                <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb" style={{ lineHeight: "1.5" }}>
                   <span className="text-muted-foreground">Dashboard</span>
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                   <span className="text-foreground font-medium">
                     {navItems.flatMap(s => s.items).find(i => i.path === pathname)?.label || "Overview"}
                   </span>
@@ -363,7 +411,7 @@ export default function DashboardClient({
               </div>
 
               {/* Right Side Actions */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-[10px]">
                 {/* Theme Toggle */}
                 <ThemeToggleCompact />
 
@@ -375,6 +423,7 @@ export default function DashboardClient({
                     onClick={() => setNotificationsOpen(!notificationsOpen)}
                     className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
                     aria-label="Notifications"
+                    style={{ height: LAYOUT.topBarControlHeight, width: LAYOUT.topBarControlHeight }}
                   >
                     <Bell className="h-5 w-5" />
                     {unreadMessagesCount > 0 && (
@@ -385,15 +434,17 @@ export default function DashboardClient({
                   </Button>
                   {notificationsOpen && (
                     <div className="absolute right-0 top-full mt-2 w-80 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
-                      <div className="p-4 border-b border-border">
+                      <div className="p-space-5 border-b border-border">
                         <h3 className="font-semibold">Notifications</h3>
                       </div>
                       <div className="max-h-64 overflow-y-auto">
                         {recentActivity.slice(0, 3).map((activity) => (
-                          <div key={activity.id} className="p-4 border-b border-border hover:bg-muted/30 transition-colors">
+                          <div key={activity.id} className="p-space-4 border-b border-border hover:bg-muted/30 transition-colors">
                             <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0" 
-                                   style={{ background: activity.color }}>
+                              <div 
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0" 
+                                style={{ background: activity.color }}
+                              >
                                 {activity.avatar}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -405,7 +456,7 @@ export default function DashboardClient({
                           </div>
                         ))}
                       </div>
-                      <div className="p-3 border-t border-border">
+                      <div className="p-space-3 border-t border-border">
                         <a href="#" className="text-sm text-accent hover:underline block text-center">View all notifications</a>
                       </div>
                     </div>
@@ -420,15 +471,18 @@ export default function DashboardClient({
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
                     aria-label="User menu"
+                    style={{ height: LAYOUT.topBarControlHeight, width: LAYOUT.topBarControlHeight }}
                   >
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
-                         style={{ background: 'hsl(var(--accent)/0.15)' }}>
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
+                      style={{ background: 'hsl(var(--accent)/0.15)' }}
+                    >
                       {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                     </div>
                   </Button>
                   {userMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
-                      <div className="p-3 border-b border-border">
+                      <div className="p-space-3 border-b border-border">
                         <p className="text-sm font-medium text-foreground truncate">
                           {user.user_metadata?.full_name || "User"}
                         </p>
@@ -453,22 +507,22 @@ export default function DashboardClient({
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 pt-20 pb-8 lg:pb-0 px-4 sm:px-6 lg:px-8 animate-fade-in">
+        <main className="flex-1 pt-[88px] pb-space-6 px-space-6 lg:pb-0 animate-fade-in">
           {/* Welcome Hero */}
-          <div className="mb-8">
-            <div className="card-neo dark:card-mono p-6 sm:p-8">
+          <div className="mb-space-6">
+            <div className="card-neo dark:card-mono p-space-6 sm:p-space-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground uppercase tracking-wider">
                     {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
                   </p>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground mt-1 leading-tight">
                     Welcome back, {user.user_metadata?.full_name?.split(" ")[0] || "there"}!
                   </h1>
                   <p className="text-muted-foreground mt-1">Here's what's happening with your events today.</p>
                 </div>
-                <Button className="btn-neo-accent dark:btn-mono-primary w-full sm:w-auto mt-4 sm:mt-0">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button className="btn-neo-accent dark:btn-mono-primary w-full sm:w-auto mt-4 sm:mt-0" style={{ height: 48, paddingLeft: 24, paddingRight: 24 }}>
+                  <Plus className="h-4 w-4 mr-2" style={{ transform: "translateY(1px)" }} />
                   Create Report
                 </Button>
               </div>
@@ -476,27 +530,29 @@ export default function DashboardClient({
           </div>
 
           {/* KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-5 mb-space-7 items-stretch">
             {kpiData.map((kpi, index) => (
-              <Card key={kpi.label} className="card-neo dark:card-mono p-5 sm:p-6" style={{ animationDelay: `${index * 80}ms` }}>
-                <div className="flex items-start justify-between">
+              <Card key={kpi.label} className="card-neo dark:card-mono" style={{ padding: LAYOUT.kpiCardPadding, animationDelay: `${index * 80}ms` }}>
+                <div className="flex items-start justify-between h-full">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                      <span className="w-8 h-8 rounded-xl flex items-center justify-center text-[hsl(var(--accent))]" 
-                            style={{ background: 'hsl(var(--accent)/0.12)' }}>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
+                      <span 
+                        className="w-8 h-8 rounded-xl flex items-center justify-center text-[hsl(var(--accent))] flex-shrink-0"
+                        style={{ background: 'hsl(var(--accent)/0.12)' }}
+                      >
                         {kpi.icon}
                       </span>
                       <span className="font-medium uppercase tracking-wider">{kpi.label}</span>
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold text-foreground">{kpi.value}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums leading-tight">{kpi.value}</p>
                     <div className="flex items-center gap-2 mt-3">
                       <span className={`flex items-center gap-1 text-sm font-medium ${
                         kpi.trend === "up" ? "text-green-500" : kpi.trend === "down" ? "text-red-500" : "text-muted-foreground"
                       }`}>
-                        {kpi.trend === "up" && <TrendingUp className="h-3.5 w-3.5" />}
-                        {kpi.trend === "down" && <TrendingDown className="h-3.5 w-3.5" />}
+                        {kpi.trend === "up" && <TrendingUp className="h-3.5 w-3.5" style={{ transform: "translateY(1px)" }} />}
+                        {kpi.trend === "down" && <TrendingDown className="h-3.5 w-3.5" style={{ transform: "translateY(1px)" }} />}
                         {kpi.trend === "neutral" && <Minus className="h-3.5 w-3.5" />}
-                        {Math.abs(kpi.delta)}%
+                        <span className="tabular-nums">{Math.abs(kpi.delta)}%</span>
                       </span>
                       <span className="text-xs text-muted-foreground">{kpi.deltaLabel}</span>
                     </div>
@@ -525,20 +581,20 @@ export default function DashboardClient({
             ))}
           </div>
 
-          {/* Charts Section */}
-          <div className="grid lg:grid-cols-7 gap-4 mb-8">
-            {/* Revenue Chart - 4 columns */}
-            <Card className="card-neo dark:card-mono lg:col-span-4 p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-6">
+          {/* Charts Section - 12-column grid */}
+          <div className="grid grid-cols-12 gap-space-5 mb-space-7">
+            {/* Revenue Chart - 8 columns (2/3) */}
+            <Card className="card-neo dark:card-mono col-span-12 lg:col-span-8 p-space-6">
+              <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-semibold text-foreground">Revenue Overview</h2>
-                <select className="input-neo dark:input-mono text-sm py-2 px-3">
+                <select className="input-neo dark:input-mono text-sm py-2 px-3" style={{ height: 40 }}>
                   <option>Last 12 Months</option>
                   <option>Last 6 Months</option>
                   <option>Last 30 Days</option>
                 </select>
               </div>
               <div className="h-64 relative">
-                <svg viewBox="0 0 560 256" className="w-full h-full" aria-label="Revenue chart">
+                <svg viewBox="0 0 560 256" className="w-full h-full" aria-label="Revenue chart" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="revenue-gradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity="0.25" />
@@ -607,9 +663,9 @@ export default function DashboardClient({
               </div>
             </Card>
 
-            {/* Traffic Sources - 3 columns */}
-            <Card className="card-neo dark:card-mono lg:col-span-3 p-5 sm:p-6">
-              <h2 className="text-lg font-semibold text-foreground mb-6">Traffic Sources</h2>
+            {/* Traffic Sources - 4 columns (1/3) */}
+            <Card className="card-neo dark:card-mono col-span-12 lg:col-span-4 p-space-6">
+              <h2 className="text-lg font-semibold text-foreground mb-5">Traffic Sources</h2>
               <div className="flex items-center justify-center h-48 relative">
                 <svg viewBox="0 0 200 200" className="w-[160px] h-[160px]">
                   {(() => {
@@ -639,137 +695,186 @@ export default function DashboardClient({
                   })()}
                 </svg>
               </div>
-              <div className="flex flex-wrap justify-center gap-3 mt-4">
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
                 {trafficSources.map((source) => (
                   <div key={source.label} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--muted)/0.3)]">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: source.color }} />
                     <span className="text-xs font-medium text-foreground">{source.label}</span>
-                    <span className="text-xs text-muted-foreground">{source.value}%</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{source.value}%</span>
                   </div>
                 ))}
               </div>
             </Card>
           </div>
 
-          {/* Data Table Section */}
-          <Card className="card-neo dark:card-mono overflow-hidden">
-            <div className="p-5 sm:p-6 border-b border-border">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <h2 className="text-lg font-semibold text-foreground">Recent Events</h2>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="input-neo dark:input-mono text-sm py-2 px-3 w-full sm:w-auto"
-                >
-                  <option value="date">Sort by Date</option>
-                  <option value="atoll">Sort by Atoll</option>
-                  <option value="island">Sort by Island</option>
-                </select>
+          {/* Data Table Section - matches charts row 8+4 grid */}
+          <div className="grid grid-cols-12 gap-space-5 mb-space-7">
+            {/* Table - 8 columns */}
+            <Card className="card-neo dark:card-mono col-span-12 lg:col-span-8 overflow-hidden">
+              <div className="p-space-6 border-b border-border">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-foreground">Recent Events</h2>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="input-neo dark:input-mono text-sm py-2 px-3 w-full sm:w-auto"
+                    style={{ height: 40 }}
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="atoll">Sort by Atoll</option>
+                    <option value="island">Sort by Island</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Event</th>
-                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Location</th>
-                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Date</th>
-                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Participants</th>
-                    <th className="px-5 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {recentEvents.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">
-                        No events yet. Create your first event to get started!
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full" style={{ borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Event</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Location</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Date</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Participants</th>
+                      <th className="px-0 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider pr-5">Actions</th>
                     </tr>
-                  ) : (
-                    recentEvents.map((event, index) => (
-                      <tr key={event.id} className="hover:bg-muted/30 transition-colors animate-stagger-in" style={{ animationDelay: `${index * 60}ms` }}>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" 
-                                 style={{ background: 'hsl(var(--accent)/0.12)' }}>
-                              <Calendar className="h-5 w-5" style={{ color: 'hsl(var(--accent))' }} />
-                            </div>
-                            <div>
-                              <p className="font-medium text-foreground">{event.title}</p>
-                              <p className="text-xs text-muted-foreground">{event.atoll} • {event.island}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-4 hidden md:table-cell text-sm text-muted-foreground">
-                          {event.eventLocation || "Not specified"}
-                        </td>
-                        <td className="px-5 py-4 hidden lg:table-cell text-sm text-muted-foreground">
-                          {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : "TBD"}
-                        </td>
-                        <td className="px-5 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyles(event.status)}`}>
-                            {event.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 hidden lg:table-cell text-sm text-foreground">
-                          {event.participantCount || 0}
-                        </td>
-                        <td className="px-5 py-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleEventExpansion(event.id)}
-                            className="btn-neo-secondary dark:btn-mono-secondary"
-                          >
-                            {expandedEvents.has(event.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          </Button>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {recentEvents.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">
+                          No events yet. Create your first event to get started!
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    ) : (
+                      recentEvents.map((event, index) => (
+                        <tr key={event.id} className="hover:bg-muted/30 transition-colors animate-stagger-in" style={{ animationDelay: `${index * 60}ms` }}>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: 'hsl(var(--accent)/0.12)' }}
+                              >
+                                <Calendar className="h-5 w-5" style={{ color: 'hsl(var(--accent))' }} />
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground">{event.title}</p>
+                                <p className="text-xs text-muted-foreground">{event.atoll} • {event.island}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 hidden md:table-cell text-sm text-muted-foreground">
+                            {event.eventLocation || "Not specified"}
+                          </td>
+                          <td className="px-5 py-4 hidden lg:table-cell text-sm text-muted-foreground">
+                            {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : "TBD"}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyles(event.status)}`}>
+                              {event.status}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 hidden lg:table-cell text-sm text-foreground tabular-nums">
+                            {event.participantCount || 0}
+                          </td>
+                          <td className="px-0 py-4 text-right pr-5">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleEventExpansion(event.id)}
+                              className="btn-neo-secondary dark:btn-mono-secondary"
+                              style={{ height: 36, paddingLeft: 10, paddingRight: 10 }}
+                            >
+                              {expandedEvents.has(event.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Expanded Event Details */}
-            {recentEvents.some(e => expandedEvents.has(e.id)) && (
-              <div className="border-t border-border animate-slide-up">
-                {recentEvents.filter(e => expandedEvents.has(e.id)).map((event) => (
-                  <div key={event.id} className="p-5 sm:p-6 bg-[hsl(var(--muted)/0.2)]">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Location</p>
-                        <p className="text-sm text-foreground mt-1">{event.eventLocation || "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Participants</p>
-                        <p className="text-sm text-foreground mt-1">{event.participantCount || 0}</p>
-                      </div>
-                      {event.eventDate && (
+              {/* Expanded Event Details */}
+              {recentEvents.some(e => expandedEvents.has(e.id)) && (
+                <div className="border-t border-border animate-slide-up">
+                  {recentEvents.filter(e => expandedEvents.has(e.id)).map((event) => (
+                    <div key={event.id} className="p-space-6 bg-[hsl(var(--muted)/0.2)]">
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</p>
-                          <p className="text-sm text-foreground mt-1">{new Date(event.eventDate).toLocaleDateString()}</p>
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Location</p>
+                          <p className="text-sm text-foreground mt-1">{event.eventLocation || "Not specified"}</p>
                         </div>
-                      )}
-                      {event.contact && (
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</p>
-                          <p className="text-sm text-foreground mt-1">{event.contact}</p>
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Participants</p>
+                          <p className="text-sm text-foreground mt-1 tabular-nums">{event.participantCount || 0}</p>
+                        </div>
+                        {event.eventDate && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</p>
+                            <p className="text-sm text-foreground mt-1">{new Date(event.eventDate).toLocaleDateString()}</p>
+                          </div>
+                        )}
+                        {event.contact && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</p>
+                            <p className="text-sm text-foreground mt-1">{event.contact}</p>
+                          </div>
+                        )}
+                      </div>
+                      {event.comment && (
+                        <div className="mt-4 pt-4 border-t border-border">
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</p>
+                          <p className="text-sm text-foreground mt-1">{event.comment}</p>
                         </div>
                       )}
                     </div>
-                    {event.comment && (
-                      <div className="mt-4 pt-4 border-t border-border">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</p>
-                        <p className="text-sm text-foreground mt-1">{event.comment}</p>
-                      </div>
-                    )}
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Quick Actions / Activity - 4 columns */}
+            <Card className="card-neo dark:card-mono col-span-12 lg:col-span-4 p-space-6">
+              <h2 className="text-lg font-semibold text-foreground mb-5">Quick Actions</h2>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {[
+                  { icon: Plus, label: "Create Event", desc: "Schedule new event" },
+                  { icon: Users, label: "Add Member", desc: "Invite team member" },
+                  { icon: MapPin, label: "Log Visit", desc: "Record island visit" },
+                  { icon: Package, label: "Add Equipment", desc: "Log new equipment" },
+                ].map((action, i) => (
+                  <div key={action.label} className="p-4 rounded-xl bg-[hsl(var(--muted)/0.3)] hover:bg-[hsl(var(--muted)/0.5)] transition-colors cursor-pointer" style={{ paddingTop: 18, paddingBottom: 18, paddingLeft: 14, paddingRight: 14 }}>
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[hsl(var(--accent))]" style={{ background: 'hsl(var(--accent)/0.12)' }}>
+                      <action.icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm font-medium text-foreground mt-2">{action.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{action.desc}</p>
                   </div>
                 ))}
               </div>
-            )}
-          </Card>
+              
+              <div className="pt-5 border-t border-border">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Recent Activity</h3>
+                <div className="space-y-2">
+                  {recentActivity.slice(0, 4).map((activity) => (
+                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[hsl(var(--muted)/0.3)] transition-colors" style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0 mt-1" 
+                        style={{ background: activity.color }}
+                      >
+                        {activity.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground">{activity.title}</p>
+                        <p className="text-xs text-muted-foreground">{activity.description}</p>
+                        <p className="text-xs text-tertiary mt-1">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
         </main>
       </div>
 
