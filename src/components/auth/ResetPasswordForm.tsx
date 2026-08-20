@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -74,16 +72,16 @@ export function ResetPasswordForm() {
 
   if (!validToken) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md card-neo dark:card-mono">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-red-600">Invalid reset link</CardTitle>
-          <CardDescription>This password reset link is invalid or has expired</CardDescription>
+          <CardTitle className="text-2xl font-bold text-destructive">Invalid reset link</CardTitle>
+          <CardDescription className="text-muted-foreground">This password reset link is invalid or has expired</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-gray-600 mb-6">
+          <p className="text-center text-muted-foreground mb-6">
             Please request a new password reset link.
           </p>
-          <Button className="w-full" onClick={() => router.push("/forgot-password")}>
+          <Button className="w-full btn-neo-accent dark:btn-mono-primary" onClick={() => router.push("/forgot-password")}>
             Request new link
           </Button>
         </CardContent>
@@ -93,14 +91,14 @@ export function ResetPasswordForm() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md card-neo dark:card-mono">
         <CardHeader className="text-center">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold">Password updated</CardTitle>
-          <CardDescription>Your password has been successfully reset</CardDescription>
+          <CardTitle className="text-2xl font-bold text-foreground">Password updated</CardTitle>
+          <CardDescription className="text-muted-foreground">Your password has been successfully reset</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full" onClick={() => router.push("/login")}>
+          <Button className="w-full btn-neo-accent dark:btn-mono-primary" onClick={() => router.push("/login")}>
             Sign in with new password
           </Button>
         </CardContent>
@@ -109,24 +107,26 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md card-neo dark:card-mono">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">Reset password</CardTitle>
-        <CardDescription>Enter your new password below</CardDescription>
+        <CardTitle className="text-2xl font-bold text-foreground">Reset password</CardTitle>
+        <CardDescription className="text-muted-foreground">Enter your new password below</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">New Password</Label>
+            <label htmlFor="password" className="text-sm font-medium text-foreground">
+              New Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="•••••••• (min 8 chars)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10"
+                className="input-neo dark:input-mono pl-10 pr-10"
                 required
                 disabled={isLoading}
                 minLength={8}
@@ -134,7 +134,7 @@ export function ResetPasswordForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -142,16 +142,18 @@ export function ResetPasswordForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+              Confirm New Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <input
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10"
+                className="input-neo dark:input-mono pl-10"
                 required
                 disabled={isLoading}
               />
@@ -159,13 +161,13 @@ export function ResetPasswordForm() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-sm text-red-500 bg-red-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-xl">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full btn-neo-accent dark:btn-mono-primary" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

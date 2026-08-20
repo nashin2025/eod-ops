@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -50,17 +48,17 @@ export function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md card-neo dark:card-mono">
         <CardHeader className="text-center">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-          <CardDescription>We&apos;ve sent password reset instructions to {email}</CardDescription>
+          <CardTitle className="text-2xl font-bold text-foreground">Check your email</CardTitle>
+          <CardDescription className="text-muted-foreground">We&apos;ve sent password reset instructions to {email}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-gray-600 mb-6">
+          <p className="text-center text-muted-foreground mb-6">
             Follow the link in the email to reset your password. The link expires in 1 hour.
           </p>
-          <Button className="w-full" onClick={() => router.push("/login")}>
+          <Button className="w-full btn-neo-accent dark:btn-mono-primary" onClick={() => router.push("/login")}>
             Back to Sign In
           </Button>
         </CardContent>
@@ -69,24 +67,26 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md card-neo dark:card-mono">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">Forgot password?</CardTitle>
-        <CardDescription>Enter your email and we&apos;ll send you reset instructions</CardDescription>
+        <CardTitle className="text-2xl font-bold text-foreground">Forgot password?</CardTitle>
+        <CardDescription className="text-muted-foreground">Enter your email and we&apos;ll send you reset instructions</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <label htmlFor="email" className="text-sm font-medium text-foreground">
+              Email
+            </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
+                className="input-neo dark:input-mono pl-10"
                 required
                 disabled={isLoading}
               />
@@ -94,13 +94,13 @@ export function ForgotPasswordForm() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-sm text-red-500 bg-red-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-xl">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full btn-neo-accent dark:btn-mono-primary" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -113,9 +113,9 @@ export function ForgotPasswordForm() {
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-muted-foreground">
           Remember your password?{" "}
-          <a href="/login" className="text-blue-600 hover:underline font-medium">
+          <a href="/login" className="text-accent hover:underline font-medium dark:text-accent-dark">
             Sign in
           </a>
         </p>

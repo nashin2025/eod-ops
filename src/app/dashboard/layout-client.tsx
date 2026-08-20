@@ -21,6 +21,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { signOut } from "@/lib/supabase/auth";
+import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
 
 const navItems = [
   { icon: BarChart3, label: "Overview", path: "/dashboard" },
@@ -107,6 +108,7 @@ export default function DashboardLayoutClient({
                 </h1>
               </div>
               <div className="flex items-center space-x-3">
+                <ThemeToggleCompact />
                 <span className="hidden sm:inline text-sm text-muted-foreground">
                   {user.user_metadata?.full_name || user.email}
                 </span>

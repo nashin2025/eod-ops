@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
 
 export default function PendingApprovalPage() {
   const router = useRouter();
@@ -51,10 +52,11 @@ export default function PendingApprovalPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
         <div className="text-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking approval status...</p>
+          <ThemeToggleCompact />
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Checking approval status...</p>
         </div>
       </div>
     );
@@ -62,11 +64,12 @@ export default function PendingApprovalPage() {
 
   if (status === "approved") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
+      <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
         <div className="text-center p-8">
-          <div className="text-green-600 mb-4">✓</div>
-          <h1 className="text-2xl font-bold mb-4">Approved!</h1>
-          <p className="text-gray-600 mb-6">Redirecting to dashboard...</p>
+          <ThemeToggleCompact />
+          <div className="text-green-500 mb-4 text-6xl">✓</div>
+          <h1 className="text-2xl font-bold mb-4 text-foreground">Approved!</h1>
+          <p className="text-muted-foreground mb-6">Redirecting to dashboard...</p>
         </div>
       </div>
     );
@@ -74,11 +77,12 @@ export default function PendingApprovalPage() {
 
   if (status === "rejected") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-rose-50">
+      <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
         <div className="text-center p-8">
-          <h1 className="text-2xl font-bold mb-4 text-red-600">Account Rejected</h1>
-          <p className="text-gray-600 mb-6">Your account registration has been rejected. Please contact admin.</p>
-          <a href="/api/auth/logout" className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 inline-block">
+          <ThemeToggleCompact />
+          <h1 className="text-2xl font-bold mb-4 text-destructive">Account Rejected</h1>
+          <p className="text-muted-foreground mb-6">Your account registration has been rejected. Please contact admin.</p>
+          <a href="/api/auth/logout" className="btn-neo-accent dark:btn-mono-primary inline-block">
             Logout
           </a>
         </div>
@@ -88,11 +92,12 @@ export default function PendingApprovalPage() {
 
   if (status === "error") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
         <div className="text-center p-8">
-          <h1 className="text-2xl font-bold mb-4">Error Checking Status</h1>
-          <p className="text-gray-600 mb-6">Unable to verify approval status. Please try again later.</p>
-          <button onClick={() => window.location.reload()} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+          <ThemeToggleCompact />
+          <h1 className="text-2xl font-bold mb-4 text-foreground">Error Checking Status</h1>
+          <p className="text-muted-foreground mb-6">Unable to verify approval status. Please try again later.</p>
+          <button onClick={() => window.location.reload()} className="btn-neo-accent dark:btn-mono-primary">
             Retry
           </button>
         </div>
@@ -102,24 +107,25 @@ export default function PendingApprovalPage() {
 
   // status === "pending"
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
+    <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
       <div className="text-center p-8">
-        <h1 className="text-2xl font-bold mb-4">Account Pending Approval</h1>
-        <p className="text-gray-600 mb-6">
+        <ThemeToggleCompact />
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Account Pending Approval</h1>
+        <p className="text-muted-foreground mb-6">
           Your account has been registered but is awaiting admin approval. This page will auto-refresh every 10 seconds.
         </p>
         <div className="flex flex-col gap-4">
-          <a href="tel:+0009947180" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+          <a href="tel:+0009947180" className="btn-neo-accent dark:btn-mono-primary">
             Call Admin
           </a>
           <a
             href="/api/auth/logout"
-            className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700"
+            className="btn-neo-secondary dark:btn-mono-secondary"
           >
             Logout
           </a>
         </div>
-        <p className="text-sm text-gray-500 mt-8">Auto-checking every 10 seconds...</p>
+        <p className="text-sm text-muted-foreground mt-8">Auto-checking every 10 seconds...</p>
       </div>
     </div>
   );

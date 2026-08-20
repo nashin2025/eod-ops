@@ -2,14 +2,18 @@
 
 import { Suspense } from "react";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
 
 function ResetPasswordContent() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-teal-50 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
       <div className="w-full max-w-md">
+        <div className="flex justify-end mb-6">
+          <ThemeToggleCompact />
+        </div>
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">EOD-Ops</h1>
-          <p className="text-gray-500 mt-2">Event Operations Dashboard</p>
+          <h1 className="text-3xl font-bold text-foreground">EOD-Ops</h1>
+          <p className="text-muted-foreground mt-2">Event Operations Dashboard</p>
         </div>
         <ResetPasswordForm />
       </div>
