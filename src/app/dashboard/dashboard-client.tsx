@@ -1,10 +1,12 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-import { Calendar, Users, MapPin, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { Calendar, Users, MapPin, CheckCircle, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Activity, BarChart3, PieChart, DollarSign, ShoppingCart, Clock, ArrowUpRight, ArrowDownRight, Minus, Plus, Search, Bell, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, User, LogOut, Settings, Archive, Package, Map, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface Event {
   id: string;
@@ -28,6 +30,108 @@ interface User {
   role: string;
 }
 
+interface KPIData {
+  label: string;
+  value: string;
+  delta: number;
+  deltaLabel: string;
+  icon: React.ReactNode;
+  trend: "up" | "down" | "neutral";
+  sparkline: number[];
+}
+
+interface ChartDataPoint {
+  label: string;
+  value: number;
+}
+
+const navItems = [
+  { section: "MAIN", items: [
+    { icon: BarChart3, label: "Overview", path: "/dashboard" },
+    { icon: Calendar, label: "Events", path: "/dashboard/events" },
+    { icon: Users, label: "Members", path: "/dashboard/members" },
+    { icon: Map, label: "Island Map", path: "/dashboard/map" },
+  ]},
+  { section: "ANALYTICS", items: [
+    { icon: Package, label: "Equipment", path: "/dashboard/equipment" },
+    { icon: Archive, label: "Archive", path: "/dashboard/archive" },
+  ]},
+  { section: "ACCOUNT", items: [
+    { icon: User, label: "My Profile", path: "/dashboard/profile" },
+    { icon: Settings, label: "Admin Panel", path: "/dashboard/admin" },
+  ]},
+];
+
+const kpiData: KPIData[] = [
+  {
+    label: "Total Revenue",
+    value: "$127,430",
+    delta: 12.5,
+    deltaLabel: "vs last month",
+    icon: <DollarSign className="h-5 w-5" />,
+    trend: "up",
+    sparkline: [45, 52, 38, 65, 71, 58, 82, 78, 92, 88, 95, 102]
+  },
+  {
+    label: "Active Users",
+    value: "2,847",
+    delta: 8.2,
+    deltaLabel: "vs last week",
+    icon: <Users className="h-5 w-5" />,
+    trend: "up",
+    sparkline: [2100, 2150, 2080, 2200, 2340, 2290, 2450, 2510, 2600, 2680, 2750, 2847]
+  },
+  {
+    label: "Conversion Rate",
+    value: "3.24%",
+    delta: -2.1,
+    deltaLabel: "vs last month",
+    icon: <TrendingUp className="h-5 w-5" />,
+    trend: "down",
+    sparkline: [3.8, 3.6, 3.7, 3.5, 3.4, 3.3, 3.4, 3.2, 3.1, 3.15, 3.2, 3.24]
+  },
+  {
+    label: "Avg. Session",
+    value: "4m 32s",
+    delta: 5.7,
+    deltaLabel: "vs last week",
+    icon: <Clock className="h-5 w-5" />,
+    trend: "up",
+    sparkline: [240, 255, 248, 262, 270, 265, 272, 275, 270, 273, 271, 272]
+  },
+];
+
+const revenueData: ChartDataPoint[] = [
+  { label: "Jan", value: 42000 },
+  { label: "Feb", value: 38000 },
+  { label: "Mar", value: 52000 },
+  { label: "Apr", value: 48000 },
+  { label: "May", value: 61000 },
+  { label: "Jun", value: 55000 },
+  { label: "Jul", value: 67000 },
+  { label: "Aug", value: 72000 },
+  { label: "Sep", value: 68000 },
+  { label: "Oct", value: 78000 },
+  { label: "Nov", value: 82000 },
+  { label: "Dec", value: 95000 },
+];
+
+const trafficSources = [
+  { label: "Direct", value: 42, color: "hsl(var(--accent))" },
+  { label: "Organic Search", value: 28, color: "hsl(var(--accent)/0.7)" },
+  { label: "Referral", value: 15, color: "hsl(var(--accent)/0.5)" },
+  { label: "Social", value: 10, color: "hsl(var(--accent)/0.35)" },
+  { label: "Email", value: 5, color: "hsl(var(--accent)/0.2)" },
+];
+
+const recentActivity = [
+  { id: 1, type: "event_created", title: "New event created", description: "Annual Atoll Festival scheduled", time: "2 min ago", avatar: "AF", color: "hsl(var(--accent))" },
+  { id: 2, type: "user_joined", title: "New member joined", description: "Sarah Chen joined the team", time: "15 min ago", avatar: "SC", color: "hsl(var(--primary))" },
+  { id: 3, type: "milestone", title: "Milestone reached", description: "100th island visit completed", time: "1 hour ago", avatar: "🏝️", color: "hsl(var(--accent))" },
+  { id: 4, type: "event_completed", title: "Event completed", description: "Marine Conservation Workshop", time: "3 hours ago", avatar: "✓", color: "#10B981" },
+  { id: 5, type: "alert", title: "Low inventory alert", description: "Diving equipment running low", time: "5 hours ago", avatar: "⚠", color: "#F59E0B" },
+];
+
 export default function DashboardClient({
   user,
   events,
@@ -38,7 +142,7 @@ export default function DashboardClient({
   atollsVisited,
   teamMembersCount,
 }: {
-  user: { id: string; email?: string; user_metadata?: { full_name?: string } };
+  user: { id: string; email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
   events: Event[];
   users: User[];
   activeEventsCount: number;
@@ -49,6 +153,24 @@ export default function DashboardClient({
 }) {
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<string>("date");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const pathname = usePathname() || "/dashboard";
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await fetch("/api/chat/unread-count", { credentials: "include" });
+      const data = await res.json();
+      setUnreadMessagesCount(data.unreadCount || 0);
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+    }
+  };
 
   const toggleEventExpansion = (eventId: string) => {
     const newExpandedEvents = new Set(expandedEvents);
@@ -71,7 +193,7 @@ export default function DashboardClient({
   const getStatusStyles = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))] dark:bg-[hsl(var(--accent)/0.2)] dark:text-[hsl(var(--accent))]";
       case "scheduled":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
       case "completed":
@@ -81,150 +203,583 @@ export default function DashboardClient({
     }
   };
 
+  const getSparklinePath = (data: number[], width: number = 120, height: number = 32) => {
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    const range = max - min || 1;
+    return data.map((value, index) => {
+      const x = (index / (data.length - 1)) * width;
+      const y = height - ((value - min) / range) * height;
+      return `${x},${y}`;
+    }).join(" ");
+  };
+
   return (
-    <div className="p-2 sm:p-4 lg:p-6 animate-fade-in">
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-2">Overview of events and activities across Maldives</p>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
-        <Card className="card-neo dark:card-mono">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Events</p>
-                <p className="text-xl sm:text-2xl font-bold" data-testid="text-active-events">{activeEventsCount}</p>
-              </div>
-              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed lg:relative top-0 left-0 z-30 bg-card border-r border-border min-h-screen transition-all duration-300
+          ${sidebarCollapsed ? "w-18" : "w-72"}
+          dark:shadow-xl
+        `}
+        style={{ 
+          boxShadow: sidebarCollapsed ? "none" : "0 4px 6px rgba(0, 0, 0, 0.05)"
+        }}
+      >
+        <nav className="p-4 space-y-6 h-full flex flex-col">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center flex-col" 
+                 style={{ 
+                   background: 'hsl(var(--background))',
+                   boxShadow: resolvedTheme === "dark" 
+                     ? "0 2px 8px rgba(0,0,0,0.4)" 
+                     : "inset 2px 2px 4px var(--shadow-inset-dark), inset -2px -2px 4px var(--shadow-inset-light)"
+                 }}>
+              <div className="w-5 h-5 rounded-full" style={{ background: 'hsl(var(--accent))' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-white/70 mt-0.5" />
             </div>
-          </CardContent>
-        </Card>
+            {!sidebarCollapsed && (
+              <span className="text-xl font-bold text-foreground">EOD-Ops</span>
+            )}
+          </div>
 
-        <Card className="card-neo dark:card-mono">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Team Members</p>
-                <p className="text-xl sm:text-2xl font-bold" data-testid="text-team-members">{teamMembersCount}</p>
-              </div>
-              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+          {/* Search */}
+          {!sidebarCollapsed && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="input-neo dark:input-mono pl-10 w-full"
+              />
             </div>
-          </CardContent>
-        </Card>
+          )}
 
-        <Card className="card-neo dark:card-mono">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Islands Visited</p>
-                <p className="text-xl sm:text-2xl font-bold" data-testid="text-visited-islands">{visitedIslands}</p>
+          {/* Navigation Sections */}
+          <div className="space-y-4 flex-1 overflow-y-auto">
+            {navItems.map((section) => (
+              <div key={section.section} className="space-y-1">
+                {!sidebarCollapsed && (
+                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {section.section}
+                  </p>
+                )}
+                {section.items.map((item) => {
+                  const isActive = pathname === item.path;
+                  return (
+                    <a key={item.path} href={item.path}>
+                      <Button
+                        variant="ghost"
+                        className={`
+                          w-full justify-start gap-3 rounded-xl transition-all duration-200
+                          ${isActive 
+                            ? "text-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.1)]" 
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          }
+                          ${sidebarCollapsed ? "justify-center p-3" : "p-3"}
+                        `}
+                        style={{
+                          borderLeft: isActive ? "4px solid hsl(var(--accent))" : "none",
+                          borderRadius: isActive ? "0 12px 12px 0" : "12px",
+                        }}
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!sidebarCollapsed && <span>{item.label}</span>}
+                      </Button>
+                    </a>
+                  );
+                })}
               </div>
-              <MapPin className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
 
-        <Card className="card-neo dark:card-mono">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Completed Events</p>
-                <p className="text-xl sm:text-2xl font-bold" data-testid="text-completed-events">{completedEventsCount}</p>
+          {/* User Profile & Collapse Toggle */}
+          <div className="border-t border-border pt-4 space-y-3">
+            {!sidebarCollapsed && (
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-[hsl(var(--muted)/0.3)]">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
+                     style={{ background: 'hsl(var(--accent)/0.15)' }}>
+                  {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {user.user_metadata?.full_name || user.email || "User"}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </div>
-              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className={`
+                rounded-xl transition-all duration-200 mx-auto
+                ${sidebarCollapsed ? "rotate-180" : ""}
+              `}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+            </Button>
+          </div>
+        </nav>
+      </aside>
 
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Recent Events</h2>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="input-neo dark:input-mono text-sm"
-          >
-            <option value="date">Sort by Date</option>
-            <option value="atoll">Sort by Atoll</option>
-            <option value="island">Sort by Island</option>
-          </select>
-        </div>
+      {/* Main Content */}
+      <div className={`
+        flex-1 flex flex-col min-h-screen 
+        ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-72"}
+      `}>
+        {/* Top Bar */}
+        <header className="fixed top-0 left-0 lg:left-72 lg:left-[calc(72px+72px)] right-0 z-20 bg-card/80 backdrop-blur-sm border-b border-border transition-all duration-300"
+              style={{ 
+                left: sidebarCollapsed ? "72px" : "288px",
+                boxShadow: resolvedTheme === "light" 
+                  ? "0 1px 3px rgba(163, 177, 198, 0.3)" 
+                  : "0 1px 3px rgba(0, 0, 0, 0.3)"
+              }}>
+          <div className="px-4 sm:px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Breadcrumbs & Mobile Menu */}
+              <div className="flex items-center gap-4 flex-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="lg:hidden"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
+                <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
+                  <span className="text-muted-foreground">Dashboard</span>
+                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-foreground font-medium">
+                    {navItems.flatMap(s => s.items).find(i => i.path === pathname)?.label || "Overview"}
+                  </span>
+                </nav>
+              </div>
 
-        {recentEvents.length === 0 ? (
-          <Card className="card-neo dark:card-mono">
-            <CardContent className="p-6 text-center text-muted-foreground">
-              No events yet. Create your first event to get started!
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4 animate-stagger-in">
-            {recentEvents.map((event, index) => (
-              <Card key={event.id} className="card-neo dark:card-mono" style={{ animationDelay: `${index * 60}ms` }}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{event.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {event.atoll} - {event.island}
-                      </p>
-                      <span className={`inline-block mt-2 px-2 py-1 text-xs rounded ${getStatusStyles(event.status)}`}>
-                        {event.status}
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-2">
+                {/* Theme Toggle */}
+                <ThemeToggleCompact />
+
+                {/* Notifications */}
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="h-5 w-5" />
+                    {unreadMessagesCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-white text-xs font-medium flex items-center justify-center">
+                        {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
                       </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleEventExpansion(event.id)}
-                      className="btn-neo-secondary dark:btn-mono-secondary"
-                    >
-                      {expandedEvents.has(event.id) ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-
-                  {expandedEvents.has(event.id) && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Event Location</p>
-                          <p>{event.eventLocation || "Not specified"}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Participants</p>
-                          <p>{event.participantCount || 0}</p>
-                        </div>
-                        {event.eventDate && (
-                          <div>
-                            <p className="text-muted-foreground">Event Date</p>
-                            <p>{new Date(event.eventDate).toLocaleDateString()}</p>
-                          </div>
-                        )}
-                        {event.contact && (
-                          <div>
-                            <p className="text-muted-foreground">Contact</p>
-                            <p>{event.contact}</p>
-                          </div>
-                        )}
+                    )}
+                  </Button>
+                  {notificationsOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-80 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
+                      <div className="p-4 border-b border-border">
+                        <h3 className="font-semibold">Notifications</h3>
                       </div>
-                      {event.comment && (
-                        <div className="mt-4">
-                          <p className="text-sm text-muted-foreground">Notes</p>
-                          <p className="text-sm mt-1">{event.comment}</p>
-                        </div>
-                      )}
+                      <div className="max-h-64 overflow-y-auto">
+                        {recentActivity.slice(0, 3).map((activity) => (
+                          <div key={activity.id} className="p-4 border-b border-border hover:bg-muted/30 transition-colors">
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0" 
+                                   style={{ background: activity.color }}>
+                                {activity.avatar}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">{activity.title}</p>
+                                <p className="text-xs text-muted-foreground">{activity.description}</p>
+                                <p className="text-xs text-tertiary mt-1">{activity.time}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="p-3 border-t border-border">
+                        <a href="#" className="text-sm text-accent hover:underline block text-center">View all notifications</a>
+                      </div>
                     </div>
                   )}
-                </CardContent>
+                </div>
+
+                {/* User Menu */}
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
+                    aria-label="User menu"
+                  >
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-[hsl(var(--accent))]" 
+                         style={{ background: 'hsl(var(--accent)/0.15)' }}>
+                      {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
+                    </div>
+                  </Button>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 card-neo dark:card-mono shadow-lg animate-fade-in z-50">
+                      <div className="p-3 border-b border-border">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {user.user_metadata?.full_name || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                      <a href="/dashboard/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-lg mx-2 my-1">
+                        <User className="h-4 w-4" /> Profile
+                      </a>
+                      <a href="/dashboard/admin" className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-lg mx-2 my-1">
+                        <Settings className="h-4 w-4" /> Admin Panel
+                      </a>
+                      <hr className="border-border my-1 mx-2" />
+                      <button onClick={() => {}} className="flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-lg mx-2 my-1 w-full">
+                        <LogOut className="h-4 w-4" /> Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 pt-20 pb-8 lg:pb-0 px-4 sm:px-6 lg:px-8 animate-fade-in">
+          {/* Welcome Hero */}
+          <div className="mb-8">
+            <div className="card-neo dark:card-mono p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wider">
+                    {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                  </p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">
+                    Welcome back, {user.user_metadata?.full_name?.split(" ")[0] || "there"}!
+                  </h1>
+                  <p className="text-muted-foreground mt-1">Here's what's happening with your events today.</p>
+                </div>
+                <Button className="btn-neo-accent dark:btn-mono-primary w-full sm:w-auto mt-4 sm:mt-0">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Report
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {kpiData.map((kpi, index) => (
+              <Card key={kpi.label} className="card-neo dark:card-mono p-5 sm:p-6" style={{ animationDelay: `${index * 80}ms` }}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                      <span className="w-8 h-8 rounded-xl flex items-center justify-center text-[hsl(var(--accent))]" 
+                            style={{ background: 'hsl(var(--accent)/0.12)' }}>
+                        {kpi.icon}
+                      </span>
+                      <span className="font-medium uppercase tracking-wider">{kpi.label}</span>
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-bold text-foreground">{kpi.value}</p>
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className={`flex items-center gap-1 text-sm font-medium ${
+                        kpi.trend === "up" ? "text-green-500" : kpi.trend === "down" ? "text-red-500" : "text-muted-foreground"
+                      }`}>
+                        {kpi.trend === "up" && <TrendingUp className="h-3.5 w-3.5" />}
+                        {kpi.trend === "down" && <TrendingDown className="h-3.5 w-3.5" />}
+                        {kpi.trend === "neutral" && <Minus className="h-3.5 w-3.5" />}
+                        {Math.abs(kpi.delta)}%
+                      </span>
+                      <span className="text-xs text-muted-foreground">{kpi.deltaLabel}</span>
+                    </div>
+                    {/* Sparkline */}
+                    <div className="mt-3 h-10 w-full">
+                      <svg viewBox="0 0 120 32" className="w-full h-full" aria-hidden="true">
+                        <defs>
+                          <linearGradient id={`sparkline-gradient-${kpi.label.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          d={`M${getSparklinePath(kpi.sparkline)}`}
+                          stroke="hsl(var(--accent))"
+                          strokeWidth="2"
+                          fill={`url(#sparkline-gradient-${kpi.label.replace(/\s+/g, '-')})`}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
-        )}
+
+          {/* Charts Section */}
+          <div className="grid lg:grid-cols-7 gap-4 mb-8">
+            {/* Revenue Chart - 4 columns */}
+            <Card className="card-neo dark:card-mono lg:col-span-4 p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-foreground">Revenue Overview</h2>
+                <select className="input-neo dark:input-mono text-sm py-2 px-3">
+                  <option>Last 12 Months</option>
+                  <option>Last 6 Months</option>
+                  <option>Last 30 Days</option>
+                </select>
+              </div>
+              <div className="h-64 relative">
+                <svg viewBox="0 0 560 256" className="w-full h-full" aria-label="Revenue chart">
+                  <defs>
+                    <linearGradient id="revenue-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {/* Grid lines */}
+                  <g stroke="hsl(var(--border))" strokeWidth="0.5" opacity="0.5">
+                    {[0, 64, 128, 192, 256].map((y) => (
+                      <line key={y} x1="40" y1={y} x2="520" y2={y} />
+                    ))}
+                    {revenueData.map((_, i) => (
+                      <line key={i} x1={40 + i * 44} y1="0" x2={40 + i * 44} y2="256" />
+                    ))}
+                  </g>
+                  {/* Area */}
+                  <path
+                    d={`M${revenueData.map((d, i) => {
+                      const x = 40 + i * 44;
+                      const y = 256 - (d.value / 100000) * 200;
+                      return `${x},${y}`;
+                    }).join(" L")}`}
+                    fill="url(#revenue-gradient)"
+                    stroke="none"
+                  />
+                  {/* Line */}
+                  <path
+                    d={`M${revenueData.map((d, i) => {
+                      const x = 40 + i * 44;
+                      const y = 256 - (d.value / 100000) * 200;
+                      return `${x},${y}`;
+                    }).join(" L")}`}
+                    stroke="hsl(var(--accent))"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Dots */}
+                  {revenueData.map((d, i) => (
+                    <circle
+                      key={i}
+                      cx={40 + i * 44}
+                      cy={256 - (d.value / 100000) * 200}
+                      r={4}
+                      fill="hsl(var(--accent))"
+                      stroke="hsl(var(--background))"
+                      strokeWidth={2}
+                    />
+                  ))}
+                  {/* X-axis labels */}
+                  {revenueData.map((d, i) => (
+                    <text
+                      key={d.label}
+                      x={40 + i * 44}
+                      y={270}
+                      textAnchor="middle"
+                      fontSize="10"
+                      fill="hsl(var(--muted-foreground))"
+                      fontFamily="Plus Jakarta Sans, system-ui, sans-serif"
+                    >
+                      {d.label}
+                    </text>
+                  ))}
+                </svg>
+              </div>
+            </Card>
+
+            {/* Traffic Sources - 3 columns */}
+            <Card className="card-neo dark:card-mono lg:col-span-3 p-5 sm:p-6">
+              <h2 className="text-lg font-semibold text-foreground mb-6">Traffic Sources</h2>
+              <div className="flex items-center justify-center h-48 relative">
+                <svg viewBox="0 0 200 200" className="w-[160px] h-[160px]">
+                  {(() => {
+                    let startAngle = -90;
+                    return trafficSources.map((source, i) => {
+                      const angle = (source.value / 100) * 360;
+                      const endAngle = startAngle + angle;
+                      const startRad = (startAngle * Math.PI) / 180;
+                      const endRad = (endAngle * Math.PI) / 180;
+                      const x1 = 100 + 70 * Math.cos(startRad);
+                      const y1 = 100 + 70 * Math.sin(startRad);
+                      const x2 = 100 + 70 * Math.cos(endRad);
+                      const y2 = 100 + 70 * Math.sin(endRad);
+                      const largeArc = angle > 180 ? 1 : 0;
+                      
+                      startAngle = endAngle;
+                      return (
+                        <path
+                          key={source.label}
+                          d={`M100,100 L${x1},${y1} A70,70 0 ${largeArc},1 ${x2},${y2} Z`}
+                          fill={source.color}
+                          stroke="hsl(var(--background))"
+                          strokeWidth={3}
+                        />
+                      );
+                    });
+                  })()}
+                </svg>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
+                {trafficSources.map((source) => (
+                  <div key={source.label} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--muted)/0.3)]">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: source.color }} />
+                    <span className="text-xs font-medium text-foreground">{source.label}</span>
+                    <span className="text-xs text-muted-foreground">{source.value}%</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          {/* Data Table Section */}
+          <Card className="card-neo dark:card-mono overflow-hidden">
+            <div className="p-5 sm:p-6 border-b border-border">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <h2 className="text-lg font-semibold text-foreground">Recent Events</h2>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="input-neo dark:input-mono text-sm py-2 px-3 w-full sm:w-auto"
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="atoll">Sort by Atoll</option>
+                  <option value="island">Sort by Island</option>
+                </select>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Event</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Location</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Date</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Participants</th>
+                    <th className="px-5 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recentEvents.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">
+                        No events yet. Create your first event to get started!
+                      </td>
+                    </tr>
+                  ) : (
+                    recentEvents.map((event, index) => (
+                      <tr key={event.id} className="hover:bg-muted/30 transition-colors animate-stagger-in" style={{ animationDelay: `${index * 60}ms` }}>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" 
+                                 style={{ background: 'hsl(var(--accent)/0.12)' }}>
+                              <Calendar className="h-5 w-5" style={{ color: 'hsl(var(--accent))' }} />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">{event.title}</p>
+                              <p className="text-xs text-muted-foreground">{event.atoll} • {event.island}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 hidden md:table-cell text-sm text-muted-foreground">
+                          {event.eventLocation || "Not specified"}
+                        </td>
+                        <td className="px-5 py-4 hidden lg:table-cell text-sm text-muted-foreground">
+                          {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : "TBD"}
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyles(event.status)}`}>
+                            {event.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 hidden lg:table-cell text-sm text-foreground">
+                          {event.participantCount || 0}
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleEventExpansion(event.id)}
+                            className="btn-neo-secondary dark:btn-mono-secondary"
+                          >
+                            {expandedEvents.has(event.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Expanded Event Details */}
+            {recentEvents.some(e => expandedEvents.has(e.id)) && (
+              <div className="border-t border-border animate-slide-up">
+                {recentEvents.filter(e => expandedEvents.has(e.id)).map((event) => (
+                  <div key={event.id} className="p-5 sm:p-6 bg-[hsl(var(--muted)/0.2)]">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Location</p>
+                        <p className="text-sm text-foreground mt-1">{event.eventLocation || "Not specified"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Participants</p>
+                        <p className="text-sm text-foreground mt-1">{event.participantCount || 0}</p>
+                      </div>
+                      {event.eventDate && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</p>
+                          <p className="text-sm text-foreground mt-1">{new Date(event.eventDate).toLocaleDateString()}</p>
+                        </div>
+                      )}
+                      {event.contact && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</p>
+                          <p className="text-sm text-foreground mt-1">{event.contact}</p>
+                        </div>
+                      )}
+                    </div>
+                    {event.comment && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</p>
+                        <p className="text-sm text-foreground mt-1">{event.comment}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </main>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-20 lg:hidden bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </div>
   );
 }
