@@ -5,15 +5,12 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search, Phone, Mail, UserPlus, Users } from "lucide-react";
-import Image from "next/image";
+  Plus, MagnifyingGlass, Phone, Mailbox, Users, FunnelSimple, CaretDown
+} from "@phosphor-icons/react";
 
 interface User {
   id: string;
@@ -26,21 +23,6 @@ interface User {
   mobile?: string;
   createdAt: string;
 }
-
-// Layout constants matching the 8-point spacing scale
-const LAYOUT = {
-  pagePadding: 24,           // --space-6
-  cardPadding: 24,           // --space-6
-  kpiCardPadding: 20,        // --space-5
-  sectionGap: 32,            // --space-7
-  cardRowGap: 20,            // --space-5
-  controlHeight: 44,         // tap-friendly
-  avatarSize: 48,            // 48px avatar
-  iconSize: 20,              // 20px icons
-  iconGap: 8,                // icon-text gap
-  buttonPaddingH: 16,        // 16px horizontal
-  buttonPaddingV: 10,        // 10px vertical
-} as const;
 
 export default function MembersClient({
   currentUser,
@@ -65,50 +47,51 @@ export default function MembersClient({
   const roles = ["admin", "coordinator", "agent", "attachment"];
 
   const kpiItems = [
-    { label: "Total Members", value: users.length, icon: <Users className="h-5 w-5" />, color: "hsl(var(--accent))" },
-    { label: "Admins", value: users.filter(u => u.role === "admin").length, icon: <Users className="h-5 w-5" />, color: "#8B5CF6" },
-    { label: "Coordinators", value: users.filter(u => u.role === "coordinator").length, icon: <Users className="h-5 w-5" />, color: "#3B82F6" },
-    { label: "Agents", value: users.filter(u => u.role === "agent").length, icon: <Users className="h-5 w-5" />, color: "#10B981" },
+    { label: "Total Members", value: users.length, icon: <Users className="h-5 w-5" />, color: "var(--accent)" },
+    { label: "Admins", value: users.filter(u => u.role === "admin").length, icon: <Users className="h-5 w-5" />, color: "var(--accent)" },
+    { label: "Coordinators", value: users.filter(u => u.role === "coordinator").length, icon: <Users className="h-5 w-5" />, color: "var(--accent)" },
+    { label: "Agents", value: users.filter(u => u.role === "agent").length, icon: <Users className="h-5 w-5" />, color: "var(--accent)" },
   ];
 
-  const getRoleBadge = (role: string) => {
-    const colors: Record<string, string> = {
-      admin: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-      coordinator: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-      agent: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-      attachment: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-    };
-    return (
-      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${colors[role] || "bg-gray-100 text-gray-800"}`}>
-        {role.charAt(0).toUpperCase() + role.slice(1)}
-      </span>
-    );
+  const getStatusConfig = (role: string) => {
+    switch (role) {
+      case "admin":
+        return { label: "Admin", variant: "accent" as const };
+      case "coordinator":
+        return { label: "Coordinator", variant: "default" as const };
+      case "agent":
+        return { label: "Agent", variant: "success" as const };
+      case "attachment":
+        return { label: "Attachment", variant: "default" as const };
+      default:
+        return { label: role, variant: "default" as const };
+    }
   };
 
   return (
-    <div className="p-space-6">
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
       {/* Header */}
-      <div className="mb-space-7">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">Members</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-2">Team directory and member management</p>
+      <div className="mb-[var(--layout-section-gap)]">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Members</h1>
+        <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Team directory and member management</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-5 mb-space-7 items-stretch">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
         {kpiItems.map((kpi, index) => (
-          <Card key={kpi.label} className="card-neo dark:card-mono" style={{ padding: LAYOUT.kpiCardPadding, animationDelay: `${index * 80}ms` }}>
+          <Card key={kpi.label} style={{ padding: "var(--layout-kpi-padding)", animationDelay: `${index * 80}ms` }}>
             <div className="flex items-start justify-between h-full">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
-                  <span 
+                <div className="flex items-center gap-3 text-sm text-tertiary mb-2" style={{ color: "var(--text-tertiary)" }}>
+                  <span
                     className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${kpi.color}15`, color: kpi.color }}
+                    style={{ background: `color-mix(in srgb, ${kpi.color} 15%, transparent)`, color: kpi.color }}
                   >
                     {kpi.icon}
                   </span>
                   <span className="font-medium uppercase tracking-wider">{kpi.label}</span>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums leading-tight">{kpi.value}</p>
+                <p className="text-2xl font-bold tabular" style={{ color: "var(--text-primary)" }}>{kpi.value}</p>
               </div>
             </div>
           </Card>
@@ -116,20 +99,21 @@ export default function MembersClient({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-space-7">
+      <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
           <Input
             placeholder="Search members..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="pl-11"
+            style={{ height: "var(--layout-control-height)" }}
           />
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[220px]">
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full pl-11" style={{ height: "var(--layout-control-height)" }}>
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
@@ -144,76 +128,65 @@ export default function MembersClient({
 
       {/* Members List */}
       {filteredUsers.length === 0 ? (
-        <div className="card-neo dark:card-mono p-space-8 text-center">
-          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg">No members found</p>
-        </div>
+        <Card className="text-center" style={{ padding: "var(--space-8)" }}>
+          <Users className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />
+          <p className="text-lg" style={{ color: "var(--text-tertiary)" }}>No members found</p>
+        </Card>
       ) : (
-        <div className="space-y-4">
-          {filteredUsers.map((member) => (
-            <div key={member.id} className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="relative w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'hsl(var(--accent)/0.15)' }}>
-                    {member.profileImageUrl ? (
-                      <Image
-                        src={member.profileImageUrl}
-                        alt={`${member.firstName || ""} ${member.lastName || ""}`}
-                        fill
-                        className="object-cover rounded-full"
-                      />
-                    ) : (
-                      <span className="text-lg font-semibold text-[hsl(var(--accent))]">
-                        {member.firstName?.[0] || member.email[0].toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-lg text-foreground truncate">
-                      {member.firstName && member.lastName
-                        ? `${member.firstName} ${member.lastName}`
-                        : member.email}
-                    </h3>
-                    <p className="text-sm text-muted-foreground truncate">{member.email}</p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      {getRoleBadge(member.role)}
-                      {member.serviceNumber && (
-                        <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-[hsl(var(--muted)/0.3)]">
-                          {member.serviceNumber}
-                        </span>
-                      )}
+        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+          {filteredUsers.map((member) => {
+            const statusConfig = getStatusConfig(member.role);
+            const fallback = member.firstName?.[0] || member.lastName?.[0] || member.email[0].toUpperCase();
+            return (
+              <Card key={member.id} style={{ padding: "var(--layout-card-padding)" }}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <Avatar size="lg" src={member.profileImageUrl} fallback={fallback} />
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-lg truncate" style={{ color: "var(--text-primary)" }}>
+                        {member.firstName && member.lastName
+                          ? `${member.firstName} ${member.lastName}`
+                          : member.email}
+                      </h3>
+                      <p className="text-sm truncate" style={{ color: "var(--text-tertiary)" }}>{member.email}</p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <Badge variant={statusConfig.variant} dot>{statusConfig.label}</Badge>
+                        {member.serviceNumber && (
+                          <span className="text-xs px-2 py-1 rounded-full" style={{ background: "var(--hover-bg)", color: "var(--text-tertiary)" }}>
+                            {member.serviceNumber}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {member.mobile && (
-                    <a href={`tel:${member.mobile}`}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {member.mobile && (
+                      <a href={`tel:${member.mobile}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-xl"
+                          aria-label="Call"
+                        >
+                          <Phone className="h-5 w-5" style={{ width: 20, height: 20 }} />
+                        </Button>
+                      </a>
+                    )}
+                    <a href={`mailto:${member.email}`}>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-                        aria-label="Call"
-                        style={{ height: 40, width: 40 }}
+                        className="rounded-xl"
+                        aria-label="Email"
                       >
-                        <Phone className="h-4 w-4" />
+                        <Mailbox className="h-5 w-5" style={{ width: 20, height: 20 }} />
                       </Button>
                     </a>
-                  )}
-                  <a href={`mailto:${member.email}`}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-                      aria-label="Email"
-                      style={{ height: 40, width: 40 }}
-                    >
-                      <Mail className="h-4 w-4" />
-                    </Button>
-                  </a>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
