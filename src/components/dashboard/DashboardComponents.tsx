@@ -56,10 +56,10 @@ export function KPICard({ data }: { data: KPIData }) {
 
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-5 h-full flex flex-col justify-between" style={{ padding: "var(--layout-kpi-padding)" }}>
+      <CardContent className="h-full flex flex-col justify-between" style={{ padding: "var(--layout-kpi-padding)" }}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-tertiary" style={{ color: "var(--text-tertiary)" }}>
+            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
               {data.label}
             </p>
             <p className="text-2xl font-bold tabular mt-1" style={{ color: "var(--text-primary)" }}>
@@ -70,7 +70,7 @@ export function KPICard({ data }: { data: KPIData }) {
                 {trendIcon}
                 {Math.abs(data.delta)}%
               </span>
-              <span className="text-xs text-tertiary" style={{ color: "var(--text-tertiary)" }}>
+              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                 {data.deltaLabel}
               </span>
             </div>
@@ -121,12 +121,12 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
 
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-5 h-full" style={{ padding: "var(--layout-card-padding)" }}>
+      <CardContent className="h-full" style={{ padding: "var(--layout-card-padding)" }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
             Revenue Overview
           </h3>
-          <div className="flex items-center gap-2 text-sm text-tertiary" style={{ color: "var(--text-tertiary)" }}>
+          <div className="flex items-center gap-2" style={{ color: "var(--text-tertiary)" }}>
             <span className="flex items-center gap-1">
               <span className="w-3 h-3 rounded" style={{ background: color }} />
               Revenue
@@ -168,7 +168,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
             })}
           </svg>
         </div>
-        <div className="flex justify-between mt-4 text-xs text-tertiary" style={{ color: "var(--text-tertiary)" }}>
+        <div className="flex justify-between mt-4" style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
           {data.map((d, i) => (
             <span key={i} style={{ flex: 1, textAlign: i === 0 ? "left" : i === data.length - 1 ? "right" : "center" }}>
               {d.label}
@@ -227,7 +227,7 @@ export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: s
 
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-5 h-full" style={{ padding: "var(--layout-card-padding)" }}>
+      <CardContent className="h-full" style={{ padding: "var(--layout-card-padding)" }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
             Traffic Sources
@@ -244,14 +244,14 @@ export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: s
               <div key={segment.label} className="flex items-center gap-3 mb-3">
                 <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: segment.color }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate" style={{ color: "var(--text-primary)" }}>
+                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                     {segment.label}
                   </p>
-                  <p className="text-xs text-tertiary" style={{ color: "var(--text-tertiary)" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
                     {segment.percentage.toFixed(1)}%
                   </p>
                 </div>
-                <span className="text-sm font-semibold tabular text-foreground flex-shrink-0" style={{ color: "var(--text-primary)" }}>
+                <span className="text-sm font-semibold tabular flex-shrink-0" style={{ color: "var(--text-primary)" }}>
                   {segment.value}%
                 </span>
               </div>
@@ -274,7 +274,7 @@ export function DataTable({ transactions }: { transactions: Transaction[] }) {
 
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-0 h-full">
+      <CardContent className="h-full">
         <div className="table-container">
           <table className="table">
             <thead>
@@ -326,11 +326,11 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
   
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-5 h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
+      <CardContent className="h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Recent Activity
         </h3>
-        <div className="flex-1 overflow-y-auto space-y-4">
+        <div className="flex-1 overflow-y-auto" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           {items.map((item) => (
             <div key={item.id} className="flex gap-3">
               <div
@@ -338,10 +338,10 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
                 style={{ background: item.dotColor }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-foreground" style={{ color: "var(--text-primary)", lineHeight: 1.4 }}>
+                <p style={{ color: "var(--text-primary)", lineHeight: 1.4, fontSize: "0.875rem" }}>
                   {item.text}
                 </p>
-                <p className="text-xs text-tertiary mt-0.5" style={{ color: "var(--text-tertiary)" }}>
+                <p style={{ color: "var(--text-tertiary)", marginTop: "0.25rem", fontSize: "0.75rem" }}>
                   {item.time}
                 </p>
               </div>
@@ -365,18 +365,19 @@ export function QuickActions() {
 
   return (
     <Card className="p-0 overflow-hidden">
-      <CardContent className="p-5 h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
+      <CardContent className="h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Quick Actions
         </h3>
-        <div className="flex-1 flex flex-col gap-3">
+        <div className="flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {actions.map((action) => (
             <Button
               key={action.label}
               variant="ghost"
-              className="w-full justify-start gap-3 h-12 rounded-xl"
+              className="w-full justify-start gap-3 rounded-xl"
               style={{
                 color: "var(--text-secondary)",
+                height: "var(--layout-control-height)",
               }}
             >
               <action.icon

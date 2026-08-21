@@ -32,7 +32,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
         <TopBar user={user} sidebarCollapsed={sidebarCollapsed} />
 
         {/* Main Content Area */}
-        <main className="flex-1 pt-20 pb-8 lg:pb-0 animate-fade-in" style={{ padding: `0 ${LAYOUT.pagePadding}px ${LAYOUT.pagePadding}px` }}>
+        <main className="flex-1 animate-fade-in" style={{ padding: `var(--layout-page-padding) var(--layout-page-padding) var(--layout-page-padding)` }}>
           {children}
         </main>
       </div>

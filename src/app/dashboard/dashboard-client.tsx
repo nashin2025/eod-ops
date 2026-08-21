@@ -96,7 +96,7 @@ const channelColors = ["var(--accent)", "var(--success)", "var(--warning)", "var
 
 export default function DashboardClient() {
   return (
-    <div className="space-y-8 animate-fade-in" style={{ gap: "var(--layout-section-gap)" }}>
+    <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* KPI Row - 4 cards */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
         {kpiData.map((kpi, i) => (
@@ -121,7 +121,7 @@ export default function DashboardClient() {
         <div className="col-span-8" style={{ minWidth: 0 }}>
           <DataTable transactions={recentTransactions} />
         </div>
-        <div className="col-span-4 flex flex-col" style={{ gap: "var(--layout-card-gap)", minWidth: 0 }}>
+        <div className="col-span-4" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)", minWidth: 0 }}>
           <ActivityFeed items={activityItems} />
           <QuickActions />
         </div>
