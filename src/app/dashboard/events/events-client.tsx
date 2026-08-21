@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit2, Trash2, Archive, ChevronDown, ChevronUp, MapPin, Phone, Download, Search, Filter, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus, PencilSimple, Trash, Archive, CaretDown, CaretUp, MapPin,
+  Phone, Download, MagnifyingGlass, FunnelSimple, Calendar, CaretDown as ChevronDownIcon
+} from "@phosphor-icons/react";
 import Link from "next/link";
 
 interface Event {
@@ -27,19 +32,6 @@ interface Island {
   name: string;
   atoll: string;
 }
-
-// Layout constants matching the 8-point spacing scale
-const LAYOUT = {
-  pagePadding: 24,           // --space-6
-  cardPadding: 24,           // --space-6
-  sectionGap: 32,            // --space-7
-  cardRowGap: 20,            // --space-5
-  controlHeight: 44,         // tap-friendly
-  iconSize: 20,              // 20px icons
-  iconGap: 8,                // icon-text gap in buttons
-  buttonPaddingH: 16,        // 16px horizontal
-  buttonPaddingV: 10,        // 10px vertical
-} as const;
 
 export default function EventsClient({
   user,
@@ -73,46 +65,57 @@ export default function EventsClient({
     return true;
   });
 
-  const getStatusStyles = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))] dark:bg-[hsl(var(--accent)/0.2)] dark:text-[hsl(var(--accent))]";
+        return { label: "Active", variant: "accent" as const };
       case "scheduled":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+        return { label: "Scheduled", variant: "default" as const };
       case "completed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+        return { label: "Completed", variant: "success" as const };
+      case "cancelled":
+        return { label: "Cancelled", variant: "danger" as const };
       default:
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return { label: status, variant: "default" as const };
     }
   };
 
   return (
-    <div className="p-space-6">
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-space-7">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-[var(--layout-section-gap)]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">Events</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">Manage conservation events across the Maldives</p>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Events</h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Manage conservation events across the Maldives</p>
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="btn-neo-accent dark:btn-mono-primary w-full sm:w-auto"
-          style={{ height: 48, paddingLeft: LAYOUT.buttonPaddingH, paddingRight: LAYOUT.buttonPaddingH }}
+          size="lg"
+          className="w-full sm:w-auto"
         >
-          <Plus className="h-4 w-4 mr-2" style={{ transform: "translateY(1px)" }} />
+          <Plus className="h-5 w-5 mr-2" style={{ transform: "translateY(0.5px)" }} />
           Create Event
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-space-7">
+      <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <Input
+            type="text"
+            placeholder="Search events..."
+            className="pl-11"
+            style={{ height: "var(--layout-control-height)" }}
+          />
+        </div>
+        <div className="relative flex-1 min-w-[180px] max-w-[280px]">
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
           <select
             value={filters.atoll}
             onChange={(e) => setFilters({ ...filters, atoll: e.target.value })}
-            className="input-neo dark:input-mono pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="pl-11 pr-10"
+            style={{ height: "var(--layout-control-height)", appearance: "none" }}
           >
             <option value="">All Atolls</option>
             {Array.from(new Set(islands.map(i => i.atoll))).map(atoll => (
@@ -121,12 +124,12 @@ export default function EventsClient({
           </select>
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="input-neo dark:input-mono pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="pr-10"
+            style={{ height: "var(--layout-control-height)", appearance: "none" }}
           >
             <option value="">All Status</option>
             <option value="scheduled">Scheduled</option>
@@ -139,94 +142,91 @@ export default function EventsClient({
 
       {/* Events List */}
       {filteredEvents.length === 0 ? (
-        <div className="card-neo dark:card-mono p-space-8 text-center">
-          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg">No events found</p>
-          <p className="text-sm text-muted-foreground mt-1">Create your first event to get started!</p>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="btn-neo-accent dark:btn-mono-primary mt-4"
-            style={{ height: 48, paddingLeft: 24, paddingRight: 24 }}
-          >
-            <Plus className="h-4 w-4 mr-2" style={{ transform: "translateY(1px)" }} />
+        <Card className="text-center" style={{ padding: "var(--space-8)" }}>
+          <Calendar className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />
+          <p className="text-lg mb-1" style={{ color: "var(--text-tertiary)" }}>No events found</p>
+          <p className="text-sm mb-4" style={{ color: "var(--text-tertiary)" }}>Create your first event to get started!</p>
+          <Button size="lg" onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-5 w-5 mr-2" style={{ transform: "translateY(0.5px)" }} />
             Create Event
           </Button>
-        </div>
+        </Card>
       ) : (
-        <div className="space-y-4">
-          {filteredEvents.map((event) => (
-            <div key={event.id} className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-foreground truncate">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{event.atoll} - {event.island}</p>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium mt-2 ${getStatusStyles(event.status)}`}
-                  >
-                    {event.status}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {event.latitude && event.longitude && (
-                    <Link href={`/dashboard/map?event=${event.id}`}>
+        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+          {filteredEvents.map((event) => {
+            const statusConfig = getStatusConfig(event.status);
+            return (
+              <Card key={event.id} className="p-0 overflow-hidden">
+                <CardContent style={{ padding: "var(--layout-card-padding)" }}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold truncate" style={{ color: "var(--text-primary)" }}>{event.title}</h3>
+                      <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>{event.atoll} - {event.island}</p>
+                      <Badge variant={statusConfig.variant} dot className="mt-2">
+                        {statusConfig.label}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {event.latitude && event.longitude && (
+                        <Link href={`/dashboard/map?event=${event.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-xl"
+                            aria-label="View on map"
+                          >
+                            <MapPin className="h-5 w-5" style={{ width: 20, height: 20 }} />
+                          </Button>
+                        </Link>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-                        aria-label="View on map"
-                        style={{ height: 40, width: 40 }}
+                        onClick={() => toggleEventExpansion(event.id)}
+                        className="rounded-xl"
+                        aria-label={expandedEvents.has(event.id) ? "Collapse event" : "Expand event"}
                       >
-                        <MapPin className="h-4 w-4" />
+                        {expandedEvents.has(event.id) ? <CaretUp className="h-5 w-5" /> : <CaretDown className="h-5 w-5" />}
                       </Button>
-                    </Link>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toggleEventExpansion(event.id)}
-                    className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-                    aria-label={expandedEvents.has(event.id) ? "Collapse event" : "Expand event"}
-                    style={{ height: 40, width: 40 }}
-                  >
-                    {expandedEvents.has(event.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {expandedEvents.has(event.id) && (
-                <div className="mt-5 pt-5 border-t border-border animate-slide-up">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Event Location</p>
-                      <p className="text-sm text-foreground mt-1">{event.eventLocation || "Not specified"}</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Participants</p>
-                      <p className="text-sm text-foreground mt-1 tabular-nums">{event.participantCount || 0}</p>
-                    </div>
-                    {event.eventDate && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</p>
-                        <p className="text-sm text-foreground mt-1">{new Date(event.eventDate).toLocaleDateString()}</p>
-                      </div>
-                    )}
-                    {event.contact && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</p>
-                        <p className="text-sm text-foreground mt-1">{event.contact}</p>
-                      </div>
-                    )}
                   </div>
-                  {event.comment && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</p>
-                      <p className="text-sm text-foreground mt-1">{event.comment}</p>
+
+                  {expandedEvents.has(event.id) && (
+                    <div className="mt-5 pt-5 animate-slide-in-left" style={{ borderTop: "1px solid var(--border)" }}>
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="label" style={{ color: "var(--text-tertiary)" }}>Event Location</p>
+                          <p className="mt-1" style={{ color: "var(--text-primary)" }}>{event.eventLocation || "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="label" style={{ color: "var(--text-tertiary)" }}>Participants</p>
+                          <p className="mt-1 tabular" style={{ color: "var(--text-primary)" }}>{event.participantCount || 0}</p>
+                        </div>
+                        {event.eventDate && (
+                          <div>
+                            <p className="label" style={{ color: "var(--text-tertiary)" }}>Date</p>
+                            <p className="mt-1" style={{ color: "var(--text-primary)" }}>{new Date(event.eventDate).toLocaleDateString()}</p>
+                          </div>
+                        )}
+                        {event.contact && (
+                          <div>
+                            <p className="label" style={{ color: "var(--text-tertiary)" }}>Contact</p>
+                            <p className="mt-1" style={{ color: "var(--text-primary)" }}>{event.contact}</p>
+                          </div>
+                        )}
+                      </div>
+                      {event.comment && (
+                        <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+                          <p className="label" style={{ color: "var(--text-tertiary)" }}>Notes</p>
+                          <p className="mt-1" style={{ color: "var(--text-primary)" }}>{event.comment}</p>
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
-              )}
-            </div>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
