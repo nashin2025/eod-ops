@@ -5,13 +5,18 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Package, Plus, Search, Edit2, Trash2, Filter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Plus, Package, MagnifyingGlass, PencilSimple, Trash, FunnelSimple,
+  Cube, ArrowClockwise
+} from "@phosphor-icons/react";
 import EquipmentForm from "@/components/equipment-form";
 
 interface EquipmentItem {
@@ -32,19 +37,18 @@ interface Island {
   atoll: string;
 }
 
-// Layout constants matching the 8-point spacing scale
-const LAYOUT = {
-  pagePadding: 24,           // --space-6
-  cardPadding: 24,           // --space-6
-  kpiCardPadding: 20,        // --space-5
-  sectionGap: 32,            // --space-7
-  cardRowGap: 20,            // --space-5
-  controlHeight: 44,         // tap-friendly
-  iconSize: 20,              // 20px icons
-  iconGap: 8,                // icon-text gap in buttons
-  buttonPaddingH: 16,        // 16px horizontal
-  buttonPaddingV: 10,        // 10px vertical
-} as const;
+const getStatusConfig = (status: string) => {
+  switch (status) {
+    case "available":
+      return { label: "Available", variant: "success" as const };
+    case "in-use":
+      return { label: "In Use", variant: "warning" as const };
+    case "damaged":
+      return { label: "Damaged", variant: "danger" as const };
+    default:
+      return { label: status, variant: "default" as const };
+  }
+};
 
 export default function EquipmentClient({
   user,
@@ -88,60 +92,47 @@ export default function EquipmentClient({
   const inUse = equipment.filter(e => e.status === "in-use").length;
   const damaged = equipment.filter(e => e.status === "damaged").length;
 
-  const getStatusStyles = (status: string) => {
-    switch (status) {
-      case "available":
-        return "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))] dark:bg-[hsl(var(--accent)/0.2)] dark:text-[hsl(var(--accent))]";
-      case "in-use":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
-      case "damaged":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
-  };
-
   const kpiItems = [
-    { label: "Total", value: total, icon: <Package className="h-5 w-5" />, color: "hsl(var(--accent))" },
-    { label: "Available", value: available, icon: <Package className="h-5 w-5" />, color: "#10B981" },
-    { label: "In Use", value: inUse, icon: <Package className="h-5 w-5" />, color: "#F59E0B" },
-    { label: "Damaged", value: damaged, icon: <Package className="h-5 w-5" />, color: "#EF4444" },
+    { label: "Total", value: total, icon: <Package className="h-5 w-5" />, color: "var(--accent)" },
+    { label: "Available", value: available, icon: <Package className="h-5 w-5" />, color: "var(--success)" },
+    { label: "In Use", value: inUse, icon: <Package className="h-5 w-5" />, color: "var(--warning)" },
+    { label: "Damaged", value: damaged, icon: <Package className="h-5 w-5" />, color: "var(--danger)" },
   ];
 
   return (
-    <div className="p-space-6">
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-space-7">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-[var(--layout-section-gap)]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">Equipment</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">Manage equipment inventory across the Maldives</p>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Equipment</h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Manage equipment inventory across the Maldives</p>
         </div>
         <Button
           onClick={() => { setEditingEquipment(null); setShowForm(true); }}
-          className="btn-neo-accent dark:btn-mono-primary w-full sm:w-auto"
-          style={{ height: 48, paddingLeft: LAYOUT.buttonPaddingH, paddingRight: LAYOUT.buttonPaddingH }}
+          size="lg"
+          className="w-full sm:w-auto"
         >
-          <Plus className="h-4 w-4 mr-2" style={{ transform: "translateY(1px)" }} />
+          <Plus className="h-5 w-5 mr-2" style={{ transform: "translateY(0.5px)" }} />
           Add Equipment
         </Button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-5 mb-space-7 items-stretch">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
         {kpiItems.map((kpi, index) => (
-          <Card key={kpi.label} className="card-neo dark:card-mono" style={{ padding: LAYOUT.kpiCardPadding, animationDelay: `${index * 80}ms` }}>
+          <Card key={kpi.label} style={{ padding: "var(--layout-kpi-padding)", animationDelay: `${index * 80}ms` }}>
             <div className="flex items-start justify-between h-full">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
-                  <span 
+                <div className="flex items-center gap-3 text-sm text-tertiary mb-2" style={{ color: "var(--text-tertiary)" }}>
+                  <span
                     className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${kpi.color}15`, color: kpi.color }}
+                    style={{ background: `color-mix(in srgb, ${kpi.color} 15%, transparent)`, color: kpi.color }}
                   >
                     {kpi.icon}
                   </span>
                   <span className="font-medium uppercase tracking-wider">{kpi.label}</span>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums leading-tight">{kpi.value}</p>
+                <p className="text-2xl font-bold tabular" style={{ color: "var(--text-primary)" }}>{kpi.value}</p>
               </div>
             </div>
           </Card>
@@ -149,24 +140,23 @@ export default function EquipmentClient({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-space-7">
+      <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
           <Input
             placeholder="Search equipment..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="pl-11"
+            style={{ height: "var(--layout-control-height)" }}
           />
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[220px]">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <select
             value={selectedAtoll}
             onChange={(e) => setSelectedAtoll(e.target.value)}
-            className="input-neo dark:input-mono pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="w-full pr-10"
+            style={{ height: "var(--layout-control-height)", appearance: "none" }}
           >
             <option value="all">All Atolls</option>
             {atolls.map(atoll => (
@@ -178,8 +168,8 @@ export default function EquipmentClient({
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="input-neo dark:input-mono pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
+            className="w-full pr-10"
+            style={{ height: "var(--layout-control-height)", appearance: "none" }}
           >
             <option value="all">All Types</option>
             {types.map(type => (
@@ -188,71 +178,68 @@ export default function EquipmentClient({
           </select>
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[220px]">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="input-neo dark:input-mono pl-10 w-full text-sm"
-            style={{ height: LAYOUT.controlHeight }}
-          >
-            <option value="all">All Status</option>
-            <option value="available">Available</option>
-            <option value="in-use">In Use</option>
-            <option value="damaged">Damaged</option>
-          </select>
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full pl-11" style={{ height: "var(--layout-control-height)" }}>
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="in-use">In Use</SelectItem>
+              <SelectItem value="damaged">Damaged</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Equipment List */}
       {filteredEquipment.length === 0 ? (
-        <div className="card-neo dark:card-mono p-space-8 text-center">
-          <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg">No equipment found</p>
-          <Button
-            onClick={() => { setEditingEquipment(null); setShowForm(true); }}
-            className="btn-neo-accent dark:btn-mono-primary mt-4"
-            style={{ height: 48, paddingLeft: 24, paddingRight: 24 }}
-          >
-            <Plus className="h-4 w-4 mr-2" style={{ transform: "translateY(1px)" }} />
+        <Card className="text-center" style={{ padding: "var(--space-8)" }}>
+          <Package className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />
+          <p className="text-lg mb-4" style={{ color: "var(--text-tertiary)" }}>No equipment found</p>
+          <Button size="lg" onClick={() => { setEditingEquipment(null); setShowForm(true); }}>
+            <Plus className="h-5 w-5 mr-2" style={{ transform: "translateY(0.5px)" }} />
             Add Equipment
           </Button>
-        </div>
+        </Card>
       ) : (
-        <div className="space-y-4">
-          {filteredEquipment.map((item) => (
-            <div key={item.id} className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-foreground truncate">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {item.type} - {item.atoll} {item.island ? `- ${item.island}` : ""}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    <span className="text-sm text-foreground tabular-nums">Qty: {item.quantity}</span>
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyles(item.status)}`}>
-                      {item.status}
-                    </span>
-                    {item.condition && (
-                      <span className="text-xs text-muted-foreground">
-                        Condition: {item.condition}
-                      </span>
-                    )}
+        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+          {filteredEquipment.map((item) => {
+            const statusConfig = getStatusConfig(item.status);
+            return (
+              <Card key={item.id} style={{ padding: "var(--layout-card-padding)" }}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold truncate" style={{ color: "var(--text-primary)" }}>{item.name}</h3>
+                    <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>
+                      {item.type} - {item.atoll} {item.island ? `- ${item.island}` : ""}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                      <span className="text-sm tabular" style={{ color: "var(--text-primary)" }}>Qty: {item.quantity}</span>
+                      <Badge variant={statusConfig.variant} dot>{statusConfig.label}</Badge>
+                      {item.condition && (
+                        <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                          Condition: {item.condition}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => { setEditingEquipment(item); setShowForm(true); }}
+                      className="rounded-xl"
+                      aria-label="Edit equipment"
+                    >
+                      <PencilSimple className="h-5 w-5" style={{ width: 20, height: 20 }} />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => { setEditingEquipment(item); setShowForm(true); }}
-                    className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-                    aria-label="Edit equipment"
-                    style={{ height: 40, width: 40 }}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
