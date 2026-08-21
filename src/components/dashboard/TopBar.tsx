@@ -14,9 +14,10 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 interface TopBarProps {
   user: { id: string; email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
   sidebarCollapsed: boolean;
+  onMobileMenuToggle?: () => void;
 }
 
-export function TopBar({ user, sidebarCollapsed }: TopBarProps) {
+export function TopBar({ user, sidebarCollapsed, onMobileMenuToggle }: TopBarProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const pathname = usePathname();
@@ -68,7 +69,7 @@ export function TopBar({ user, sidebarCollapsed }: TopBarProps) {
     <header
       className="fixed top-0 right-0 z-20 border-b backdrop-blur-sm transition-all duration-300"
       style={{
-        left: sidebarCollapsed ? "72px" : "288px",
+        left: sidebarCollapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)",
         background: resolvedTheme === "dark" ? "var(--topbar-bg-dark)" : "var(--topbar-bg)",
         borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)",
         boxShadow: resolvedTheme === "light"
@@ -80,6 +81,17 @@ export function TopBar({ user, sidebarCollapsed }: TopBarProps) {
       <div className="flex items-center justify-between gap-4 h-full" style={{ padding: `0 ${LAYOUT.topBarPaddingH}px` }}>
         {/* Breadcrumbs & Mobile Menu */}
         <div className="flex items-center gap-4 flex-1">
+          {/* Mobile Menu Toggle - only visible on mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden icon-btn"
+            onClick={onMobileMenuToggle}
+            aria-label="Toggle menu"
+            style={{ height: LAYOUT.topBarControlHeight, width: LAYOUT.topBarControlHeight }}
+          >
+            <List className="h-5 w-5" />
+          </Button>
           <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb" style={{ lineHeight: "1", gap: LAYOUT.breadcrumbSepGap }}>
             <Link href="/dashboard" className="text-tertiary hover:text-foreground transition-colors" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>
               Dashboard

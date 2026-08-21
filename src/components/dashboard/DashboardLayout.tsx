@@ -27,9 +27,15 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
       />
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col min-h-screen ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-72"}`}>
+      <div className="flex-1 flex flex-col min-h-screen" style={{
+        marginLeft: sidebarCollapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)"
+      }}>
         {/* Top Bar */}
-        <TopBar user={user} sidebarCollapsed={sidebarCollapsed} />
+        <TopBar 
+          user={user} 
+          sidebarCollapsed={sidebarCollapsed}
+          onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 animate-fade-in" style={{ padding: `var(--layout-page-padding) var(--layout-page-padding) var(--layout-page-padding)` }}>
