@@ -2,16 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +17,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle, UserPlus, Trash2, Download, RefreshCw, Users, Shield, FileText, Activity, BarChart3, ChevronDown, ChevronUp, Search, Filter } from "lucide-react";
-import Image from "next/image";
+import {
+  Plus, Users, Shield, FileText, ChartBar, ActivityIcon, CheckCircle, XCircle,
+  UserPlus, Trash, ArrowClockwise, MagnifyingGlass, FunnelSimple, CaretDown,
+  CaretUp, CaretRight, Mailbox, Phone
+} from "@phosphor-icons/react";
 import { format } from "date-fns";
 
 interface User {
@@ -79,21 +77,6 @@ interface AuditLog {
     last_name: string | null;
   };
 }
-
-// Layout constants matching the 8-point spacing scale
-const LAYOUT = {
-  pagePadding: 24,           // --space-6
-  cardPadding: 24,           // --space-6
-  kpiCardPadding: 20,        // --space-5
-  sectionGap: 32,            // --space-7
-  cardRowGap: 20,            // --space-5
-  controlHeight: 44,         // tap-friendly
-  iconSize: 20,              // 20px icons
-  iconGap: 8,                // icon-text gap
-  buttonPaddingH: 16,        // 16px horizontal
-  buttonPaddingV: 10,        // 10px vertical
-  avatarSize: 32,            // 32px avatar in table
-} as const;
 
 export default function AdminClient({
   currentUser,
@@ -152,7 +135,7 @@ export default function AdminClient({
   // Bulk actions
   const handleBulkAction = async (action: string, role?: string) => {
     if (selectedUsers.length === 0) return;
-    
+
     setBulkActionLoading(true);
     try {
       const res = await fetch("/api/admin/bulk", {
@@ -161,7 +144,7 @@ export default function AdminClient({
         body: JSON.stringify({ action, userIds: selectedUsers, data: { role } }),
         credentials: "include",
       });
-      
+
       if (res.ok) {
         router.refresh();
         setSelectedUsers([]);
@@ -252,165 +235,114 @@ export default function AdminClient({
   }, [activeSection]);
 
   const statCards = [
-    { label: "Total Users", value: stats?.overview.totalUsers || 0, icon: Users, color: "hsl(var(--accent))", trend: stats?.overview.userGrowth !== undefined ? `${stats.overview.userGrowth > 0 ? "+" : ""}${stats.overview.userGrowth}%` : null },
-    { label: "Active Users", value: stats?.overview.activeUsers || 0, icon: CheckCircle, color: "#10B981" },
-    { label: "Pending Approval", value: stats?.overview.pendingUsers || 0, icon: Shield, color: "#F59E0B" },
-    { label: "Total Events", value: stats?.overview.totalEvents || 0, icon: Activity, color: "#3B82F6" },
-    { label: "Active Events", value: stats?.overview.activeEvents || 0, icon: Activity, color: "#10B981" },
-    { label: "Completed Events", value: stats?.overview.completedEvents || 0, icon: CheckCircle, color: "#6B7280" },
-    { label: "Total Equipment", value: stats?.overview.totalEquipment || 0, icon: BarChart3, color: "#8B5CF6" },
-    { label: "Available", value: stats?.overview.availableEquipment || 0, icon: CheckCircle, color: "#10B981" },
-    { label: "Damaged", value: stats?.overview.damagedEquipment || 0, icon: XCircle, color: "#EF4444" },
+    { label: "Total Users", value: stats?.overview.totalUsers || 0, icon: Users, color: "var(--accent)", trend: stats?.overview.userGrowth !== undefined ? `${stats.overview.userGrowth > 0 ? "+" : ""}${stats.overview.userGrowth}%` : null },
+    { label: "Active Users", value: stats?.overview.activeUsers || 0, icon: CheckCircle, color: "var(--success)" },
+    { label: "Pending Approval", value: stats?.overview.pendingUsers || 0, icon: Shield, color: "var(--warning)" },
+    { label: "Total Events", value: stats?.overview.totalEvents || 0, icon: ActivityIcon, color: "var(--accent)" },
+    { label: "Active Events", value: stats?.overview.activeEvents || 0, icon: ActivityIcon, color: "var(--success)" },
+    { label: "Completed Events", value: stats?.overview.completedEvents || 0, icon: CheckCircle, color: "var(--text-tertiary)" },
+    { label: "Total Equipment", value: stats?.overview.totalEquipment || 0, icon: ChartBar, color: "var(--accent)" },
+    { label: "Available", value: stats?.overview.availableEquipment || 0, icon: CheckCircle, color: "var(--success)" },
+    { label: "Damaged", value: stats?.overview.damagedEquipment || 0, icon: XCircle, color: "var(--danger)" },
   ];
 
-  const getStatusStyles = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case "active":
       case "approved":
-        return "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))] dark:bg-[hsl(var(--accent)/0.2)] dark:text-[hsl(var(--accent))]";
+        return { label: "Active", variant: "success" as const };
       case "scheduled":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+        return { label: "Scheduled", variant: "default" as const };
       case "completed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+        return { label: "Completed", variant: "default" as const };
       case "in-use":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return { label: "In Use", variant: "warning" as const };
       case "damaged":
       case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return { label: "Damaged", variant: "danger" as const };
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return { label: "Pending", variant: "warning" as const };
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+        return { label: status, variant: "default" as const };
     }
   };
 
   const getActiveBadge = (isActive: boolean) => (
-      <Badge variant={isActive ? "accent" : "default"} className="text-xs">
-        {isActive ? "Active" : "Inactive"}
-      </Badge>
-    );
-
-    const getRoleBadge = (role: string) => (
-      <Badge variant="default" className="text-xs capitalize">{role}</Badge>
-    );
-
-    const getApprovalBadge = (status: string) => (
-      <Badge
-        variant={status === "approved" ? "success" : status === "rejected" ? "danger" : "default"}
-        className="text-xs capitalize"
-      >
-        {status}
-      </Badge>
-    );
-
-    const getEventStatusBadge = (status: string) => (
-      <Badge
-        variant={
-          status === "active" ? "success" :
-          status === "scheduled" ? "accent" :
-          status === "completed" ? "default" : "danger"
-        }
-        className="text-xs capitalize"
-      >
-        {status}
-      </Badge>
-    );
-
-  const renderUserRow = (user: User, isCurrentUser: boolean) => (
-    <div key={user.id} className="flex items-center justify-between p-4 border-b border-border hover:bg-muted/30 transition-colors">
-      <div className="flex items-center gap-4">
-        <input
-          type="checkbox"
-          checked={selectedUsers.includes(user.id)}
-          onChange={(e) => handleSelectUser(user.id, e.target.checked)}
-          disabled={isCurrentUser}
-          className="h-4 w-4 rounded border-border text-[hsl(var(--accent))]"
-        />
-        <div className="relative w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0" style={{ background: 'hsl(var(--accent)/0.15)' }}>
-          {user.profileImageUrl ? (
-            <Image
-              src={user.profileImageUrl}
-              alt={`${user.firstName || ""} ${user.lastName || ""}`}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <span className="text-sm font-semibold text-[hsl(var(--accent))]">
-              {user.firstName?.[0] || user.email[0].toUpperCase()}
-            </span>
-          )}
-        </div>
-        <div className="min-w-0">
-          <p className="font-medium text-foreground truncate">
-            {user.firstName && user.lastName
-              ? `${user.firstName} ${user.lastName}`
-              : user.email}
-          </p>
-          <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2 flex-wrap">
-        <Select
-          value={user.role}
-          onValueChange={(value) => handleRoleChange(user.id, value)}
-          disabled={isCurrentUser}
-        >
-          <SelectTrigger className="w-[130px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="coordinator">Coordinator</SelectItem>
-            <SelectItem value="agent">Agent</SelectItem>
-            <SelectItem value="attachment">Attachment</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={user.approvalStatus}
-          onValueChange={(value) => handleApprovalChange(user.id, value)}
-        >
-          <SelectTrigger className="w-[130px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
-        {getActiveBadge(user.isActive)}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setDeletingUser(user)}
-          disabled={isCurrentUser}
-          className="rounded-xl btn-neo-secondary dark:btn-mono-secondary"
-          aria-label="Delete user"
-          style={{ height: 36, width: 36 }}
-        >
-          <Trash2 className="h-4 w-4 text-red-600" />
-        </Button>
-      </div>
-    </div>
+    <Badge variant={isActive ? "success" : "default"} className="text-xs">
+      {isActive ? "Active" : "Inactive"}
+    </Badge>
   );
 
-  const renderPendingRow = (user: User) => (
-    <div key={user.id} className="card-neo dark:card-mono p-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-foreground truncate">
-            {user.firstName && user.lastName
-              ? `${user.firstName} ${user.lastName}`
-              : user.email}
-          </p>
-          <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+  const getRoleBadge = (role: string) => (
+    <Badge variant="default" className="text-xs capitalize">{role}</Badge>
+  );
+
+  const getApprovalBadge = (status: string) => (
+    <Badge
+      variant={status === "approved" ? "success" : status === "rejected" ? "danger" : "warning"}
+      className="text-xs capitalize"
+    >
+      {status}
+    </Badge>
+  );
+
+  const getEventStatusBadge = (status: string) => (
+    <Badge
+      variant={
+        status === "active" ? "success" :
+        status === "scheduled" ? "default" :
+        status === "completed" ? "default" : "danger"
+      }
+      className="text-xs capitalize"
+    >
+      {status}
+    </Badge>
+  );
+
+  const renderUserRow = (user: User, isCurrentUser: boolean) => {
+    const fallback = user.firstName?.[0] || user.lastName?.[0] || user.email[0].toUpperCase();
+    return (
+      <div key={user.id} className="flex items-center justify-between p-4 border-b border-border hover:bg-[var(--hover-bg)] transition-colors" style={{ borderColor: "var(--border)" }}>
+        <div className="flex items-center gap-4">
+          <input
+            type="checkbox"
+            checked={selectedUsers.includes(user.id)}
+            onChange={(e) => handleSelectUser(user.id, e.target.checked)}
+            disabled={isCurrentUser}
+            className="h-4 w-4 rounded border-border accent"
+            style={{ accentColor: "var(--accent)" }}
+          />
+          <Avatar size="sm" src={user.profileImageUrl} fallback={fallback} />
+          <div className="min-w-0">
+            <p className="font-medium truncate" style={{ color: "var(--text-primary)" }}>
+              {user.firstName && user.lastName
+                ? `${user.firstName} ${user.lastName}`
+                : user.email}
+            </p>
+            <p className="text-sm truncate" style={{ color: "var(--text-tertiary)" }}>{user.email}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Select
+            value={user.role}
+            onValueChange={(value) => handleRoleChange(user.id, value)}
+            disabled={isCurrentUser}
+          >
+            <SelectTrigger className="w-[130px]" style={{ height: "var(--layout-control-height)" }}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="coordinator">Coordinator</SelectItem>
+              <SelectItem value="agent">Agent</SelectItem>
+              <SelectItem value="attachment">Attachment</SelectItem>
+            </SelectContent>
+          </Select>
           <Select
             value={user.approvalStatus}
             onValueChange={(value) => handleApprovalChange(user.id, value)}
           >
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[130px]" style={{ height: "var(--layout-control-height)" }}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -419,37 +351,83 @@ export default function AdminClient({
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
+          {getActiveBadge(user.isActive)}
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => handleApprove(user.id)}
-            className="btn-neo-secondary dark:btn-mono-secondary gap-1"
-            style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
+            size="icon"
+            onClick={() => setDeletingUser(user)}
+            disabled={isCurrentUser}
+            className="rounded-xl"
+            aria-label="Delete user"
           >
-            <CheckCircle className="h-3.5 w-3.5 text-green-600" />
-            <span>Approve</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleReject(user.id)}
-            className="btn-neo-secondary dark:btn-mono-secondary gap-1"
-            style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
-          >
-            <XCircle className="h-3.5 w-3.5 text-red-600" />
-            <span>Reject</span>
+            <Trash className="h-5 w-5" style={{ width: 18, height: 18, color: "var(--danger)" }} />
           </Button>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const renderPendingRow = (user: User) => {
+    const fallback = user.firstName?.[0] || user.lastName?.[0] || user.email[0].toUpperCase();
+    return (
+      <div key={user.id} className="p-4 border-b border-border" style={{ borderColor: "var(--border)" }}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <Avatar size="sm" src={user.profileImageUrl} fallback={fallback} />
+            <div className="min-w-0">
+              <p className="font-medium truncate" style={{ color: "var(--text-primary)" }}>
+                {user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : user.email}
+              </p>
+              <p className="text-sm truncate" style={{ color: "var(--text-tertiary)" }}>{user.email}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select
+              value={user.approvalStatus}
+              onValueChange={(value) => handleApprovalChange(user.id, value)}
+            >
+              <SelectTrigger className="w-[150px]" style={{ height: "var(--layout-control-height)" }}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={() => handleApprove(user.id)}
+              className="gap-1"
+              style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
+            >
+              <CheckCircle className="h-4 w-4" style={{ width: 16, height: 16, color: "var(--success)" }} />
+              <span>Approve</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => handleReject(user.id)}
+              className="gap-1"
+              style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
+            >
+              <XCircle className="h-4 w-4" style={{ width: 16, height: 16 }} />
+              <span>Reject</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderAuditRow = (log: AuditLog) => (
-    <tr key={log.id} className="border-b border-border hover:bg-muted/30 transition-colors">
-      <td className="px-5 py-3 text-sm text-muted-foreground">
+    <tr key={log.id} className="border-b border-border hover:bg-[var(--hover-bg)] transition-colors" style={{ borderColor: "var(--border)" }}>
+      <td className="px-5 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>
         {format(new Date(log.created_at), "MMM d, yyyy HH:mm")}
       </td>
-      <td className="px-5 py-3 text-sm text-foreground">
+      <td className="px-5 py-3 text-sm" style={{ color: "var(--text-primary)" }}>
         {log.admin ? (
           <>
             {log.admin.first_name && log.admin.last_name
@@ -461,7 +439,7 @@ export default function AdminClient({
       <td className="px-5 py-3">
         <Badge variant="default" className="text-xs capitalize">{log.action.replace("_", " ")}</Badge>
       </td>
-      <td className="px-5 py-3 text-sm text-foreground">
+      <td className="px-5 py-3 text-sm" style={{ color: "var(--text-primary)" }}>
         {log.target_user ? (
           <>
             {log.target_user.first_name && log.target_user.last_name
@@ -470,47 +448,49 @@ export default function AdminClient({
           </>
         ) : "—"}
       </td>
-      <td className="px-5 py-3 text-sm text-muted-foreground max-w-xs truncate">{log.details || "—"}</td>
-      <td className="px-5 py-3 text-sm text-muted-foreground text-xs">{log.ip_address}</td>
+      <td className="px-5 py-3 text-sm max-w-xs truncate" style={{ color: "var(--text-tertiary)" }}>{log.details || "—"}</td>
+      <td className="px-5 py-3 text-sm text-xs" style={{ color: "var(--text-tertiary)" }}>{log.ip_address}</td>
     </tr>
   );
 
+  const sections = [
+    { id: "overview", label: "Overview", icon: ChartBar },
+    { id: "users", label: "User Management", icon: Users },
+    { id: "approvals", label: "Pending Approvals", icon: Shield },
+    { id: "audit", label: "Audit Logs", icon: FileText },
+  ];
+
   return (
-    <div className="p-space-6">
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
       {/* Header */}
-      <div className="mb-space-7">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-space-7">
+      <div className="mb-[var(--layout-section-gap)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-[var(--layout-section-gap)]">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">Admin Panel</h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-2">Administrative controls and user management</p>
+            <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Admin Panel</h1>
+            <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Administrative controls and user management</p>
           </div>
           <Button
             variant="ghost"
             onClick={() => { fetchStats(); fetchAuditLogs(); }}
-            className="btn-neo-secondary dark:btn-mono-secondary gap-2"
-            style={{ height: 44, paddingLeft: LAYOUT.buttonPaddingH, paddingRight: LAYOUT.buttonPaddingH }}
+            className="gap-2"
+            style={{ height: "var(--layout-control-height)", paddingLeft: "var(--space-5)", paddingRight: "var(--space-5)" }}
           >
-            <RefreshCw className="h-4 w-4" style={{ transform: "translateY(1px)" }} />
+            <ArrowClockwise className="h-5 w-5" style={{ width: 18, height: 18 }} />
             Refresh
           </Button>
         </div>
 
         {/* Section Navigation */}
-        <div className="flex flex-wrap gap-2 mb-space-7 border-b border-border pb-3">
-          {[
-            { id: "overview", label: "Overview", icon: BarChart3 },
-            { id: "users", label: "User Management", icon: Users },
-            { id: "approvals", label: "Pending Approvals", icon: Shield },
-            { id: "audit", label: "Audit Logs", icon: FileText },
-          ].map(section => (
+        <div className="flex flex-wrap gap-2 mb-[var(--layout-section-gap)] border-b border-border pb-3" style={{ borderColor: "var(--border)" }}>
+          {sections.map(section => (
             <Button
               key={section.id}
               variant={activeSection === section.id ? "default" : "ghost"}
               onClick={() => { setActiveSection(section.id); if (section.id === "audit") fetchAuditLogs(); }}
-              className="gap-2 px-4 py-2.5 rounded-xl"
-              style={{ height: 44 }}
+              className="gap-2 px-4"
+              style={{ height: "var(--layout-control-height)", borderRadius: "var(--layout-border-radius-sm)" }}
             >
-              <section.icon className="h-4 w-4" />
+              <section.icon className="h-5 w-5" style={{ width: 18, height: 18 }} />
               {section.label}
             </Button>
           ))}
@@ -521,22 +501,22 @@ export default function AdminClient({
       {activeSection === "overview" && stats && (
         <>
           {/* KPI Grid - 9 cards in responsive grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-space-5 mb-space-7 items-stretch">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
             {statCards.map((stat, i) => (
-              <Card key={i} className="card-neo dark:card-mono" style={{ padding: LAYOUT.kpiCardPadding, animationDelay: `${i * 60}ms` }}>
+              <Card key={i} style={{ padding: "var(--layout-kpi-padding)", animationDelay: `${i * 60}ms` }}>
                 <div className="flex items-start justify-between h-full">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums leading-tight">{stat.value}</p>
+                    <p className="text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>{stat.label}</p>
+                    <p className="text-2xl font-bold tabular leading-tight" style={{ color: "var(--text-primary)" }}>{stat.value}</p>
                     {stat.trend && (
-                      <p className={`text-xs mt-1 ${stat.trend.startsWith("+") ? "text-green-500" : "text-red-500"}`}>
+                      <p className="text-xs mt-1" style={{ color: stat.trend.startsWith("+") ? "var(--success)" : "var(--danger)" }}>
                         {stat.trend} vs last period
                       </p>
                     )}
                   </div>
-                  <div 
+                  <div
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${stat.color}15`, color: stat.color }}
+                    style={{ background: `color-mix(in srgb, ${stat.color} 15%, transparent)`, color: stat.color }}
                   >
                     <stat.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
@@ -546,44 +526,44 @@ export default function AdminClient({
           </div>
 
           {/* Charts Row - User Roles & Events by Status */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-5 mb-space-7">
-            <Card className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <h3 className="text-lg font-semibold text-foreground mb-5">User Roles Distribution</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
+            <Card style={{ padding: "var(--layout-card-padding)" }}>
+              <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>User Roles Distribution</h3>
               <div className="space-y-4">
                 {Object.entries(stats.userRoles).map(([role, count]) => (
                   <div key={role} className="flex items-center gap-3">
-                    <span className="capitalize text-sm text-foreground w-28 flex-shrink-0">{role}</span>
-                    <div className="h-2 bg-muted rounded-full flex-1 max-w-[200px]">
-                      <div 
-                        className="h-full rounded-full" 
-                        style={{ 
-                          background: 'hsl(var(--accent))',
-                          width: `${(count / (stats.overview.totalUsers || 1)) * 100}%` 
+                    <span className="capitalize text-sm w-28 flex-shrink-0" style={{ color: "var(--text-primary)" }}>{role}</span>
+                    <div className="h-2 bg-[var(--border)] rounded-full flex-1 max-w-[200px]" style={{ borderColor: "var(--border)" }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          background: "var(--accent)",
+                          width: `${(count / (stats.overview.totalUsers || 1)) * 100}%`
                         }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-foreground tabular-nums w-10 text-right">{count}</span>
+                    <span className="text-sm font-medium tabular w-10 text-right" style={{ color: "var(--text-primary)" }}>{count}</span>
                   </div>
                 ))}
               </div>
             </Card>
 
-            <Card className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <h3 className="text-lg font-semibold text-foreground mb-5">Events by Status</h3>
+            <Card style={{ padding: "var(--layout-card-padding)" }}>
+              <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>Events by Status</h3>
               <div className="space-y-4">
                 {Object.entries(stats.eventsByStatus).map(([status, count]) => (
                   <div key={status} className="flex items-center gap-3">
-                    <span className="capitalize text-sm text-foreground w-28 flex-shrink-0">{status}</span>
-                    <div className="h-2 bg-muted rounded-full flex-1 max-w-[200px]">
-                      <div 
-                        className="h-full rounded-full" 
-                        style={{ 
-                          background: 'hsl(var(--accent))',
-                          width: `${(count / (stats.overview.totalEvents || 1)) * 100}%` 
+                    <span className="capitalize text-sm w-28 flex-shrink-0" style={{ color: "var(--text-primary)" }}>{status}</span>
+                    <div className="h-2 bg-[var(--border)] rounded-full flex-1 max-w-[200px]" style={{ borderColor: "var(--border)" }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          background: "var(--accent)",
+                          width: `${(count / (stats.overview.totalEvents || 1)) * 100}%`
                         }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-foreground tabular-nums w-10 text-right">{count}</span>
+                    <span className="text-sm font-medium tabular w-10 text-right" style={{ color: "var(--text-primary)" }}>{count}</span>
                   </div>
                 ))}
               </div>
@@ -591,28 +571,26 @@ export default function AdminClient({
           </div>
 
           {/* Recent Users & Recent Events */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-5">
-            <Card className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <h3 className="text-lg font-semibold text-foreground mb-5">Recent Users</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--layout-card-gap)]">
+            <Card style={{ padding: "var(--layout-card-padding)" }}>
+              <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>Recent Users</h3>
               {stats.recentUsers.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">No recent users</p>
+                <p className="text-center py-8" style={{ color: "var(--text-tertiary)" }}>No recent users</p>
               ) : (
                 <div className="space-y-3">
                   {stats.recentUsers.map((user: any) => (
-                    <div key={user.id} className="flex items-center justify-between p-3 rounded-xl bg-[hsl(var(--muted)/0.3)]">
+                    <div key={user.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--hover-bg)" }}>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'hsl(var(--accent)/0.15)' }}>
-                          <span className="text-sm font-semibold text-[hsl(var(--accent))]">
-                            {user.first_name?.[0] || user.email[0].toUpperCase()}
-                          </span>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>
+                          <span className="text-sm font-semibold">{user.first_name?.[0] || user.email[0].toUpperCase()}</span>
                         </div>
                         <div>
-                          <p className="font-medium text-sm text-foreground">
+                          <p className="font-medium text-sm" style={{ color: "var(--text-primary)" }}>
                             {user.first_name && user.last_name
                               ? `${user.first_name} ${user.last_name}`
                               : user.email}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">{user.email}</p>
+                          <p className="text-xs truncate max-w-[200px]" style={{ color: "var(--text-tertiary)" }}>{user.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
@@ -625,17 +603,17 @@ export default function AdminClient({
               )}
             </Card>
 
-            <Card className="card-neo dark:card-mono" style={{ padding: LAYOUT.cardPadding }}>
-              <h3 className="text-lg font-semibold text-foreground mb-5">Recent Events</h3>
+            <Card style={{ padding: "var(--layout-card-padding)" }}>
+              <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>Recent Events</h3>
               {stats.recentEvents.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">No recent events</p>
+                <p className="text-center py-8" style={{ color: "var(--text-tertiary)" }}>No recent events</p>
               ) : (
                 <div className="space-y-3">
                   {stats.recentEvents.map((event: any) => (
-                    <div key={event.id} className="flex items-center justify-between p-3 rounded-xl bg-[hsl(var(--muted)/0.3)]">
+                    <div key={event.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--hover-bg)" }}>
                       <div className="min-w-0">
-                        <p className="font-medium text-sm text-foreground truncate">{event.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{event.atoll} - {event.island}</p>
+                        <p className="font-medium text-sm truncate" style={{ color: "var(--text-primary)" }}>{event.title}</p>
+                        <p className="text-xs truncate" style={{ color: "var(--text-tertiary)" }}>{event.atoll} - {event.island}</p>
                       </div>
                       {getEventStatusBadge(event.status)}
                     </div>
@@ -652,24 +630,24 @@ export default function AdminClient({
         <>
           {/* Bulk Actions Bar */}
           {selectedUsers.length > 0 && (
-            <div className="card-neo dark:card-mono mb-space-6 p-space-5 animate-slide-up">
+            <div className="mb-[var(--layout-section-gap)] p-[var(--layout-card-padding)] animate-slide-in-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <span className="font-medium text-foreground">{selectedUsers.length} user(s) selected</span>
+                <span className="font-medium" style={{ color: "var(--text-primary)" }}>{selectedUsers.length} user(s) selected</span>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => handleBulkAction("approve")} disabled={bulkActionLoading} className="btn-neo-secondary dark:btn-mono-secondary gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <CheckCircle className="h-3.5 w-3.5" /> Approve
+                  <Button size="sm" onClick={() => handleBulkAction("approve")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
+                    <CheckCircle className="h-4 w-4" style={{ width: 14, height: 14 }} /> Approve
                   </Button>
                   <Button size="sm" variant="destructive" onClick={() => handleBulkAction("reject")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <XCircle className="h-3.5 w-3.5" /> Reject
+                    <XCircle className="h-4 w-4" style={{ width: 14, height: 14 }} /> Reject
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleBulkAction("activate")} disabled={bulkActionLoading} className="btn-neo-secondary dark:btn-mono-secondary gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <UserPlus className="h-3.5 w-3.5" /> Activate
+                  <Button size="sm" variant="ghost" onClick={() => handleBulkAction("activate")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
+                    <UserPlus className="h-4 w-4" style={{ width: 14, height: 14 }} /> Activate
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleBulkAction("deactivate")} disabled={bulkActionLoading} className="btn-neo-secondary dark:btn-mono-secondary gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <UserPlus className="h-3.5 w-3.5" /> Deactivate
+                  <Button size="sm" variant="ghost" onClick={() => handleBulkAction("deactivate")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
+                    <UserPlus className="h-4 w-4" style={{ width: 14, height: 14 }} /> Deactivate
                   </Button>
                   <Select onValueChange={(role) => handleBulkAction("role", role)} disabled={bulkActionLoading}>
-                    <SelectTrigger className="w-[130px]">
+                    <SelectTrigger className="w-[130px]" style={{ height: 38 }}>
                       <SelectValue placeholder="Change Role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -680,7 +658,7 @@ export default function AdminClient({
                     </SelectContent>
                   </Select>
                   <Button size="sm" variant="destructive" onClick={() => handleBulkAction("delete")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <Trash2 className="h-3.5 w-3.5" /> Delete
+                    <Trash className="h-4 w-4" style={{ width: 14, height: 14 }} /> Delete
                   </Button>
                 </div>
               </div>
@@ -688,11 +666,11 @@ export default function AdminClient({
           )}
 
           {/* Users Table */}
-          <Card className="card-neo dark:card-mono overflow-hidden" style={{ padding: 0 }}>
-            <div className="p-space-6 border-b border-border">
-              <h3 className="text-lg font-semibold text-foreground">All Users</h3>
+          <Card style={{ padding: 0 }}>
+            <div className="p-[var(--layout-card-padding)] border-b border-border" style={{ borderColor: "var(--border)" }}>
+              <h3 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>All Users</h3>
             </div>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border" style={{ borderColor: "var(--border)" }}>
               {users.map((user) => renderUserRow(user, user.id === currentUser.id))}
             </div>
           </Card>
@@ -701,18 +679,18 @@ export default function AdminClient({
 
       {/* Pending Approvals Section */}
       {activeSection === "approvals" && (
-        <Card className="card-neo dark:card-mono overflow-hidden" style={{ padding: 0 }}>
-          <div className="p-space-6 border-b border-border">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <Shield className="h-5 w-5 text-[hsl(var(--accent))]" />
-              Pending Approvals <span className="text-sm font-normal text-muted-foreground">({pendingUsers.length})</span>
+        <Card style={{ padding: 0 }}>
+          <div className="p-[var(--layout-card-padding)] border-b border-border" style={{ borderColor: "var(--border)" }}>
+            <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+              <Shield className="h-5 w-5" style={{ width: 20, height: 20, color: "var(--accent)" }} />
+              Pending Approvals <span className="text-sm font-normal" style={{ color: "var(--text-tertiary)" }}>({pendingUsers.length})</span>
             </h3>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border" style={{ borderColor: "var(--border)" }}>
             {pendingUsers.length === 0 ? (
-              <div className="p-space-8 text-center">
-                <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg">No pending approvals</p>
+              <div className="p-[var(--space-8)] text-center">
+                <Shield className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />
+                <p className="text-lg" style={{ color: "var(--text-tertiary)" }}>No pending approvals</p>
               </div>
             ) : (
               pendingUsers.map((user) => renderPendingRow(user))
@@ -723,48 +701,48 @@ export default function AdminClient({
 
       {/* Audit Logs Section */}
       {activeSection === "audit" && (
-        <Card className="card-neo dark:card-mono overflow-hidden" style={{ padding: 0 }}>
-          <div className="p-space-6 border-b border-border">
+        <Card style={{ padding: 0 }}>
+          <div className="p-[var(--layout-card-padding)] border-b border-border" style={{ borderColor: "var(--border)" }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <FileText className="h-5 w-5 text-[hsl(var(--accent))]" />
+              <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <FileText className="h-5 w-5" style={{ width: 20, height: 20, color: "var(--accent)" }} />
                 Audit Logs
               </h3>
               <Button
                 variant="ghost"
                 onClick={() => fetchAuditLogs(auditPage)}
                 disabled={auditLoading}
-                className="btn-neo-secondary dark:btn-mono-secondary gap-2"
+                className="gap-2"
                 style={{ height: 40, paddingLeft: 12, paddingRight: 12 }}
               >
-                <RefreshCw className="h-4 w-4" style={{ transform: "translateY(1px)" }} />
+                <ArrowClockwise className="h-4 w-4" style={{ width: 16, height: 16 }} />
                 Refresh
               </Button>
             </div>
           </div>
-          <div className="p-space-6">
+          <div className="p-[var(--layout-card-padding)]">
             {auditLoading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--accent))] border-t-transparent mx-auto mb-2" />
-                <p className="text-muted-foreground">Loading audit logs...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-t-transparent mx-auto mb-2" style={{ borderColor: "var(--accent)" }} />
+                <p style={{ color: "var(--text-tertiary)" }}>Loading audit logs...</p>
               </div>
             ) : auditLogs.length === 0 ? (
               <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg">No audit logs found</p>
+                <FileText className="h-12 w-12 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />
+                <p className="text-lg" style={{ color: "var(--text-tertiary)" }}>No audit logs found</p>
               </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
                   <table className="w-full" style={{ borderCollapse: "collapse" }}>
                     <thead>
-                      <tr className="border-b border-border">
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</th>
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Action</th>
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Target User</th>
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Details</th>
-                        <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">IP Address</th>
+                      <tr className="border-b border-border" style={{ borderColor: "var(--border)" }}>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Date</th>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Admin</th>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Action</th>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Target User</th>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>Details</th>
+                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>IP Address</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -774,18 +752,17 @@ export default function AdminClient({
                 </div>
 
                 {auditTotalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-5 pt-5 border-t border-border">
+                  <div className="flex items-center justify-center gap-2 mt-5 pt-5 border-t border-border" style={{ borderColor: "var(--border)" }}>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => fetchAuditLogs(auditPage - 1)}
                       disabled={auditPage === 1 || auditLoading}
-                      className="btn-neo-secondary dark:btn-mono-secondary"
                       style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-muted-foreground px-3">
+                    <span className="text-sm px-3" style={{ color: "var(--text-tertiary)" }}>
                       Page {auditPage} of {auditTotalPages}
                     </span>
                     <Button
@@ -793,7 +770,6 @@ export default function AdminClient({
                       size="sm"
                       onClick={() => fetchAuditLogs(auditPage + 1)}
                       disabled={auditPage === auditTotalPages || auditLoading}
-                      className="btn-neo-secondary dark:btn-mono-secondary"
                       style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
                     >
                       Next
@@ -807,7 +783,7 @@ export default function AdminClient({
       )}
 
       <AlertDialog open={!!deletingUser} onOpenChange={() => setDeletingUser(null)}>
-        <AlertDialogContent className="card-neo dark:card-mono max-w-md">
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete User</AlertDialogTitle>
             <AlertDialogDescription>
@@ -817,10 +793,10 @@ export default function AdminClient({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex justify-end gap-3">
-            <AlertDialogCancel className="btn-neo-secondary dark:btn-mono-secondary" style={{ height: 40, paddingLeft: 16, paddingRight: 16 }}>
+            <AlertDialogCancel style={{ height: 40, paddingLeft: 16, paddingRight: 16 }}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white" style={{ height: 40, paddingLeft: 16, paddingRight: 16 }}>
+            <AlertDialogAction onClick={handleDelete} className="bg-[var(--danger)] hover:bg-[var(--danger)] text-white" style={{ height: 40, paddingLeft: 16, paddingRight: 16 }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
