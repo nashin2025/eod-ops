@@ -38,7 +38,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 animate-fade-in" style={{ padding: `var(--layout-page-padding) var(--layout-page-padding) var(--layout-page-padding)` }}>
+        <main className="flex-1 animate-fade-in" style={{ padding: `calc(var(--layout-page-padding) + var(--layout-topbar-height)) var(--layout-page-padding) var(--layout-page-padding)` }}>
           {children}
         </main>
       </div>
