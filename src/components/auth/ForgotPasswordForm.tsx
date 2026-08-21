@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Mail, AlertCircle, CheckCircle } from "lucide-react";
+import { Mailbox, CheckCircle, Warning, Spinner } from "@phosphor-icons/react";
 import { useToast } from "@/hooks/use-toast";
 
 export function ForgotPasswordForm() {
@@ -48,78 +49,84 @@ export function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md card-neo dark:card-mono">
-        <CardHeader className="text-center">
-          <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold text-foreground">Check your email</CardTitle>
-          <CardDescription className="text-muted-foreground">We&apos;ve sent password reset instructions to {email}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground mb-6">
-            Follow the link in the email to reset your password. The link expires in 1 hour.
-          </p>
-          <Button className="w-full btn-neo-accent dark:btn-mono-primary" onClick={() => router.push("/login")}>
-            Back to Sign In
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
+        <Card className="w-full max-w-md animate-scale-in">
+          <CardHeader className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4" style={{ background: "var(--success)", boxShadow: "var(--neu-raised-sm)" }}>
+              <CheckCircle className="h-6 w-6" style={{ color: "white" }} />
+            </div>
+            <CardTitle className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Check your email</CardTitle>
+            <CardDescription style={{ color: "var(--text-tertiary)" }}>We&apos;ve sent password reset instructions to {email}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center mb-6" style={{ color: "var(--text-tertiary)" }}>
+              Follow the link in the email to reset your password. The link expires in 1 hour.
+            </p>
+            <Button className="w-full" size="lg" onClick={() => router.push("/login")}>
+              Back to Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-md card-neo dark:card-mono">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-foreground">Forgot password?</CardTitle>
-        <CardDescription className="text-muted-foreground">Enter your email and we&apos;ll send you reset instructions</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-foreground">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-neo dark:input-mono pl-10"
-                required
-                disabled={isLoading}
-              />
+    <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
+      <Card className="w-full max-w-md animate-slide-in-right">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Forgot password?</CardTitle>
+          <CardDescription style={{ color: "var(--text-tertiary)" }}>Enter your email and we&apos;ll send you reset instructions</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                Email
+              </label>
+              <div className="relative">
+                <Mailbox className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-11"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-xl">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <Button type="submit" className="w-full btn-neo-accent dark:btn-mono-primary" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              "Send reset link"
+            {error && (
+              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "rgba(239, 68, 68, 0.1)", color: "var(--danger)" }}>
+                <Warning className="h-4 w-4 flex-shrink-0" style={{ width: 16, height: 16 }} />
+                <span>{error}</span>
+              </div>
             )}
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-2">
-        <p className="text-center text-sm text-muted-foreground">
-          Remember your password?{" "}
-          <a href="/login" className="text-accent hover:underline font-medium dark:text-accent-dark">
-            Sign in
-          </a>
-        </p>
-      </CardFooter>
-    </Card>
+
+            <Button type="submit" className="w-full" disabled={isLoading} size="lg">
+              {isLoading ? (
+                <>
+                  <Spinner className="mr-2 h-4 w-4 animate-spin" style={{ width: 18, height: 18 }} />
+                  Sending...
+                </>
+              ) : (
+                "Send reset link"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-3">
+          <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
+            Remember your password?{" "}
+            <a href="/login" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
+              Sign in
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
