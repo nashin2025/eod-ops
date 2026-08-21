@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Loader2, Mail, Lock, User, AlertCircle } from "lucide-react";
+import { Mailbox, Lock, User, Warning, Spinner } from "@phosphor-icons/react";
 import { useToast } from "@/hooks/use-toast";
 
 export function RegisterForm() {
@@ -65,46 +66,46 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in" style={{ background: 'hsl(var(--background))' }}>
-      <Card className="w-full max-w-md card-neo dark:card-mono animate-slide-up">
+    <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
+      <Card className="w-full max-w-md animate-slide-in-right">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">Create account</CardTitle>
-          <CardDescription className="text-muted-foreground">Sign up for EOD-Ops</CardDescription>
+          <CardTitle className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Create account</CardTitle>
+          <CardDescription style={{ color: "var(--text-tertiary)" }}>Sign up for EOD-Ops</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="firstName" className="text-sm font-medium text-foreground">
+                <label htmlFor="firstName" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                   First Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <input
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                  <Input
                     id="firstName"
                     type="text"
                     placeholder="John"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="input-neo dark:input-mono pl-10"
+                    className="pl-11"
                     required
                     disabled={isLoading}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label htmlFor="lastName" className="text-sm font-medium text-foreground">
+                <label htmlFor="lastName" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                   Last Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <input
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                  <Input
                     id="lastName"
                     type="text"
                     placeholder="Doe"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="input-neo dark:input-mono pl-10"
+                    className="pl-11"
                     required
                     disabled={isLoading}
                   />
@@ -113,18 +114,18 @@ export function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
+              <label htmlFor="email" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <input
+                <Mailbox className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input-neo dark:input-mono pl-10"
+                  className="pl-11"
                   required
                   disabled={isLoading}
                 />
@@ -132,18 +133,18 @@ export function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
+              <label htmlFor="password" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <input
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Input
                   id="password"
                   type="password"
                   placeholder="•••••••• (min 8 chars)"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-neo dark:input-mono pl-10"
+                  className="pl-11"
                   required
                   disabled={isLoading}
                   minLength={8}
@@ -152,18 +153,18 @@ export function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+              <label htmlFor="confirmPassword" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <input
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Input
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input-neo dark:input-mono pl-10"
+                  className="pl-11"
                   required
                   disabled={isLoading}
                 />
@@ -171,16 +172,16 @@ export function RegisterForm() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-xl">
-                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "rgba(239, 68, 68, 0.1)", color: "var(--danger)" }}>
+                <Warning className="h-4 w-4 flex-shrink-0" style={{ width: 16, height: 16 }} />
                 <span>{error}</span>
               </div>
             )}
 
-            <Button type="submit" className="w-full btn-neo-accent dark:btn-mono-primary" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} size="lg">
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Spinner className="mr-2 h-4 w-4 animate-spin" style={{ width: 18, height: 18 }} />
                   Creating account...
                 </>
               ) : (
@@ -189,16 +190,20 @@ export function RegisterForm() {
             </Button>
           </form>
 
-          <div className="mt-6">
-            <Separator className="my-4" />
-            <p className="text-center text-sm text-muted-foreground mb-4">Or continue with</p>
+          <div className="space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center" style={{ borderBottom: "1px solid var(--border-subtle)" }} />
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-card px-2" style={{ color: "var(--text-tertiary)" }}>Or continue with</span>
+              </div>
+            </div>
             <Button
-              variant="outline"
-              className="w-full btn-neo-secondary dark:btn-mono-secondary"
+              variant="secondary"
+              className="w-full justify-center gap-3"
               onClick={() => window.location.href = "/api/auth/login"}
               disabled={isLoading}
             >
-              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+              <svg className="h-5 w-5" viewBox="0 0 24 24" style={{ width: 20, height: 20 }}>
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -216,14 +221,14 @@ export function RegisterForm() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              <span>Continue with Google</span>
             </Button>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-2">
-          <p className="text-center text-sm text-muted-foreground">
+        <CardFooter className="flex flex-col gap-3">
+          <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
             Already have an account?{" "}
-            <a href="/login" className="text-accent hover:underline font-medium dark:text-accent-dark">
+            <a href="/login" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
               Sign in
             </a>
           </p>
