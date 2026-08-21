@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Navigation, MapPin, Layers } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  MapPin, MapPinLine, MapPinSimple, MagnifyingGlass, StackSimple,
+  NavigationArrow, Compass, Globe, Users, CheckCircle, Circle as CircleIcon
+} from "@phosphor-icons/react";
 
 // Custom icons for leaflet markers
 const eventIcon = new L.Icon({
@@ -56,14 +60,6 @@ interface Island {
   isVisited: boolean;
 }
 
-// Layout constants matching the 8-point spacing scale
-const LAYOUT = {
-  pagePadding: 24,           // --space-6
-  controlHeight: 44,         // tap-friendly
-  panelWidth: 320,           // 320px side panel
-  headerHeight: 68,          // matches top bar
-} as const;
-
 export default function MapClient({
   user,
   events,
@@ -76,8 +72,6 @@ export default function MapClient({
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<"all" | "events" | "islands">("all");
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [selectedIsland, setSelectedIsland] = useState<Island | null>(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -112,16 +106,16 @@ export default function MapClient({
     );
   });
 
-  const getStatusStyles = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))] dark:bg-[hsl(var(--accent)/0.2)] dark:text-[hsl(var(--accent))]";
+        return { label: "Active", variant: "success" as const };
       case "scheduled":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+        return { label: "Scheduled", variant: "default" as const };
       case "completed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+        return { label: "Completed", variant: "default" as const };
       default:
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return { label: status, variant: "danger" as const };
     }
   };
 
@@ -131,24 +125,24 @@ export default function MapClient({
   };
 
   return (
-    <div className="relative h-[calc(100vh-5rem)] overflow-hidden">
+    <div className="relative h-[calc(100vh-var(--layout-topbar-height))] overflow-hidden" style={{ height: "calc(100vh - var(--layout-topbar-height))" }}>
       {/* Search & Filter Panel */}
-      <div className="absolute top-space-6 left-space-6 z-[1000] w-[320px] animate-fade-in">
-        <div className="card-neo dark:card-mono p-space-5">
+      <div className="absolute top-[var(--space-6)] left-[var(--space-6)] z-[1000] w-[320px] animate-fade-in">
+        <Card style={{ padding: "var(--layout-card-padding)" }}>
           <div className="flex items-center gap-2 mb-4">
-            <MapPin className="h-5 w-5 text-[hsl(var(--accent))]" />
-            <h2 className="text-lg font-semibold text-foreground">Explore</h2>
+            <MapPin className="h-5 w-5" style={{ color: "var(--accent)" }} />
+            <h2 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>Explore</h2>
           </div>
-          
+
           {/* Search */}
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
             <Input
               placeholder="Search islands or events..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full text-sm"
-              style={{ height: LAYOUT.controlHeight }}
+              className="pl-11"
+              style={{ height: "var(--layout-control-height)" }}
             />
           </div>
 
@@ -160,9 +154,13 @@ export default function MapClient({
                 onClick={() => setSelectedFilter(filter as "all" | "events" | "islands")}
                 className={`flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   selectedFilter === filter
-                    ? "bg-[hsl(var(--accent))] text-white shadow-[0_4px_14px_hsl(var(--accent)/0.4)]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-[hsl(var(--muted)/0.3)]"
+                    ? "text-white shadow-[0_4px_14px_var(--accent-glow)]"
+                    : "hover:bg-[var(--hover-bg)]"
                 }`}
+                style={{
+                  background: selectedFilter === filter ? "var(--accent)" : "transparent",
+                  color: selectedFilter === filter ? "white" : "var(--text-secondary)",
+                }}
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </button>
@@ -170,38 +168,38 @@ export default function MapClient({
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-3 text-center p-3 rounded-xl bg-[hsl(var(--muted)/0.3)]">
+          <div className="grid grid-cols-2 gap-3 text-center p-3 rounded-xl" style={{ background: "var(--hover-bg)" }}>
             <div>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{filteredEvents.length}</p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Events</p>
+              <p className="text-2xl font-bold tabular" style={{ color: "var(--text-primary)" }}>{filteredEvents.length}</p>
+              <p className="label" style={{ color: "var(--text-tertiary)" }}>Events</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{filteredIslands.length}</p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Islands</p>
+              <p className="text-2xl font-bold tabular" style={{ color: "var(--text-primary)" }}>{filteredIslands.length}</p>
+              <p className="label" style={{ color: "var(--text-tertiary)" }}>Islands</p>
             </div>
           </div>
 
           {/* Legend */}
-          <div className="mt-4 pt-4 border-t border-border space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Legend</p>
+          <div className="mt-4 pt-4 space-y-2" style={{ borderTop: "1px solid var(--border)" }}>
+            <p className="label" style={{ color: "var(--text-tertiary)" }}>Legend</p>
             <div className="flex items-center gap-2 text-sm">
-              <span className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--accent))" }} />
-              <span className="text-muted-foreground">Active Events</span>
+              <span className="w-3 h-3 rounded-full" style={{ background: "var(--accent)" }} />
+              <span style={{ color: "var(--text-tertiary)" }}>Active Events</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="w-3 h-3 rounded-full" style={{ background: "#10B981" }} />
-              <span className="text-muted-foreground">Unvisited Islands</span>
+              <span className="w-3 h-3 rounded-full" style={{ background: "var(--success)" }} />
+              <span style={{ color: "var(--text-tertiary)" }}>Unvisited Islands</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="w-3 h-3 rounded-full" style={{ background: "#F59E0B" }} />
-              <span className="text-muted-foreground">Visited Islands</span>
+              <span className="w-3 h-3 rounded-full" style={{ background: "var(--warning)" }} />
+              <span style={{ color: "var(--text-tertiary)" }}>Visited Islands</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <span className="w-3 h-3 rounded-full" style={{ background: "#3B82F6" }} />
-              <span className="text-muted-foreground">Your Location</span>
+              <span style={{ color: "var(--text-tertiary)" }}>Your Location</span>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Map Container */}
@@ -224,8 +222,8 @@ export default function MapClient({
               <Marker position={userLocation}>
                 <Popup>
                   <div className="p-2">
-                    <p className="font-semibold text-foreground">Your Location</p>
-                    <p className="text-xs text-muted-foreground">Current GPS position</p>
+                    <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Your Location</p>
+                    <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>Current GPS position</p>
                   </div>
                 </Popup>
               </Marker>
@@ -233,23 +231,24 @@ export default function MapClient({
           )}
 
           {/* Event Markers */}
-          {(selectedFilter === "all" || selectedFilter === "events") && filteredEvents.map((event) => (
-            <Marker
-              key={`event-${event.id}`}
-              position={[event.latitude!, event.longitude!]}
-              icon={eventIcon}
-            >
-              <Popup>
-                <div className="p-2 min-w-[200px]">
-                  <h3 className="font-semibold text-foreground">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground">{event.atoll} - {event.island}</p>
-                  <span className={`inline-block mt-2 px-2 py-1 text-xs rounded ${getStatusStyles(event.status)}`}>
-                    {event.status}
-                  </span>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {(selectedFilter === "all" || selectedFilter === "events") && filteredEvents.map((event) => {
+            const statusConfig = getStatusConfig(event.status);
+            return (
+              <Marker
+                key={`event-${event.id}`}
+                position={[event.latitude!, event.longitude!]}
+                icon={eventIcon}
+              >
+                <Popup>
+                  <div className="p-2 min-w-[200px]">
+                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>{event.title}</h3>
+                    <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>{event.atoll} - {event.island}</p>
+                    <Badge variant={statusConfig.variant} dot className="mt-2">{statusConfig.label}</Badge>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
 
           {/* Island Markers */}
           {(selectedFilter === "all" || selectedFilter === "islands") && filteredIslands.map((island) => (
@@ -260,12 +259,10 @@ export default function MapClient({
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
-                  <h3 className="font-semibold text-foreground">{island.name}</h3>
-                  <p className="text-sm text-muted-foreground">{island.atoll}</p>
+                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>{island.name}</h3>
+                  <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>{island.atoll}</p>
                   {island.isVisited && (
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                      Visited
-                    </span>
+                    <Badge variant="warning" dot className="mt-2">Visited</Badge>
                   )}
                 </div>
               </Popup>
@@ -274,11 +271,11 @@ export default function MapClient({
         </MapContainer>
 
         {/* Zoom Controls */}
-        <div className="absolute bottom-space-6 right-space-6 z-[1000] flex flex-col gap-2">
+        <div className="absolute bottom-[var(--space-6)] right-[var(--space-6)] z-[1000] flex flex-col gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-xl btn-neo-secondary dark:btn-mono-secondary shadow-lg"
+            className="rounded-xl shadow-lg"
             onClick={() => {
               const map = document.querySelector('.leaflet-container') as any;
               if (map && map._leaflet_map) {
@@ -286,14 +283,14 @@ export default function MapClient({
               }
             }}
             aria-label="Zoom in"
-            style={{ height: 44, width: 44 }}
+            style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <Layers className="h-5 w-5" />
+            <StackSimple className="h-5 w-5" style={{ width: 20, height: 20 }} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-xl btn-neo-secondary dark:btn-mono-secondary shadow-lg"
+            className="rounded-xl shadow-lg"
             onClick={() => {
               const map = document.querySelector('.leaflet-container') as any;
               if (map && map._leaflet_map) {
@@ -301,14 +298,14 @@ export default function MapClient({
               }
             }}
             aria-label="Zoom out"
-            style={{ height: 44, width: 44 }}
+            style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <Layers className="h-5 w-5 rotate-180" />
+            <StackSimple className="h-5 w-5" style={{ width: 20, height: 20, transform: "rotate(180deg)" }} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-xl btn-neo-secondary dark:btn-mono-secondary shadow-lg"
+            className="rounded-xl shadow-lg"
             onClick={() => {
               if (userLocation) {
                 const map = document.querySelector('.leaflet-container') as any;
@@ -328,9 +325,9 @@ export default function MapClient({
               }
             }}
             aria-label="Center on location"
-            style={{ height: 44, width: 44 }}
+            style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <Navigation className="h-5 w-5" />
+            <NavigationArrow className="h-5 w-5" style={{ width: 20, height: 20 }} />
           </Button>
         </div>
       </div>
