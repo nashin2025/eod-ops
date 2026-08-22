@@ -70,9 +70,6 @@ export default async function DashboardPage() {
   const activeEventsCount = activeEvents.length;
   const completedEventsCount = completedEvents.length;
 
-  // Revenue calculation from events (if events have pricing)
-  const totalRevenue = events?.reduce((sum, e) => sum + (e.price || 0), 0) || 0;
-
   // Recent events for activity feed
   const recentEvents = (events || []).slice(0, 5).map(e => ({
     id: e.id,
@@ -100,7 +97,6 @@ export default async function DashboardPage() {
         totalUsers={totalUsers}
         activeEventsCount={activeEventsCount}
         completedEventsCount={completedEventsCount}
-        totalRevenue={totalRevenue}
         islandVisits={islandVisits}
         atollsVisited={atollsVisited}
         totalVisits={totalVisits || 0}

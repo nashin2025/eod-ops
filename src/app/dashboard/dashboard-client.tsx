@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { KPICard, AreaChart, DonutChart, DataTable, ActivityFeed, QuickActions } from "@/components/dashboard/DashboardComponents";
+import { KPICard, DataTable, ActivityFeed } from "@/components/dashboard/DashboardComponents";
 import { IslandCheckIn } from "@/components/dashboard/IslandCheckIn";
 import { MilestoneBadges, MilestoneQuickStats } from "@/components/dashboard/MilestoneBadges";
-import { CurrencyDollar, Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus, CaretDown, CaretUp, Phone } from "@phosphor-icons/react";
+import { Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus, CaretDown, CaretUp, Phone } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,6 @@ interface DashboardClientProps {
   totalUsers: number;
   activeEventsCount: number;
   completedEventsCount: number;
-  totalRevenue: number;
   islandVisits: number;
   atollsVisited: number;
   totalVisits: number;
@@ -67,36 +66,11 @@ function formatRelativeTime(dateStr: string): string {
   return formatDate(dateStr);
 }
 
-// Sample revenue data for area chart
-const revenueChartData = [
-  { label: "Jan", value: 42000 },
-  { label: "Feb", value: 38000 },
-  { label: "Mar", value: 51000 },
-  { label: "Apr", value: 48000 },
-  { label: "May", value: 62000 },
-  { label: "Jun", value: 58000 },
-  { label: "Jul", value: 71000 },
-  { label: "Aug", value: 69000 },
-  { label: "Sep", value: 75000 },
-  { label: "Oct", value: 82000 },
-  { label: "Nov", value: 78000 },
-  { label: "Dec", value: 89000 },
-];
-
-// Sample traffic source data for donut chart
-const trafficSourceData = [
-  { label: "Direct", value: 42, color: "var(--accent)" },
-  { label: "Organic Search", value: 28, color: "var(--success)" },
-  { label: "Referral", value: 18, color: "var(--warning)" },
-  { label: "Social", value: 12, color: "var(--danger)" },
-];
-
 export default function DashboardClient({
   totalEvents,
   totalUsers,
   activeEventsCount,
   completedEventsCount,
-  totalRevenue,
   islandVisits,
   atollsVisited,
   totalVisits,
@@ -363,38 +337,6 @@ export default function DashboardClient({
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Charts Section - 2 column grid */}
-      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "560ms" }}>
-          <AreaChart data={revenueChartData} color="var(--accent)" />
-        </div>
-        <div className="col-span-4" style={{ minWidth: 0, animationDelay: "640ms" }}>
-          <DonutChart data={trafficSourceData} colors={trafficSourceData.map(d => d.color)} />
-        </div>
-      </div>
-
-      {/* Data Table Section */}
-      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "720ms" }}>
-          <DataTable
-            transactions={[
-              ...upcomingData,
-              ...recentUsers,
-            ]}
-          />
-        </div>
-      </div>
-
-      {/* Secondary Row - Activity Feed + Quick Actions */}
-      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "800ms" }}>
-          <ActivityFeed items={activityItems} />
-        </div>
-        <div className="col-span-4" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)", minWidth: 0, animationDelay: "880ms" }}>
-          <QuickActions />
         </div>
       </div>
     </div>
