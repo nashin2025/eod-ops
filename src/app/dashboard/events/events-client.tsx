@@ -101,7 +101,7 @@ export default function EventsClient({
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
             type="text"
             placeholder="Search events..."
@@ -110,7 +110,7 @@ export default function EventsClient({
           />
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <select
             value={filters.atoll}
             onChange={(e) => setFilters({ ...filters, atoll: e.target.value })}
@@ -124,7 +124,7 @@ export default function EventsClient({
           </select>
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-          <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none h-5 w-5 text-tertiary" />
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
@@ -175,7 +175,7 @@ export default function EventsClient({
                             className="rounded-xl"
                             aria-label="View on map"
                           >
-                            <MapPin className="h-5 w-5" style={{ width: 20, height: 20 }} />
+                            <MapPin className="h-5 w-5" />
                           </Button>
                         </Link>
                       )}

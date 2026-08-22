@@ -136,7 +136,7 @@ export default function MapClient({
 
           {/* Search */}
           <div className="relative mb-4">
-            <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+            <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
             <Input
               placeholder="Search islands or events..."
               value={searchQuery}
@@ -195,7 +195,7 @@ export default function MapClient({
               <span style={{ color: "var(--text-tertiary)" }}>Visited Islands</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="w-3 h-3 rounded-full" style={{ background: "#3B82F6" }} />
+              <span className="w-3 h-3 rounded-full" style={{ background: "var(--accent)" }} />
               <span style={{ color: "var(--text-tertiary)" }}>Your Location</span>
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function MapClient({
           {/* User Location */}
           {userLocation && (
             <>
-              <Circle center={userLocation} radius={500} pathOptions={{ color: "#3B82F6", fillColor: "#3B82F6", fillOpacity: 0.2 }} />
+              <Circle center={userLocation} radius={500} pathOptions={{ color: "var(--accent)", fillColor: "var(--accent)", fillOpacity: 0.2 }} />
               <Marker position={userLocation}>
                 <Popup>
                   <div className="p-2">
@@ -285,7 +285,7 @@ export default function MapClient({
             aria-label="Zoom in"
             style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <StackSimple className="h-5 w-5" style={{ width: 20, height: 20 }} />
+            <StackSimple className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
@@ -300,7 +300,7 @@ export default function MapClient({
             aria-label="Zoom out"
             style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <StackSimple className="h-5 w-5" style={{ width: 20, height: 20, transform: "rotate(180deg)" }} />
+            <StackSimple className="h-5 w-5 rotate-180" />
           </Button>
           <Button
             variant="ghost"
@@ -327,7 +327,7 @@ export default function MapClient({
             aria-label="Center on location"
             style={{ height: "var(--layout-control-height)", width: "var(--layout-control-height)" }}
           >
-            <NavigationArrow className="h-5 w-5" style={{ width: 20, height: 20 }} />
+            <NavigationArrow className="h-5 w-5" />
           </Button>
         </div>
       </div>

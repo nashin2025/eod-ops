@@ -68,7 +68,7 @@ export function LoginForm() {
                 Email
               </label>
               <div className="relative">
-                <Mailbox className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Mailbox className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
                 <Input
                   id="email"
                   type="email"
@@ -86,7 +86,7 @@ export function LoginForm() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
                 <Input
                   id="password"
                   type="password"
@@ -101,8 +101,8 @@ export function LoginForm() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "rgba(239, 68, 68, 0.1)", color: "var(--danger)" }}>
-                <Warning className="h-4 w-4 flex-shrink-0" style={{ width: 16, height: 16 }} />
+              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
+                <Warning className="h-4 w-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -110,7 +110,7 @@ export function LoginForm() {
             <Button type="submit" className="w-full" disabled={isLoading} size="lg">
               {isLoading ? (
                 <>
-                  <Spinner className="mr-2 h-4 w-4 animate-spin" style={{ width: 18, height: 18 }} />
+                  <Spinner className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...
                 </>
               ) : (

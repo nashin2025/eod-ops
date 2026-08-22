@@ -130,7 +130,7 @@ export function ResetPasswordForm() {
                 New Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -148,7 +148,7 @@ export function ResetPasswordForm() {
                   className="absolute right-4 top-1/2 -translate-y-1/2"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  {showPassword ? <EyeSlash className="h-5 w-5" style={{ width: 18, height: 18 }} /> : <Eye className="h-5 w-5" style={{ width: 18, height: 18 }} />}
+                  {showPassword ? <EyeSlash className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
@@ -158,7 +158,7 @@ export function ResetPasswordForm() {
                 Confirm New Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
                 <Input
                   id="confirmPassword"
                   type={showPassword ? "text" : "password"}
@@ -173,8 +173,8 @@ export function ResetPasswordForm() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "rgba(239, 68, 68, 0.1)", color: "var(--danger)" }}>
-                <Warning className="h-4 w-4 flex-shrink-0" style={{ width: 16, height: 16 }} />
+              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
+                <Warning className="h-4 w-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -182,7 +182,7 @@ export function ResetPasswordForm() {
             <Button type="submit" className="w-full" disabled={isLoading} size="lg">
               {isLoading ? (
                 <>
-                  <Spinner className="mr-2 h-4 w-4 animate-spin" style={{ width: 18, height: 18 }} />
+                  <Spinner className="mr-2 h-4 w-4 animate-spin" />
                   Resetting...
                 </>
               ) : (

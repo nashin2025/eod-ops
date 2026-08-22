@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         .eq("id", data.user.id)
         .single();
 
-      if (profile?.approvalStatus !== "approved") {
+      if (profile?.approval_status !== "approved") {
         return NextResponse.json(
           { error: "Account pending approval", redirectTo: "/pending" },
           { status: 403 }

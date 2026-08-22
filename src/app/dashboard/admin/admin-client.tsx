@@ -360,7 +360,7 @@ export default function AdminClient({
             className="rounded-xl"
             aria-label="Delete user"
           >
-            <Trash className="h-5 w-5" style={{ width: 18, height: 18, color: "var(--danger)" }} />
+            <Trash className="h-5 w-5 text-danger" />
           </Button>
         </div>
       </div>
@@ -403,7 +403,7 @@ export default function AdminClient({
               className="gap-1"
               style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
             >
-              <CheckCircle className="h-4 w-4" style={{ width: 16, height: 16, color: "var(--success)" }} />
+              <CheckCircle className="h-4 w-4 text-success" />
               <span>Approve</span>
             </Button>
             <Button
@@ -413,7 +413,7 @@ export default function AdminClient({
               className="gap-1"
               style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}
             >
-              <XCircle className="h-4 w-4" style={{ width: 16, height: 16 }} />
+              <XCircle className="h-4 w-4" />
               <span>Reject</span>
             </Button>
           </div>
@@ -475,7 +475,7 @@ export default function AdminClient({
             className="gap-2"
             style={{ height: "var(--layout-control-height)", paddingLeft: "var(--space-5)", paddingRight: "var(--space-5)" }}
           >
-            <ArrowClockwise className="h-5 w-5" style={{ width: 18, height: 18 }} />
+            <ArrowClockwise className="h-5 w-5" />
             Refresh
           </Button>
         </div>
@@ -490,7 +490,7 @@ export default function AdminClient({
               className="gap-2 px-4"
               style={{ height: "var(--layout-control-height)", borderRadius: "var(--layout-border-radius-sm)" }}
             >
-              <section.icon className="h-5 w-5" style={{ width: 18, height: 18 }} />
+              <section.icon className="h-5 w-5" />
               {section.label}
             </Button>
           ))}
@@ -682,7 +682,7 @@ export default function AdminClient({
         <Card style={{ padding: 0 }}>
           <div className="p-[var(--layout-card-padding)] border-b border-border" style={{ borderColor: "var(--border)" }}>
             <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-              <Shield className="h-5 w-5" style={{ width: 20, height: 20, color: "var(--accent)" }} />
+              <Shield className="h-5 w-5 text-accent" />
               Pending Approvals <span className="text-sm font-normal" style={{ color: "var(--text-tertiary)" }}>({pendingUsers.length})</span>
             </h3>
           </div>
@@ -705,7 +705,7 @@ export default function AdminClient({
           <div className="p-[var(--layout-card-padding)] border-b border-border" style={{ borderColor: "var(--border)" }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-                <FileText className="h-5 w-5" style={{ width: 20, height: 20, color: "var(--accent)" }} />
+                <FileText className="h-5 w-5 text-accent" />
                 Audit Logs
               </h3>
               <Button
@@ -715,7 +715,7 @@ export default function AdminClient({
                 className="gap-2"
                 style={{ height: 40, paddingLeft: 12, paddingRight: 12 }}
               >
-                <ArrowClockwise className="h-4 w-4" style={{ width: 16, height: 16 }} />
+                <ArrowClockwise className="h-4 w-4" />
                 Refresh
               </Button>
             </div>

@@ -97,7 +97,7 @@ export default function PendingApprovalPage() {
           <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--danger)" }}>Account Rejected</h1>
           <p className="mb-6" style={{ color: "var(--text-tertiary)" }}>Your account registration has been rejected. Please contact admin.</p>
           <a href="/api/auth/logout" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium" style={{ background: "var(--accent)", color: "white", boxShadow: "var(--neu-raised-sm)" }}>
-            <SignOut className="h-5 w-5" style={{ width: 18, height: 18 }} />
+            <SignOut className="h-5 w-5" />
             <span>Logout</span>
           </a>
         </div>
@@ -118,7 +118,7 @@ export default function PendingApprovalPage() {
           <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Error Checking Status</h1>
           <p className="mb-6" style={{ color: "var(--text-tertiary)" }}>Unable to verify approval status. Please try again later.</p>
           <button onClick={() => window.location.reload()} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium" style={{ background: "var(--accent)", color: "white", boxShadow: "var(--neu-raised-sm)" }}>
-            <Spinner className="h-5 w-5" style={{ width: 18, height: 18 }} />
+            <Spinner className="h-5 w-5" />
             <span>Retry</span>
           </button>
         </div>
@@ -150,16 +150,16 @@ export default function PendingApprovalPage() {
           </p>
           <div className="flex flex-col gap-3">
             <a href="tel:+0009947180" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium" style={{ background: "var(--accent)", color: "white", boxShadow: "var(--neu-raised-sm)" }}>
-              <Phone className="h-5 w-5" style={{ width: 18, height: 18 }} />
+              <Phone className="h-5 w-5" />
               <span>Call Admin</span>
             </a>
             <a href="/api/auth/logout" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium" style={{ background: "var(--surface-raised)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)", boxShadow: "var(--neu-raised-sm)" }}>
-              <SignOut className="h-5 w-5" style={{ width: 18, height: 18 }} />
+              <SignOut className="h-5 w-5" />
               <span>Logout</span>
             </a>
           </div>
           <div className="flex items-center justify-center gap-2 mt-8" style={{ color: "var(--text-tertiary)" }}>
-            <Clock className="h-4 w-4" style={{ width: 14, height: 14 }} />
+            <Clock className="h-4 w-4" />
             <span className="text-sm">Auto-checking every 10 seconds...</span>
           </div>
         </div>

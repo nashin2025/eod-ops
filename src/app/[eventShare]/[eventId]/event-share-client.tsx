@@ -6,7 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Share2, Navigation } from "lucide-react";
+import { ShareNetwork, NavigationArrow } from "@phosphor-icons/react";
 
 const eventIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
@@ -73,7 +73,7 @@ export default function EventShareClient({ event }: { event: Event }) {
           )}
           <div className="flex gap-2">
             <Button onClick={handleShare} className="flex-1">
-              <Share2 className="h-4 w-4 mr-2" />
+              <ShareNetwork className="h-4 w-4 mr-2" />
               Share
             </Button>
             {event.latitude && event.longitude && (
@@ -83,7 +83,7 @@ export default function EventShareClient({ event }: { event: Event }) {
                 rel="noopener noreferrer"
               >
                 <Button variant="outline">
-                  <Navigation className="h-4 w-4 mr-2" />
+                  <NavigationArrow className="h-4 w-4 mr-2" />
                   Directions
                 </Button>
               </a>

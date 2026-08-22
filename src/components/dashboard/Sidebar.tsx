@@ -77,8 +77,8 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
         background: resolvedTheme === "dark" ? "var(--sidebar-bg-dark)" : "var(--sidebar-bg)",
         borderRight: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
         boxShadow: resolvedTheme === "light"
-          ? "4px 0 20px rgba(163, 177, 198, 0.3)"
-          : "4px 0 20px rgba(0, 0, 0, 0.4)",
+          ? "var(--neu-raised)"
+          : "var(--neu-raised)",
         padding: `${LAYOUT.sidebarPaddingV}px ${LAYOUT.sidebarPaddingH}px`,
         display: "flex",
         flexDirection: "column",
@@ -103,7 +103,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
                 fontSize: 18,
                 boxShadow:
                   resolvedTheme === "dark"
-                    ? "0 4px 12px rgba(16,185,129,0.3)"
+                    ? "0 4px 12px var(--accent-glow)"
                     : "var(--neu-raised-sm)",
               }}
             >
@@ -213,7 +213,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
             <div
               className="flex items-center gap-3 p-3 rounded-xl"
               style={{
-                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "rgba(124, 58, 237, 0.1)",
+                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "var(--accent-soft)",
                 border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
                 marginBottom: "var(--space-2)",
               }}
@@ -254,7 +254,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
             <div
               className="flex items-center justify-center gap-2 p-2 rounded-xl mx-auto"
               style={{
-                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "rgba(124, 58, 237, 0.1)",
+                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "var(--accent-soft)",
                 border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
                 width: "calc(100% - 8px)",
                 marginBottom: "var(--space-2)",

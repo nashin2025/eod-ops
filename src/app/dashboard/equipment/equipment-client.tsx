@@ -142,7 +142,7 @@ export default function EquipmentClient({
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
             placeholder="Search equipment..."
             value={searchQuery}
@@ -178,7 +178,7 @@ export default function EquipmentClient({
           </select>
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[220px]">
-          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger className="w-full pl-11" style={{ height: "var(--layout-control-height)" }}>
               <SelectValue placeholder="All Status" />
@@ -233,7 +233,7 @@ export default function EquipmentClient({
                       className="rounded-xl"
                       aria-label="Edit equipment"
                     >
-                      <PencilSimple className="h-5 w-5" style={{ width: 20, height: 20 }} />
+                      <PencilSimple className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>

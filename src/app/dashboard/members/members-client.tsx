@@ -101,7 +101,7 @@ export default function MembersClient({
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
             placeholder="Search members..."
             value={searchQuery}
@@ -111,7 +111,7 @@ export default function MembersClient({
           />
         </div>
         <div className="relative flex-1 min-w-[180px] max-w-[220px]">
-          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <FunnelSimple className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Select value={roleFilter} onValueChange={setRoleFilter}>
             <SelectTrigger className="w-full pl-11" style={{ height: "var(--layout-control-height)" }}>
               <SelectValue placeholder="Filter by role" />

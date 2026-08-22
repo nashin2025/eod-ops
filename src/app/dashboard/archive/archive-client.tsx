@@ -97,7 +97,7 @@ export default function ArchiveClient({ events }: { events: Event[] }) {
       {/* Search */}
       <div className="mb-[var(--layout-section-gap)]">
         <div className="relative max-w-md">
-          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2" style={{ width: 18, height: 18, color: "var(--text-tertiary)" }} />
+          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
             placeholder="Search archived events..."
             value={searchQuery}

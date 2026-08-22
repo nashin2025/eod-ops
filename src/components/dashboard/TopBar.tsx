@@ -73,8 +73,8 @@ export function TopBar({ user, sidebarCollapsed, onMobileMenuToggle }: TopBarPro
         background: resolvedTheme === "dark" ? "var(--topbar-bg-dark)" : "var(--topbar-bg)",
         borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)",
         boxShadow: resolvedTheme === "light"
-          ? "0 1px 3px rgba(163, 177, 198, 0.3)"
-          : "0 1px 3px rgba(0, 0, 0, 0.3)",
+          ? "var(--neu-raised-sm)"
+          : "var(--neu-raised-sm)",
         height: LAYOUT.topBarHeight,
       }}
     >
@@ -137,7 +137,7 @@ export function TopBar({ user, sidebarCollapsed, onMobileMenuToggle }: TopBarPro
                   <div className="p-4 border-b" style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}>
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white flex-shrink-0" style={{ background: "var(--accent)" }}>
-                        📋
+                        <Package className="h-4 w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground">Welcome to EOD-Ops</p>
