@@ -111,10 +111,10 @@ export default function DashboardClient({
   // Build KPI data from real metrics
   const kpiData = [
     {
-      label: "Total Events",
-      value: totalEvents.toLocaleString(),
+      label: "Active Events",
+      value: activeEventsCount.toLocaleString(),
       delta: activeEventsCount > 0 ? Math.round((activeEventsCount / Math.max(totalEvents - activeEventsCount, 1)) * 100) : 0,
-      deltaLabel: "active",
+      deltaLabel: "of total",
       icon: <MapPin className="h-5 w-5" />,
       trend: "up" as const,
       sparkline: Array.from({ length: 9 }, () => Math.floor(Math.random() * 20) + 5),
@@ -141,14 +141,14 @@ export default function DashboardClient({
       iconColor: "var(--warning)",
     },
     {
-      label: "Revenue",
-      value: `$${totalRevenue.toLocaleString()}`,
+      label: "Completed Events",
+      value: completedEventsCount.toLocaleString(),
       delta: completedEventsCount > 0 ? Math.round((completedEventsCount / Math.max(totalEvents - completedEventsCount, 1)) * 100) : 0,
-      deltaLabel: "completed events",
-      icon: <CurrencyDollar className="h-5 w-5" />,
+      deltaLabel: "of total",
+      icon: <CheckCircle className="h-5 w-5" />,
       trend: completedEventsCount > 0 ? "up" as const : "neutral" as const,
       sparkline: Array.from({ length: 9 }, () => Math.floor(Math.random() * 30) + 10),
-      iconColor: "var(--accent)",
+      iconColor: "var(--success)",
     },
   ];
 
