@@ -71,7 +71,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed lg:relative top-0 left-0 z-30 min-h-screen transition-all duration-300`}
+      className="fixed top-0 left-0 z-30 min-h-screen transition-all duration-300"
       style={{
         width: collapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)",
         background: resolvedTheme === "dark" ? "var(--sidebar-bg-dark)" : "var(--sidebar-bg)",
