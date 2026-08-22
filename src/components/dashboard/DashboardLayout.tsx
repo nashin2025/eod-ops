@@ -1,54 +1,76 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-import { Sidebar } from "./Sidebar";
-import { TopBar } from "./TopBar";
+import { useState } from "react";
+import { ReactNode } from "react";
+import Sidebar from "./Sidebar";
+import TopBar from "./TopBar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  user: { id: string; email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
+  user?: {
+    id: string;
+    email?: string;
+    name?: string;
+    role?: string;
+    avatar?: string;
+  };
 }
 
-export default function DashboardLayout({ children, user }: DashboardLayoutProps) {
+export default function DashboardLayout({
+  children,
+  user = {
+    id: "1",
+    email: "alex.chen@eod-ops.com",
+    name: "Alex Chen",
+    role: "Administrator",
+    avatar: "",
+  },
+}: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const LAYOUT = {
-    pagePadding: 24,
-  } as const;
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
-    <div className="flex min-h-screen bg-background" style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}>
+    <div className="flex min-h-screen" style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}>
       {/* Sidebar */}
       <Sidebar
         collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggle={handleSidebarToggle}
+        user={user}
+      />
+
+      {/* Top Bar */}
+      <TopBar
+        sidebarCollapsed={sidebarCollapsed}
+        onMobileMenuToggle={handleMobileMenuToggle}
         user={user}
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen transition-all duration-300" style={{
-        marginLeft: sidebarCollapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)"
-      }}>
-        {/* Top Bar */}
-        <TopBar 
-          user={user} 
-          sidebarCollapsed={sidebarCollapsed}
-          onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        />
+      <main
+        className="main-content"
+        style={{
+          marginLeft: sidebarCollapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)",
+          marginTop: "var(--layout-topbar-height)",
+        }}
+        role="main"
+      >
+        {children}
+      </main>
 
-        {/* Main Content Area */}
-        <main className="flex-1 animate-fade-in" style={{ padding: `calc(var(--layout-page-padding) + var(--layout-topbar-height)) var(--layout-page-padding) var(--layout-page-padding)` }}>
-          {children}
-        </main>
-      </div>
-
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 lg:hidden bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+          className="fixed inset-0 z-[25] bg-black/50 backdrop-blur-sm lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
-          style={{ zIndex: "var(--z-mobile-overlay)" }}
+          aria-hidden="true"
         />
       )}
     </div>

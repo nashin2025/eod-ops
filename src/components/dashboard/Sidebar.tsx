@@ -1,285 +1,222 @@
 "use client";
 
-import { ReactNode } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
-  ChartBar,
-  Calendar,
-  Users,
+  MagnifyingGlass,
   MapPin,
-  Package,
-  Archive,
+  ChartBar,
+  ChartPie,
+  Users,
+  Calendar,
+  Bell,
+  Shield,
   Gear,
+  User,
+  SignOut,
   CaretLeft,
   CaretRight,
-  MagnifyingGlass,
+  Cube,
+  MapPin as MapPinIcon,
+  Package,
+  Archive,
+  ChatCircle,
 } from "@phosphor-icons/react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
-const navItems = [
-  {
-    section: "MAIN",
-    items: [
-      { icon: ChartBar, label: "Overview", path: "/dashboard" },
-      { icon: Calendar, label: "Events", path: "/dashboard/events" },
-      { icon: Users, label: "Members", path: "/dashboard/members" },
-      { icon: MapPin, label: "Island Map", path: "/dashboard/map" },
-    ],
-  },
-  {
-    section: "ANALYTICS",
-    items: [
-      { icon: Package, label: "Equipment", path: "/dashboard/equipment" },
-      { icon: Archive, label: "Archive", path: "/dashboard/archive" },
-    ],
-  },
-  {
-    section: "ACCOUNT",
-    items: [
-      { icon: Users, label: "Profile", path: "/dashboard/profile" },
-      { icon: Gear, label: "Admin", path: "/dashboard/admin" },
-    ],
-  },
-];
-
-interface SidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
-  user: { id: string; email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
+interface NavItem {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: string;
 }
 
-export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+interface SidebarProps {
+  collapsed?: boolean;
+  onToggle?: () => void;
+  user?: {
+    name?: string;
+    email?: string;
+    role?: string;
+    avatar?: string;
+  };
+}
+
+export default function Sidebar({
+  collapsed = false,
+  onToggle,
+  user = {
+    name: "Alex Chen",
+    email: "alex.chen@eod-ops.com",
+    role: "Administrator",
+    avatar: "",
+  },
+}: SidebarProps) {
+  const { resolvedTheme, setTheme, theme } = useTheme();
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const LAYOUT = {
-    sidebarWidthExpanded: 288,
-    sidebarWidthCollapsed: 72,
-    sidebarPaddingH: 18,
-    sidebarPaddingV: 24,
-    navItemHeight: 44,
-    brandLogoSize: 40,
-  } as const;
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
-  const initials = user.user_metadata?.full_name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || user.email?.charAt(0).toUpperCase() || "U";
+  const navSections: NavSection[] = [
+    {
+      label: "MAIN",
+      items: [
+        { href: "/dashboard", icon: <MapPin className="h-5 w-5" />, label: "Dashboard" },
+        { href: "/dashboard/events", icon: <Calendar className="h-5 w-5" />, label: "Events" },
+        { href: "/dashboard/members", icon: <Users className="h-5 w-5" />, label: "Members" },
+        { href: "/dashboard/equipment", icon: <Package className="h-5 w-5" />, label: "Equipment" },
+      ],
+    },
+    {
+      label: "ANALYTICS",
+      items: [
+        { href: "/dashboard/map", icon: <MapPinIcon className="h-5 w-5" />, label: "Map View" },
+        { href: "/dashboard/archive", icon: <Archive className="h-5 w-5" />, label: "Archive" },
+      ],
+    },
+    {
+      label: "ACCOUNT",
+      items: [
+        { href: "/dashboard/profile", icon: <User className="h-5 w-5" />, label: "Profile" },
+        { href: "/dashboard/settings", icon: <Gear className="h-5 w-5" />, label: "Settings" },
+      ],
+    },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(href);
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return "A";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
-    <aside
-      className="fixed top-0 left-0 z-30 min-h-screen transition-all duration-300"
-      style={{
-        width: collapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)",
-        background: resolvedTheme === "dark" ? "var(--sidebar-bg-dark)" : "var(--sidebar-bg)",
-        borderRight: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
-        boxShadow: resolvedTheme === "light"
-          ? "var(--neu-raised)"
-          : "var(--neu-raised)",
-        padding: `${LAYOUT.sidebarPaddingV}px ${LAYOUT.sidebarPaddingH}px`,
-        display: "flex",
-        flexDirection: "column",
-        gap: "var(--space-1)",
-      }}
-    >
-      <nav className="space-y-6 h-full flex flex-col">
-        {/* Brand & Toggle */}
-        <div className="flex items-center justify-between gap-3" style={{ padding: "8px 8px 20px" }}>
-          <div className="flex items-center gap-3">
-            <div
-              className="flex-shrink-0"
-              style={{
-                width: LAYOUT.brandLogoSize,
-                height: LAYOUT.brandLogoSize,
-                borderRadius: 12,
-                background: "var(--accent)",
-                display: "grid",
-                placeItems: "center",
-                color: "white",
-                fontWeight: 800,
-                fontSize: 18,
-                boxShadow:
-                  resolvedTheme === "dark"
-                    ? "0 4px 12px var(--accent-glow)"
-                    : "var(--neu-raised-sm)",
-              }}
-            >
-              N
-            </div>
-            {!collapsed && <span className="text-xl font-bold text-foreground">EOD-Ops</span>}
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-[25] bg-black/50 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`}
+        style={{
+          width: collapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)",
+        }}
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        {/* Brand */}
+        <div className="sidebar-brand" role="banner">
+          <div className="sidebar-brand-icon" aria-hidden="true">
+            <MapPin className="h-6 w-6" />
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={`rounded-xl transition-all duration-200 ${collapsed ? "rotate-180" : ""}`}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{ width: 40, height: 40 }}
-          >
-            {collapsed ? <CaretRight className="h-5 w-5" /> : <CaretLeft className="h-5 w-5" />}
-          </Button>
+          <span className="sidebar-brand-text">EOD-Ops</span>
         </div>
 
         {/* Search */}
-        {!collapsed && (
-          <div className="relative" style={{ marginBottom: "var(--space-3)" }}>
+        <div className="sidebar-search">
+          <div className="relative">
             <MagnifyingGlass
-              className="absolute left-3 top-1/2 h-4 w-4"
-              style={{
-                transform: "translateY(calc(-50% + 1px))",
-                color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+              style={{ color: "var(--text-tertiary)" }}
+              aria-hidden="true"
             />
             <input
-              type="text"
-              placeholder="Search anything..."
-              className={resolvedTheme === "dark" ? "input" : "input"}
-              style={{
-                width: "100%",
-                height: LAYOUT.navItemHeight,
-                paddingLeft: 40,
-                borderRadius: 12,
-              }}
+              type="search"
+              placeholder="Search..."
+              className="sidebar-search-input"
+              aria-label="Search events, members, equipment"
             />
           </div>
-        )}
+        </div>
 
-        {/* Navigation Sections - scrollable */}
-        <div className="space-y-4 flex-1 overflow-y-auto min-h-0">
-          {navItems.map((section) => (
-            <div key={section.section} className="space-y-1">
-              {!collapsed && (
-                <p
-                  className="text-xs font-semibold text-tertiary uppercase tracking-wider"
-                  style={{
-                    padding: `var(--space-3) var(--space-3) var(--space-2) 44px`,
-                    letterSpacing: "0.08em",
-                    fontSize: "10.5px",
-                  }}
-                >
-                  {section.section}
-                </p>
-              )}
+        {/* Navigation */}
+        <nav className="sidebar-nav" aria-label="Sidebar navigation">
+          {navSections.map((section) => (
+            <div key={section.label} className="sidebar-nav-section">
+              <span className="sidebar-nav-label">{section.label}</span>
               {section.items.map((item) => {
-                const isActive = pathname === item.path;
+                const active = isActive(item.href);
                 return (
-                  <Link key={item.path} href={item.path}>
-                    <Button
-                      variant="ghost"
-                      className={`w-full justify-start gap-3 rounded-xl transition-all duration-200 ${
-                        isActive ? "text-accent" : "text-muted-foreground hover:text-foreground"
-                      } ${collapsed ? "justify-center" : "h-11 px-3"}`}
-                      style={{
-                        background: isActive
-                          ? resolvedTheme === "dark"
-                            ? "var(--accent-soft-dark)"
-                            : "var(--accent-soft)"
-                          : undefined,
-                        boxShadow: isActive && resolvedTheme === "light" ? "var(--neu-pressed)" : undefined,
-                        borderLeft: isActive ? "4px solid var(--accent)" : "none",
-                        borderRadius: isActive ? "0 12px 12px 0" : "12px",
-                        height: LAYOUT.navItemHeight,
-                        color: resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)",
-                      }}
-                    >
-                      <item.icon
-                        className="h-5 w-5 flex-shrink-0"
-                        style={{
-                          transform: "translateY(1px)",
-                        }}
-                      />
-                      {!collapsed && <span>{item.label}</span>}
-                    </Button>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`sidebar-nav-item ${active ? "active" : ""}`}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <span className="sidebar-nav-item-icon" aria-hidden="true">
+                      {item.icon}
+                    </span>
+                    <span className="sidebar-nav-item-text">{item.label}</span>
+                    {item.badge && (
+                      <span
+                        className="badge badge-accent ml-auto sidebar-nav-item-text"
+                        style={{ fontSize: "10px", padding: "2px 6px" }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
             </div>
           ))}
-        </div>
+        </nav>
 
-        {/* User Profile & Collapse Toggle - fixed at bottom */}
-        <div
-          className="border-t pt-4 flex-shrink-0"
-          style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}
-        >
-          {!collapsed && (
-            <div
-              className="flex items-center gap-3 p-3 rounded-xl"
-              style={{
-                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "var(--accent-soft)",
-                border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
-                marginBottom: "var(--space-2)",
-              }}
-            >
-              <div
-                className="flex-shrink-0"
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-                  display: "grid",
-                  placeItems: "center",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 14,
-                }}
-              >
-                {initials}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p
-                  className="text-sm font-medium text-foreground truncate"
-                  style={{ color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)" }}
-                >
-                  {user.user_metadata?.full_name || user.email || "User"}
-                </p>
-                <p
-                  className="text-xs text-tertiary truncate"
-                  style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}
-                >
-                  {user.email}
-                </p>
-              </div>
+        {/* User Profile & Toggle */}
+        <div className="sidebar-footer relative">
+          <div className="sidebar-user" role="button" tabIndex={0} aria-expanded="false" aria-haspopup="true">
+            <div className="sidebar-user-avatar" aria-hidden="true">
+              {user.avatar ? (
+                <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                getInitials(user.name)
+              )}
             </div>
-          )}
-          {collapsed && (
-            <div
-              className="flex items-center justify-center gap-2 p-2 rounded-xl mx-auto"
-              style={{
-                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "var(--accent-soft)",
-                border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
-                width: "calc(100% - 8px)",
-                marginBottom: "var(--space-2)",
-              }}
-              title={user.user_metadata?.full_name || user.email || "User"}
-            >
-              <div
-                className="flex-shrink-0"
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-                  display: "grid",
-                  placeItems: "center",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 12,
-                }}
-              >
-                {initials}
-              </div>
-              <span className="text-xs text-tertiary truncate max-w-[120px]" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>
-                {user.email}
-              </span>
+            <div className="sidebar-user-info">
+              <p className="sidebar-user-name">{user.name}</p>
+              <p className="sidebar-user-role">{user.role}</p>
             </div>
-          )}
+          </div>
+
+          <button
+            className="sidebar-toggle"
+            onClick={onToggle}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+          >
+            {collapsed ? (
+              <CaretRight className="h-5 w-5" />
+            ) : (
+              <CaretLeft className="h-5 w-5" />
+            )}
+          </button>
         </div>
-      </nav>
-    </aside>
+      </aside>
+    </>
   );
 }

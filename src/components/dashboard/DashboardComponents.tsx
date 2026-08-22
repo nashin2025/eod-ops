@@ -4,10 +4,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Calendar, Users, MapPin, CheckCircle, CaretDown, CaretUp, TrendUp, TrendDown,
-  ChartBar, ChartPie, CurrencyDollar, Users as UsersIcon, Clock, ArrowUpRight, ArrowDownRight,
-  Minus, Plus, MagnifyingGlass, List, X, CaretLeft, CaretRight, User, Log, Gear, Archive,
-  Package, MapPin as MapPinIcon, ChatCircle, MagnifyingGlass as SearchIcon, Bell
+  Calendar,
+  Users,
+  MapPin,
+  CheckCircle,
+  CaretDown,
+  CaretUp,
+  TrendUp,
+  TrendDown,
+  ChartBar,
+  ChartPie,
+  CurrencyDollar,
+  Users as UsersIcon,
+  Clock,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+  Plus,
+  MagnifyingGlass,
+  List,
+  X,
+  CaretLeft,
+  CaretRight,
+  User,
+  Log,
+  Gear,
+  Archive,
+  Package,
+  MapPin as MapPinIcon,
+  ChatCircle,
+  MagnifyingGlass as SearchIcon,
+  Bell,
+  ArrowUpRight as TrendUpIcon,
+  ArrowDownRight as TrendDownIcon,
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -45,9 +74,9 @@ interface ActivityItem {
 
 export function KPICard({ data }: { data: KPIData }) {
   const { resolvedTheme } = useTheme();
-  const trendIcon = data.trend === "up" ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />;
+  const trendIcon = data.trend === "up" ? <TrendUpIcon className="h-3.5 w-3.5" /> : <TrendDownIcon className="h-3.5 w-3.5" />;
   const trendColor = data.trend === "up" ? "var(--success)" : "var(--danger)";
-  
+
   const sparklinePoints = data.sparkline.map((val, i) => {
     const x = (i / (data.sparkline.length - 1)) * 100;
     const y = 100 - ((val - Math.min(...data.sparkline)) / (Math.max(...data.sparkline) - Math.min(...data.sparkline))) * 100;
@@ -55,13 +84,11 @@ export function KPICard({ data }: { data: KPIData }) {
   }).join(", ");
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full flex flex-col justify-between" style={{ padding: "var(--layout-kpi-padding)" }}>
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
-              {data.label}
-            </p>
+          <div className="min-w-0">
+            <p className="label">{data.label}</p>
             <p className="text-2xl font-bold tabular mt-1" style={{ color: "var(--text-primary)" }}>
               {data.value}
             </p>
@@ -70,7 +97,7 @@ export function KPICard({ data }: { data: KPIData }) {
                 {trendIcon}
                 {Math.abs(data.delta)}%
               </span>
-              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+              <span className="caption" style={{ color: "var(--text-tertiary)" }}>
                 {data.deltaLabel}
               </span>
             </div>
@@ -80,6 +107,7 @@ export function KPICard({ data }: { data: KPIData }) {
             style={{
               background: data.iconColor ? `color-mix(in srgb, ${data.iconColor} 15%, transparent)` : "var(--accent-soft)",
               color: data.iconColor || "var(--accent)",
+              borderRadius: "var(--layout-border-radius-sm)",
             }}
           >
             {data.icon}
@@ -112,7 +140,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
   const { resolvedTheme } = useTheme();
   const maxValue = Math.max(...data.map(d => d.value));
   const minValue = Math.min(...data.map(d => d.value));
-  
+
   const points = data.map((d, i) => {
     const x = (i / (data.length - 1)) * 100;
     const y = 100 - ((d.value - minValue) / (maxValue - minValue)) * 80;
@@ -120,7 +148,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
   }).join(", ");
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full" style={{ padding: "var(--layout-card-padding)" }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
@@ -133,7 +161,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
             </span>
           </div>
         </div>
-        <div style={{ height: 280 }}>
+        <div className="chart-container">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
             <defs>
               <linearGradient id="area-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -159,7 +187,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
                   cy={y + "%"}
                   r="4"
                   fill={color}
-                  stroke={resolvedTheme === "dark" ? "var(--base-dark)" : "var(--base)"}
+                  stroke={resolvedTheme === "dark" ? "var(--base)" : "var(--base-raised)"}
                   strokeWidth="2"
                   className="transition-opacity duration-200"
                   style={{ opacity: 0 }}
@@ -183,7 +211,7 @@ export function AreaChart({ data, color = "var(--accent)" }: { data: ChartDataPo
 export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: string[] }) {
   const { resolvedTheme } = useTheme();
   const total = data.reduce((sum, d) => sum + d.value, 0);
-  
+
   const segments = data.map((d, i) => {
     const percentage = (d.value / total) * 100;
     const angle = (percentage / 100) * 360;
@@ -191,18 +219,18 @@ export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: s
   });
 
   let cumulativeAngle = -90;
-  
+
   const paths = segments.map((segment) => {
     const startAngle = cumulativeAngle;
     const endAngle = cumulativeAngle + segment.angle;
     cumulativeAngle = endAngle;
-    
+
     const startRad = (startAngle * Math.PI) / 180;
     const endRad = (endAngle * Math.PI) / 180;
-    
+
     const outerRadius = 45;
     const innerRadius = 28;
-    
+
     const x1 = 50 + outerRadius * Math.cos(startRad);
     const y1 = 50 + outerRadius * Math.sin(startRad);
     const x2 = 50 + outerRadius * Math.cos(endRad);
@@ -211,22 +239,22 @@ export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: s
     const y3 = 50 + innerRadius * Math.sin(endRad);
     const x4 = 50 + innerRadius * Math.cos(startRad);
     const y4 = 50 + innerRadius * Math.sin(startRad);
-    
+
     const largeArcFlag = segment.angle > 180 ? 1 : 0;
-    
+
     return (
       <path
         key={segment.label}
         d={`M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`}
         fill={segment.color}
-        stroke={resolvedTheme === "dark" ? "var(--base-dark)" : "var(--base)"}
+        stroke={resolvedTheme === "dark" ? "var(--base)" : "var(--base-raised)"}
         strokeWidth="1"
       />
     );
   });
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full" style={{ padding: "var(--layout-card-padding)" }}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
@@ -265,7 +293,7 @@ export function DonutChart({ data, colors }: { data: ChartDataPoint[]; colors: s
 
 export function DataTable({ transactions }: { transactions: Transaction[] }) {
   const { resolvedTheme } = useTheme();
-  
+
   const statusConfig = {
     completed: { label: "Completed", variant: "success" as const },
     pending: { label: "Pending", variant: "warning" as const },
@@ -273,7 +301,7 @@ export function DataTable({ transactions }: { transactions: Transaction[] }) {
   };
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full">
         <div className="table-container">
           <table className="table">
@@ -289,12 +317,12 @@ export function DataTable({ transactions }: { transactions: Transaction[] }) {
             <tbody>
               {transactions.map((tx) => {
                 const config = statusConfig[tx.status];
-                const borderColor = resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)";
-                const textColorSecondary = resolvedTheme === "dark" ? "var(--text-secondary-dark)" : "var(--text-secondary)";
-                const textColorPrimary = resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)";
-                
+                const borderColor = resolvedTheme === "dark" ? "var(--border-subtle)" : "var(--border-subtle)";
+                const textColorSecondary = "var(--text-secondary)";
+                const textColorPrimary = "var(--text-primary)";
+
                 return (
-                  <tr key={tx.id}>
+                  <tr key={tx.id} style={{ transition: "background var(--transition-fast)" }}>
                     <td style={{ padding: "var(--space-3) var(--space-4)", borderTop: `1px solid ${borderColor}`, fontWeight: 500, color: textColorPrimary }}>
                       {tx.id}
                     </td>
@@ -323,9 +351,9 @@ export function DataTable({ transactions }: { transactions: Transaction[] }) {
 
 export function ActivityFeed({ items }: { items: ActivityItem[] }) {
   const { resolvedTheme } = useTheme();
-  
+
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Recent Activity
@@ -355,7 +383,7 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
 
 export function QuickActions() {
   const { resolvedTheme } = useTheme();
-  
+
   const actions = [
     { icon: Plus, label: "New Event", color: "var(--accent)" },
     { icon: Calendar, label: "Schedule", color: "var(--accent)" },
@@ -364,12 +392,12 @@ export function QuickActions() {
   ];
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="card p-0 overflow-hidden h-full" style={{ borderRadius: "var(--layout-border-radius)" }}>
       <CardContent className="h-full flex flex-col" style={{ padding: "var(--layout-card-padding)" }}>
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Quick Actions
         </h3>
-        <div className="flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)" }}>
+        <div className="flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {actions.map((action) => (
             <Button
               key={action.label}
@@ -378,6 +406,7 @@ export function QuickActions() {
               style={{
                 color: "var(--text-secondary)",
                 height: "var(--layout-control-height)",
+                borderRadius: "var(--layout-border-radius-sm)",
               }}
             >
               <action.icon
