@@ -43,9 +43,49 @@ export default async function DashboardPage() {
     createdAt: u.created_at ?? new Date().toISOString(),
   }));
 
+  // Prepare real dashboard data for client
+  const totalEvents = events?.length || 0;
+  const totalUsers = users?.length || 0;
+  const activeEventsCount = activeEvents.length;
+  const completedEventsCount = completedEvents.length;
+
+  // Revenue calculation from events (if events have pricing)
+  const totalRevenue = events?.reduce((sum, e) => sum + (e.price || 0), 0) || 0;
+
+  // Recent events for activity feed
+  const recentEvents = (events || []).slice(0, 5).map(e => ({
+    id: e.id,
+    title: e.title,
+    status: e.status,
+    date: e.created_at,
+    location: e.location,
+  }));
+
+  // Upcoming events for quick stats
+  const upcomingEvents = (events || [])
+    .filter(e => e.status === "scheduled" && new Date(e.start_date) > new Date())
+    .slice(0, 5)
+    .map(e => ({
+      id: e.id,
+      title: e.title,
+      date: e.start_date,
+      location: e.location,
+    }));
+
   return (
     <DashboardLayout user={user}>
-      <DashboardClient />
+      <DashboardClient
+        totalEvents={totalEvents}
+        totalUsers={totalUsers}
+        activeEventsCount={activeEventsCount}
+        completedEventsCount={completedEventsCount}
+        totalRevenue={totalRevenue}
+        islandVisits={islandVisits}
+        atollsVisited={atollsVisited}
+        recentEvents={recentEvents}
+        upcomingEvents={upcomingEvents}
+        usersData={usersData}
+      />
     </DashboardLayout>
   );
 }
