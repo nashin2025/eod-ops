@@ -26,19 +26,20 @@ describe('LoginForm', () => {
   it('renders email and password fields', () => {
     render(<LoginForm />);
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+  });
+
+  it('has required attribute on password input', () => {
+    render(<LoginForm />);
+    // The password input has placeholder "••••••••" and type="password"
+    const passwordInput = screen.getByPlaceholderText('••••••••');
+    expect(passwordInput).toHaveAttribute('required');
   });
 
   it('has required attribute on email input', () => {
     render(<LoginForm />);
     const emailInput = screen.getByLabelText(/email/i);
     expect(emailInput).toHaveAttribute('required');
-  });
-
-  it('has required attribute on password input', () => {
-    render(<LoginForm />);
-    const passwordInput = screen.getByLabelText(/password/i);
-    expect(passwordInput).toHaveAttribute('required');
   });
 
   it('shows submit button', () => {
@@ -53,6 +54,6 @@ describe('LoginForm', () => {
 
   it('renders sign up link', () => {
     render(<LoginForm />);
-    expect(screen.getByText(/sign up/i)).toBeInTheDocument();
+    expect(screen.getByText(/create one/i)).toBeInTheDocument();
   });
 });

@@ -387,6 +387,88 @@ html[data-theme="dark"] .btn-ghost:hover {
 }
 
 /* ============================================
+   Auth Form Styles
+   ============================================ */
+
+.card-auth {
+  background: var(--card-bg);
+  border-radius: var(--layout-border-radius);
+  transition: all var(--transition-base);
+}
+
+html[data-theme="light"] .card-auth {
+  box-shadow: var(--neu-raised);
+}
+
+html[data-theme="dark"] .card-auth {
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--neu-raised);
+}
+
+.input-auth {
+  width: 100%;
+  height: var(--layout-control-height);
+  padding: 0 var(--space-4);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--input-bg);
+  border: 1px solid var(--border-input);
+  border-radius: var(--layout-border-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+html[data-theme="light"] .input-auth {
+  box-shadow: var(--neu-inset);
+}
+
+.input-auth:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--neu-glow);
+}
+
+.input-auth::placeholder {
+  color: var(--text-tertiary);
+}
+
+.input-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  color: var(--text-tertiary);
+}
+
+.btn-auth {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+}
+
+html[data-theme="light"] .btn-auth:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--neu-glow);
+}
+
+html[data-theme="dark"] .btn-auth:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--neu-glow);
+}
+
+.btn-auth:active {
+  transform: scale(0.98);
+}
+
+.btn-auth:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
    Input Styles
    ============================================ */
 

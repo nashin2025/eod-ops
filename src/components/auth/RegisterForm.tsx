@@ -19,6 +19,7 @@ export function RegisterForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,139 +67,170 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
-      <Card className="w-full max-w-md animate-slide-in-right">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Create account</CardTitle>
-          <CardDescription style={{ color: "var(--text-tertiary)" }}>Sign up for EOD-Ops</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="firstName" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                  First Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="John"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="pl-11"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="lastName" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                  Last Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Doe"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="pl-11"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-            </div>
-
+    <Card className="card-auth w-full">
+      <CardHeader className="text-center pb-2">
+        <CardTitle className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+          Create account
+        </CardTitle>
+        <CardDescription style={{ color: "var(--text-tertiary)" }}>
+          Sign up for EOD-Ops
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                Email
+              <label htmlFor="firstName" className="label">
+                First Name
               </label>
               <div className="relative">
-                <Mailbox className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
+                <User className="input-icon" aria-hidden="true" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-11"
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="input-auth pl-11"
                   required
                   disabled={isLoading}
+                  autoComplete="given-name"
                 />
               </div>
             </div>
-
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                Password
+              <label htmlFor="lastName" className="label">
+                Last Name
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
+                <User className="input-icon" aria-hidden="true" />
                 <Input
-                  id="password"
-                  type="password"
-                  placeholder="•••••••• (min 8 chars)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-11"
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="input-auth pl-11"
                   required
                   disabled={isLoading}
-                  minLength={8}
+                  autoComplete="family-name"
                 />
               </div>
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-11"
-                  required
-                  disabled={isLoading}
-                />
-              </div>
+          <div className="space-y-2">
+            <label htmlFor="email" className="label">
+              Email
+            </label>
+            <div className="relative">
+              <Mailbox className="input-icon" aria-hidden="true" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-auth pl-11"
+                required
+                disabled={isLoading}
+                autoComplete="email"
+              />
             </div>
+          </div>
 
-            {error && (
-              <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
-                <Warning className="h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
+          <div className="space-y-2">
+            <label htmlFor="password" className="label">
+              Password
+            </label>
+            <div className="relative">
+              <Lock className="input-icon" aria-hidden="true" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="•••••••• (min 8 chars)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-auth pl-11 pr-11"
+                required
+                disabled={isLoading}
+                autoComplete="new-password"
+                minLength={8}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary hover:text-primary transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <Lock className="h-5 w-5" weight="duotone" />
+                ) : (
+                  <Lock className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="label">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <Lock className="input-icon" aria-hidden="true" />
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input-auth pl-11 pr-11"
+                required
+                disabled={isLoading}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary hover:text-primary transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <Lock className="h-5 w-5" weight="duotone" />
+                ) : (
+                  <Lock className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="flex items-center gap-2 text-sm p-3 rounded-xl" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>
+              <Warning className="h-4 w-4 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full btn-auth" disabled={isLoading} size="lg">
+            {isLoading ? (
+              <>
+                <Spinner className="mr-2 h-4 w-4 animate-spin" />
+                Creating account…
+              </>
+            ) : (
+              "Create account"
             )}
-
-            <Button type="submit" className="w-full" disabled={isLoading} size="lg">
-              {isLoading ? (
-                <>
-                  <Spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-3">
-          <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
-            Already have an account?{" "}
-            <a href="/login" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
-              Sign in
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter className="flex flex-col gap-3 pt-4">
+        <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
+          Already have an account?{" "}
+          <a href="/login" className="font-medium hover:underline" style={{ color: "var(--accent)" }}>
+            Sign in
+          </a>
+        </p>
+      </CardFooter>
+    </Card>
   );
 }
