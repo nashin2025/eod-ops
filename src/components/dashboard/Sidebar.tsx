@@ -194,7 +194,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
 
         {/* User Profile & Collapse Toggle - fixed at bottom */}
         <div
-          className="border-t pt-4 space-y-4 flex-shrink-0"
+          className="border-t pt-4 flex-shrink-0"
           style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}
         >
           {!collapsed && (
@@ -203,6 +203,7 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
               style={{
                 background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "rgba(124, 58, 237, 0.1)",
                 border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
+                marginBottom: "var(--space-2)",
               }}
             >
               <div
