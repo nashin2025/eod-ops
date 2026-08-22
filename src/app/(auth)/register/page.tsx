@@ -6,7 +6,7 @@ import { ThemeToggleCompact } from "@/components/ui/ThemeToggle";
 export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto">
         <div className="flex justify-end mb-8">
           <ThemeToggleCompact />
         </div>
