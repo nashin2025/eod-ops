@@ -86,29 +86,41 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
       }}
     >
       <nav className="space-y-6 h-full flex flex-col">
-        {/* Brand */}
-        <div className="flex items-center gap-3" style={{ padding: "8px 8px 20px" }}>
-          <div
-            className="flex-shrink-0"
-            style={{
-              width: LAYOUT.brandLogoSize,
-              height: LAYOUT.brandLogoSize,
-              borderRadius: 12,
-              background: "var(--accent)",
-              display: "grid",
-              placeItems: "center",
-              color: "white",
-              fontWeight: 800,
-              fontSize: 18,
-              boxShadow:
-                resolvedTheme === "dark"
-                  ? "0 4px 12px rgba(16,185,129,0.3)"
-                  : "var(--neu-raised-sm)",
-            }}
-          >
-            N
+        {/* Brand & Toggle */}
+        <div className="flex items-center justify-between gap-3" style={{ padding: "8px 8px 20px" }}>
+          <div className="flex items-center gap-3">
+            <div
+              className="flex-shrink-0"
+              style={{
+                width: LAYOUT.brandLogoSize,
+                height: LAYOUT.brandLogoSize,
+                borderRadius: 12,
+                background: "var(--accent)",
+                display: "grid",
+                placeItems: "center",
+                color: "white",
+                fontWeight: 800,
+                fontSize: 18,
+                boxShadow:
+                  resolvedTheme === "dark"
+                    ? "0 4px 12px rgba(16,185,129,0.3)"
+                    : "var(--neu-raised-sm)",
+              }}
+            >
+              N
+            </div>
+            {!collapsed && <span className="text-xl font-bold text-foreground">EOD-Ops</span>}
           </div>
-          {!collapsed && <span className="text-xl font-bold text-foreground">EOD-Ops</span>}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className={`rounded-xl transition-all duration-200 ${collapsed ? "rotate-180" : ""}`}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            style={{ width: 40, height: 40 }}
+          >
+            {collapsed ? <CaretRight className="h-5 w-5" /> : <CaretLeft className="h-5 w-5" />}
+          </Button>
         </div>
 
         {/* Search */}
@@ -270,16 +282,6 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
               </span>
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={`rounded-xl transition-all duration-200 mx-auto ${collapsed ? "rotate-180" : ""}`}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{ width: 40, height: 40 }}
-          >
-            {collapsed ? <CaretRight className="h-5 w-5" /> : <CaretLeft className="h-5 w-5" />}
-          </Button>
         </div>
       </nav>
     </aside>
