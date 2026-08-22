@@ -394,6 +394,7 @@ html[data-theme="dark"] .btn-ghost:hover {
   background: var(--card-bg);
   border-radius: var(--layout-border-radius);
   transition: all var(--transition-base);
+  padding: var(--space-6) var(--space-8);
 }
 
 html[data-theme="light"] .card-auth {
