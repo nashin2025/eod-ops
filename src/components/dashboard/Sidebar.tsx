@@ -238,6 +238,38 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
               </div>
             </div>
           )}
+          {collapsed && (
+            <div
+              className="flex items-center justify-center gap-2 p-2 rounded-xl mx-auto"
+              style={{
+                background: resolvedTheme === "dark" ? "var(--surface-raised-dark)" : "rgba(124, 58, 237, 0.1)",
+                border: resolvedTheme === "dark" ? "1px solid var(--border-dark)" : "none",
+                width: "calc(100% - 8px)",
+                marginBottom: "var(--space-2)",
+              }}
+              title={user.user_metadata?.full_name || user.email || "User"}
+            >
+              <div
+                className="flex-shrink-0"
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+                  display: "grid",
+                  placeItems: "center",
+                  color: "white",
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              >
+                {initials}
+              </div>
+              <span className="text-xs text-tertiary truncate max-w-[120px]" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>
+                {user.email}
+              </span>
+            </div>
+          )}
           <Button
             variant="ghost"
             size="icon"
