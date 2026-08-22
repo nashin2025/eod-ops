@@ -419,6 +419,16 @@ html[data-theme="dark"] .card-auth {
   transition: all var(--transition-fast);
 }
 
+/* Input with icon - extra left padding for icon space */
+.input-auth.pl-11 {
+  padding-left: 44px;
+}
+
+/* Input with icon and right padding */
+.input-auth.pr-11 {
+  padding-right: 44px;
+}
+
 html[data-theme="light"] .input-auth {
   box-shadow: var(--neu-inset);
 }
@@ -435,7 +445,7 @@ html[data-theme="light"] .input-auth {
 
 .input-icon {
   position: absolute;
-  left: var(--space-3);
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   width: 16px;
