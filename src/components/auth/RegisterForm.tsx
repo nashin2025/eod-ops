@@ -20,6 +20,7 @@ export function RegisterForm() {
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,7 +181,7 @@ export function RegisterForm() {
               <Lock className="input-icon" aria-hidden="true" />
               <Input
                 id="confirmPassword"
-                type={showPassword ? "text" : "password"}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -192,10 +193,10 @@ export function RegisterForm() {
               <button
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary hover:text-primary transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? (
+                {showConfirmPassword ? (
                   <Lock className="h-5 w-5" weight="duotone" />
                 ) : (
                   <Lock className="h-5 w-5" />
