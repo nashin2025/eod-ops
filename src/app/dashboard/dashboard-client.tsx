@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { KPICard, DataTable, ActivityFeed } from "@/components/dashboard/DashboardComponents";
+import { KPICard } from "@/components/dashboard/DashboardComponents";
 import { IslandCheckIn } from "@/components/dashboard/IslandCheckIn";
-import { MilestoneBadges, MilestoneQuickStats } from "@/components/dashboard/MilestoneBadges";
+import { MilestoneBadges } from "@/components/dashboard/MilestoneBadges";
 import { Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus, CaretDown, CaretUp, Phone } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,6 @@ interface DashboardClientProps {
   totalVisits: number;
   achievedCount: number;
   recentEvents: Array<{ id: string; title: string; status: string; date: string; location?: string }>;
-  upcomingEvents: Array<{ id: string; title: string; date: string; location?: string }>;
-  usersData: Array<{ id: string; email: string; firstName?: string; lastName?: string; role: string; createdAt: string }>;
 }
 
 function getStatusColor(status: string): string {
@@ -76,8 +74,6 @@ export default function DashboardClient({
   totalVisits,
   achievedCount,
   recentEvents,
-  upcomingEvents,
-  usersData,
 }: DashboardClientProps) {
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<string>("date"); // date, atoll, island
@@ -97,7 +93,7 @@ export default function DashboardClient({
     {
       label: "Total Members",
       value: totalUsers.toLocaleString(),
-      delta: usersData.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 86400000)).length,
+      delta: 0,
       deltaLabel: "this month",
       icon: <UsersIcon className="h-5 w-5" />,
       trend: "up" as const,
@@ -126,32 +122,6 @@ export default function DashboardClient({
     },
   ];
 
-  // Recent events for activity feed
-  const activityItems = recentEvents.slice(0, 5).map((e, i) => ({
-    id: i + 1,
-    dotColor: getStatusColor(e.status),
-    text: `${e.title} ${e.location ? `at ${e.location}` : ""}`,
-    time: formatRelativeTime(e.date),
-  }));
-
-  // Upcoming events for data table
-  const upcomingData = upcomingEvents.slice(0, 5).map(e => ({
-    id: e.id,
-    date: formatDate(e.date),
-    amount: e.title,
-    status: "pending" as const,
-    customer: e.location || "TBD",
-  }));
-
-  // Recent users for data table
-  const recentUsers = usersData.slice(0, 5).map(u => ({
-    id: u.id,
-    date: formatDate(u.createdAt),
-    amount: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email,
-    status: getTransactionStatus(u.role),
-    customer: u.email,
-  }));
-
   // Sort events
   const sortedEvents = [...recentEvents].sort((a: any, b: any) => {
     if (sortBy === "atoll") {
@@ -176,22 +146,6 @@ export default function DashboardClient({
 
   return (
     <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
-      {/* Dashboard Hero */}
-      <div className="dashboard-hero" style={{ animationDelay: "80ms" }}>
-        <div className="dashboard-hero-header">
-          <div className="dashboard-greeting">
-            <h1 className="dashboard-greeting-text">Good morning, Alex</h1>
-            <p className="dashboard-greeting-sub">
-              {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
-            </p>
-          </div>
-          <button className="dashboard-hero-cta btn-primary" style={{ height: "var(--layout-control-height)" }}>
-            <Plus className="h-5 w-5" />
-            Create Report
-          </button>
-        </div>
-      </div>
-
       {/* KPI Row - 4 cards */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
         {kpiData.map((kpi, i) => (
@@ -199,13 +153,6 @@ export default function DashboardClient({
             <KPICard data={kpi} />
           </div>
         ))}
-      </div>
-
-      {/* Milestone Quick Stats */}
-      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "400ms" }}>
-          <MilestoneQuickStats />
-        </div>
       </div>
 
       {/* Island Check-in Section */}

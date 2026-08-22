@@ -102,8 +102,6 @@ export default async function DashboardPage() {
         totalVisits={totalVisits || 0}
         achievedCount={achievedCount}
         recentEvents={recentEvents}
-        upcomingEvents={upcomingEvents}
-        usersData={usersData}
       />
     </DashboardLayout>
   );
