@@ -127,12 +127,10 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
         {!collapsed && (
           <div className="relative" style={{ marginBottom: "var(--space-3)" }}>
             <MagnifyingGlass
-              className="absolute left-3 top-1/2"
+              className="absolute left-3 top-1/2 h-4 w-4"
               style={{
                 transform: "translateY(calc(-50% + 1px))",
                 color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)",
-                width: 16,
-                height: 16,
               }}
             />
             <input
@@ -191,8 +189,6 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
                         className="h-5 w-5 flex-shrink-0"
                         style={{
                           transform: "translateY(1px)",
-                          width: 20,
-                          height: 20,
                         }}
                       />
                       {!collapsed && <span>{item.label}</span>}

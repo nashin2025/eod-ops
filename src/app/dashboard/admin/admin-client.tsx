@@ -635,16 +635,16 @@ export default function AdminClient({
                 <span className="font-medium" style={{ color: "var(--text-primary)" }}>{selectedUsers.length} user(s) selected</span>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" onClick={() => handleBulkAction("approve")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <CheckCircle className="h-4 w-4" style={{ width: 14, height: 14 }} /> Approve
+                    <CheckCircle className="h-4 w-4" /> Approve
                   </Button>
                   <Button size="sm" variant="destructive" onClick={() => handleBulkAction("reject")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <XCircle className="h-4 w-4" style={{ width: 14, height: 14 }} /> Reject
+                    <XCircle className="h-4 w-4" /> Reject
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => handleBulkAction("activate")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <UserPlus className="h-4 w-4" style={{ width: 14, height: 14 }} /> Activate
+                    <UserPlus className="h-4 w-4" /> Activate
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => handleBulkAction("deactivate")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <UserPlus className="h-4 w-4" style={{ width: 14, height: 14 }} /> Deactivate
+                    <UserPlus className="h-4 w-4" /> Deactivate
                   </Button>
                   <Select onValueChange={(role) => handleBulkAction("role", role)} disabled={bulkActionLoading}>
                     <SelectTrigger className="w-[130px]" style={{ height: 38 }}>
@@ -658,7 +658,7 @@ export default function AdminClient({
                     </SelectContent>
                   </Select>
                   <Button size="sm" variant="destructive" onClick={() => handleBulkAction("delete")} disabled={bulkActionLoading} className="gap-1" style={{ height: 38, paddingLeft: 12, paddingRight: 12 }}>
-                    <Trash className="h-4 w-4" style={{ width: 14, height: 14 }} /> Delete
+                    <Trash className="h-4 w-4" /> Delete
                   </Button>
                 </div>
               </div>

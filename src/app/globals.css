@@ -86,6 +86,7 @@
   --z-dropdown: 50;
   --z-modal: 60;
   --z-toast: 70;
+  --z-mobile-overlay: 25;
 }
 
 /* Dark Theme (Monochromatic/Green) - Activated via data-theme="dark" on html */

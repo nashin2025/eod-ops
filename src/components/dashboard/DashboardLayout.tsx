@@ -27,7 +27,7 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen" style={{
+      <div className="flex-1 flex flex-col min-h-screen transition-all duration-300" style={{
         marginLeft: sidebarCollapsed ? "var(--layout-sidebar-width-collapsed)" : "var(--layout-sidebar-width-expanded)"
       }}>
         {/* Top Bar */}
@@ -46,8 +46,9 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 z-20 lg:hidden bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 lg:hidden bg-black/50 backdrop-blur-sm transition-opacity duration-300"
           onClick={() => setIsMobileMenuOpen(false)}
+          style={{ zIndex: "var(--z-mobile-overlay)" }}
         />
       )}
     </div>

@@ -96,7 +96,7 @@ export function TopBar({ user, sidebarCollapsed, onMobileMenuToggle }: TopBarPro
             <Link href="/dashboard" className="text-tertiary hover:text-foreground transition-colors" style={{ color: resolvedTheme === "dark" ? "var(--text-tertiary-dark)" : "var(--text-tertiary)" }}>
               Dashboard
             </Link>
-            <CaretDown className="h-3.5 w-3.5 text-tertiary flex-shrink-0" style={{ transform: "translateY(1px)", width: 14, height: 14 }} />
+            <CaretDown className="h-3.5 w-3.5 text-tertiary flex-shrink-0" style={{ transform: "translateY(1px)" }} />
             <span className="text-foreground font-medium" style={{ color: resolvedTheme === "dark" ? "var(--text-primary-dark)" : "var(--text-primary)" }}>
               {currentPage}
             </span>
