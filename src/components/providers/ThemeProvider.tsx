@@ -29,8 +29,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (!mounted) return;
 
     const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
+    
     let resolved: "light" | "dark";
 
     if (theme === "system") {
@@ -39,7 +38,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       resolved = theme;
     }
 
-    root.classList.add(resolved);
+    root.setAttribute("data-theme", resolved);
     setResolvedTheme(resolved);
     localStorage.setItem("theme", theme);
   }, [theme, mounted]);
@@ -50,8 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => {
       const resolved = mediaQuery.matches ? "dark" : "light";
-      document.documentElement.classList.remove("light", "dark");
-      document.documentElement.classList.add(resolved);
+      document.documentElement.setAttribute("data-theme", resolved);
       setResolvedTheme(resolved);
     };
 
