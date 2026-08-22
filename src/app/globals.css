@@ -438,8 +438,8 @@ html[data-theme="light"] .input-auth {
   left: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
   color: var(--text-tertiary);
 }
