@@ -1,6 +1,6 @@
 "use client";
 
-import { KPICard, AreaChart, DonutChart, DataTable, ActivityFeed, QuickActions } from "@/components/dashboard/DashboardComponents";
+import { KPICard, DataTable, ActivityFeed, QuickActions } from "@/components/dashboard/DashboardComponents";
 import { CurrencyDollar, Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag } from "@phosphor-icons/react";
 import { format } from "date-fns";
 
@@ -115,37 +115,6 @@ export default function DashboardClient({
     },
   ];
 
-  // Revenue chart data - last 8 months
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const now = new Date();
-  const revenueData = Array.from({ length: 8 }, (_, i) => {
-    const monthIdx = (now.getMonth() - 7 + i + 12) % 12;
-    const year = now.getFullYear() + (now.getMonth() - 7 + i < 0 ? -1 : 0);
-    // Estimate monthly revenue from events
-    const monthlyEvents = (recentEvents.filter(e => {
-      const eventDate = new Date(e.date);
-      return eventDate.getMonth() === monthIdx && eventDate.getFullYear() === year;
-    }).length) || Math.floor(Math.random() * 5);
-    return {
-      label: monthNames[monthIdx],
-      value: monthlyEvents * 5000 + Math.floor(Math.random() * 10000),
-    };
-  });
-
-  // Event status distribution for donut chart
-  const statusCounts = {
-    active: recentEvents.filter(e => e.status === "active").length,
-    scheduled: recentEvents.filter(e => e.status === "scheduled").length,
-    completed: recentEvents.filter(e => e.status === "completed").length,
-    draft: recentEvents.filter(e => e.status === "draft").length,
-  };
-
-  const channelData = Object.entries(statusCounts)
-    .filter(([, v]) => v > 0)
-    .map(([label, value]) => ({ label: label.charAt(0).toUpperCase() + label.slice(1), value }));
-
-  const channelColors = ["var(--success)", "var(--accent)", "var(--text-tertiary)", "var(--warning)"].slice(0, channelData.length);
-
   // Recent events for activity feed
   const activityItems = recentEvents.slice(0, 5).map((e, i) => ({
     id: i + 1,
@@ -181,16 +150,6 @@ export default function DashboardClient({
             <KPICard data={kpi} />
           </div>
         ))}
-      </div>
-
-      {/* Charts Row - Area Chart (8) + Donut Chart (4) */}
-      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-8" style={{ minWidth: 0 }}>
-          <AreaChart data={revenueData} color="var(--accent)" />
-        </div>
-        <div className="col-span-4" style={{ minWidth: 0 }}>
-          <DonutChart data={channelData} colors={channelColors} />
-        </div>
       </div>
 
       {/* Bottom Row - Data Table (8) + Activity Feed + Quick Actions (4) */}
