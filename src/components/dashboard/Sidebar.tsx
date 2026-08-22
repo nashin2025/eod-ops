@@ -137,8 +137,8 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
           </div>
         )}
 
-        {/* Navigation Sections */}
-        <div className="space-y-4 flex-1 overflow-y-auto">
+        {/* Navigation Sections - scrollable */}
+        <div className="space-y-4 flex-1 overflow-y-auto min-h-0">
           {navItems.map((section) => (
             <div key={section.section} className="space-y-1">
               {!collapsed && (
@@ -192,9 +192,9 @@ export function Sidebar({ collapsed, onToggle, user }: SidebarProps) {
           ))}
         </div>
 
-        {/* User Profile & Collapse Toggle */}
+        {/* User Profile & Collapse Toggle - fixed at bottom */}
         <div
-          className="border-t pt-4 space-y-4"
+          className="border-t pt-4 space-y-4 flex-shrink-0"
           style={{ borderColor: resolvedTheme === "dark" ? "var(--border-dark)" : "var(--border)" }}
         >
           {!collapsed && (
