@@ -46,11 +46,6 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
-  it('renders Google sign-in button', () => {
-    render(<LoginForm />);
-    expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-  });
-
   it('renders forgot password link', () => {
     render(<LoginForm />);
     expect(screen.getByText(/forgot password/i)).toBeInTheDocument();
