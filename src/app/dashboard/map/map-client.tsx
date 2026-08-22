@@ -127,7 +127,7 @@ export default function MapClient({
   return (
     <div className="relative h-[calc(100vh-var(--layout-topbar-height))] overflow-hidden" style={{ height: "calc(100vh - var(--layout-topbar-height))" }}>
       {/* Search & Filter Panel */}
-      <div className="absolute top-[var(--space-6)] left-[var(--space-6)] z-[1000] w-[320px] animate-fade-in">
+      <div className="absolute top-[var(--space-6)] left-[var(--space-6)] z-[1000] w-[320px] animate-fade-in" style={{ top: "var(--layout-page-padding)", left: "var(--layout-page-padding)" }}>
         <Card style={{ padding: "var(--layout-card-padding)" }}>
           <div className="flex items-center gap-2 mb-4">
             <MapPin className="h-5 w-5" style={{ color: "var(--accent)" }} />
@@ -180,7 +180,7 @@ export default function MapClient({
           </div>
 
           {/* Legend */}
-          <div className="mt-4 pt-4 space-y-2" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="mt-4 pt-4 space-y-[var(--space-2)]" style={{ borderTop: "1px solid var(--border)" }}>
             <p className="label" style={{ color: "var(--text-tertiary)" }}>Legend</p>
             <div className="flex items-center gap-2 text-sm">
               <span className="w-3 h-3 rounded-full" style={{ background: "var(--accent)" }} />
@@ -271,7 +271,7 @@ export default function MapClient({
         </MapContainer>
 
         {/* Zoom Controls */}
-        <div className="absolute bottom-[var(--space-6)] right-[var(--space-6)] z-[1000] flex flex-col gap-2">
+        <div className="absolute bottom-[var(--space-6)] right-[var(--space-6)] z-[1000] flex flex-col gap-2" style={{ bottom: "var(--layout-page-padding)", right: "var(--layout-page-padding)" }}>
           <Button
             variant="ghost"
             size="icon"

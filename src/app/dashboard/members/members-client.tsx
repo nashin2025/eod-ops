@@ -69,15 +69,15 @@ export default function MembersClient({
   };
 
   return (
-    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0", display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* Header */}
-      <div className="mb-[var(--layout-section-gap)]">
+      <div>
         <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Members</h1>
         <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Team directory and member management</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--layout-card-gap)]">
         {kpiItems.map((kpi, index) => (
           <Card key={kpi.label} style={{ padding: "var(--layout-kpi-padding)", animationDelay: `${index * 80}ms` }}>
             <div className="flex items-start justify-between h-full">
@@ -99,7 +99,7 @@ export default function MembersClient({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
+      <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
           <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
@@ -133,7 +133,7 @@ export default function MembersClient({
           <p className="text-lg" style={{ color: "var(--text-tertiary)" }}>No members found</p>
         </Card>
       ) : (
-        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+        <div className="space-y-[var(--space-4)]" style={{ gap: "var(--space-4)" }}>
           {filteredUsers.map((member) => {
             const statusConfig = getStatusConfig(member.role);
             const fallback = member.firstName?.[0] || member.lastName?.[0] || member.email[0].toUpperCase();

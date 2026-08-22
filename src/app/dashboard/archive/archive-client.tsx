@@ -65,15 +65,15 @@ export default function ArchiveClient({ events }: { events: Event[] }) {
   ];
 
   return (
-    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0", display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* Header */}
-      <div className="mb-[var(--layout-section-gap)]">
+      <div>
         <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Archive</h1>
         <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Historical record of completed and cancelled events</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-2 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-[var(--layout-card-gap)]">
         {kpiItems.map((kpi, index) => (
           <Card key={kpi.label} style={{ padding: "var(--layout-kpi-padding)", animationDelay: `${index * 80}ms` }}>
             <div className="flex items-start justify-between h-full">
@@ -95,7 +95,7 @@ export default function ArchiveClient({ events }: { events: Event[] }) {
       </div>
 
       {/* Search */}
-      <div className="mb-[var(--layout-section-gap)]">
+      <div>
         <div className="relative max-w-md">
           <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
@@ -115,7 +115,7 @@ export default function ArchiveClient({ events }: { events: Event[] }) {
           <p className="text-lg" style={{ color: "var(--text-tertiary)" }}>No archived events found</p>
         </Card>
       ) : (
-        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+        <div className="space-y-[var(--space-4)]" style={{ gap: "var(--space-4)" }}>
           {filteredEvents.map((event) => {
             const statusConfig = getStatusConfig(event.status);
             return (

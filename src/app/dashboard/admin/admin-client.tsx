@@ -461,7 +461,7 @@ export default function AdminClient({
   ];
 
   return (
-    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0", display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* Header */}
       <div className="mb-[var(--layout-section-gap)]">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-[var(--layout-section-gap)]">
@@ -529,7 +529,7 @@ export default function AdminClient({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--layout-card-gap)] mb-[var(--layout-section-gap)]">
             <Card style={{ padding: "var(--layout-card-padding)" }}>
               <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>User Roles Distribution</h3>
-              <div className="space-y-4">
+              <div className="space-y-[var(--space-4)]">
                 {Object.entries(stats.userRoles).map(([role, count]) => (
                   <div key={role} className="flex items-center gap-3">
                     <span className="capitalize text-sm w-28 flex-shrink-0" style={{ color: "var(--text-primary)" }}>{role}</span>
@@ -550,7 +550,7 @@ export default function AdminClient({
 
             <Card style={{ padding: "var(--layout-card-padding)" }}>
               <h3 className="text-lg font-semibold mb-5" style={{ color: "var(--text-primary)" }}>Events by Status</h3>
-              <div className="space-y-4">
+              <div className="space-y-[var(--space-4)]">
                 {Object.entries(stats.eventsByStatus).map(([status, count]) => (
                   <div key={status} className="flex items-center gap-3">
                     <span className="capitalize text-sm w-28 flex-shrink-0" style={{ color: "var(--text-primary)" }}>{status}</span>
@@ -577,7 +577,7 @@ export default function AdminClient({
               {stats.recentUsers.length === 0 ? (
                 <p className="text-center py-8" style={{ color: "var(--text-tertiary)" }}>No recent users</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-[var(--space-3)]">
                   {stats.recentUsers.map((user: any) => (
                     <div key={user.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--hover-bg)" }}>
                       <div className="flex items-center gap-3">
@@ -608,7 +608,7 @@ export default function AdminClient({
               {stats.recentEvents.length === 0 ? (
                 <p className="text-center py-8" style={{ color: "var(--text-tertiary)" }}>No recent events</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-[var(--space-3)]">
                   {stats.recentEvents.map((event: any) => (
                     <div key={event.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: "var(--hover-bg)" }}>
                       <div className="min-w-0">

@@ -330,7 +330,7 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Recent Activity
         </h3>
-        <div className="flex-1 overflow-y-auto" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <div className="flex-1 overflow-y-auto" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)" }}>
           {items.map((item) => (
             <div key={item.id} className="flex gap-3">
               <div
@@ -369,7 +369,7 @@ export function QuickActions() {
         <h3 className="font-semibold text-lg mb-5" style={{ color: "var(--text-primary)" }}>
           Quick Actions
         </h3>
-        <div className="flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className="flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)" }}>
           {actions.map((action) => (
             <Button
               key={action.label}

@@ -81,9 +81,9 @@ export default function EventsClient({
   };
 
   return (
-    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0" }}>
+    <div className="animate-fade-in" style={{ padding: "var(--layout-page-padding) var(--layout-page-padding) 0", display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-[var(--layout-section-gap)]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Events</h1>
           <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>Manage conservation events across the Maldives</p>
@@ -99,7 +99,7 @@ export default function EventsClient({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-[var(--layout-section-gap)]">
+      <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[180px] max-w-[280px]">
           <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-tertiary" />
           <Input
@@ -152,7 +152,7 @@ export default function EventsClient({
           </Button>
         </Card>
       ) : (
-        <div className="space-y-4" style={{ gap: "var(--space-4)" }}>
+        <div className="space-y-[var(--space-4)]" style={{ gap: "var(--space-4)" }}>
           {filteredEvents.map((event) => {
             const statusConfig = getStatusConfig(event.status);
             return (
