@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { KPICard, AreaChart, DonutChart, DataTable, ActivityFeed, QuickActions } from "@/components/dashboard/DashboardComponents";
 import { IslandCheckIn } from "@/components/dashboard/IslandCheckIn";
 import { MilestoneBadges, MilestoneQuickStats } from "@/components/dashboard/MilestoneBadges";
-import { CurrencyDollar, Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus } from "@phosphor-icons/react";
+import { CurrencyDollar, Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus, CaretDown, CaretUp, Phone } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface DashboardClientProps {
   totalEvents: number;
@@ -102,6 +105,9 @@ export default function DashboardClient({
   upcomingEvents,
   usersData,
 }: DashboardClientProps) {
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [sortBy, setSortBy] = useState<string>("date"); // date, atoll, island
+
   // Build KPI data from real metrics
   const kpiData = [
     {
@@ -172,6 +178,28 @@ export default function DashboardClient({
     customer: u.email,
   }));
 
+  // Sort events
+  const sortedEvents = [...recentEvents].sort((a: any, b: any) => {
+    if (sortBy === "atoll") {
+      return (a.location || "").localeCompare(b.location || "");
+    } else if (sortBy === "island") {
+      // Use title as island proxy since we don't have separate island field
+      return a.title.localeCompare(b.title);
+    } else {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+  }).slice(0, 6); // Show more events
+
+  const toggleEventExpansion = (eventId: string) => {
+    const newExpandedEvents = new Set(expandedEvents);
+    if (newExpandedEvents.has(eventId)) {
+      newExpandedEvents.delete(eventId);
+    } else {
+      newExpandedEvents.add(eventId);
+    }
+    setExpandedEvents(newExpandedEvents);
+  };
+
   return (
     <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-section-gap)" }}>
       {/* Dashboard Hero */}
@@ -202,7 +230,7 @@ export default function DashboardClient({
       {/* Milestone Quick Stats */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
         <div className="col-span-12" style={{ minWidth: 0, animationDelay: "400ms" }}>
-          <MilestoneQuickStats stats={{ totalIslands: islandVisits, totalVisits, uniqueAtolls: atollsVisited }} achievedCount={achievedCount} />
+          <MilestoneQuickStats />
         </div>
       </div>
 
@@ -216,7 +244,125 @@ export default function DashboardClient({
       {/* Milestone Badges Section */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
         <div className="col-span-12" style={{ minWidth: 0, animationDelay: "480ms" }}>
-          <MilestoneBadges stats={{ totalIslands: islandVisits, totalVisits, uniqueAtolls: atollsVisited }} />
+          <MilestoneBadges />
+        </div>
+      </div>
+
+      {/* Recent Events Section with Sort and Expandable Cards */}
+      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
+        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "520ms" }}>
+          <Card className="card-auth">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Recent Events</CardTitle>
+                <div className="flex items-center gap-2">
+                  <span className="label" style={{ fontWeight: "normal" }}>Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date">Date</SelectItem>
+                      <SelectItem value="atoll">Atoll</SelectItem>
+                      <SelectItem value="island">Island</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 pt-0">
+              <div className="space-y-3">
+                {sortedEvents.length === 0 ? (
+                  <p className="text-center py-4" style={{ color: "var(--text-tertiary)" }}>
+                    No events found. Create your first event to get started.
+                  </p>
+                ) : (
+                  sortedEvents.map((event: any) => {
+                    const isExpanded = expandedEvents.has(event.id);
+                    return (
+                      <div
+                        key={event.id}
+                        className="border rounded-lg p-3"
+                        style={{ borderColor: "var(--border-subtle)", background: "var(--card-bg)" }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <p className="font-medium" style={{ color: "var(--text-primary)" }}>
+                                {event.title}
+                              </p>
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full ${
+                                  event.status === "active" ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300" :
+                                  event.status === "scheduled" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300" :
+                                  event.status === "completed" ? "bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300" :
+                                  "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300"
+                                }`}
+                              >
+                                {event.status}
+                              </span>
+                            </div>
+                            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+                              {event.location}
+                            </p>
+                            {event.date && !isNaN(new Date(event.date).getTime()) && (
+                              <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+                                {formatDate(event.date)} at {event.startTime || "TBD"}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleEventExpansion(event.id)}
+                          >
+                            {isExpanded ? <CaretUp className="h-4 w-4" /> : <CaretDown className="h-4 w-4" />}
+                          </Button>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: "var(--border-subtle)" }}>
+                            {event.eventLocation && (
+                              <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+                                <strong>Event Location:</strong> {event.eventLocation}
+                              </p>
+                            )}
+                            {event.waitingLocation && (
+                              <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+                                <strong>Waiting Location:</strong> {event.waitingLocation}
+                              </p>
+                            )}
+                            {event.contact && (
+                              <div className="text-sm flex items-center gap-2" style={{ color: "var(--text-tertiary)" }}>
+                                <span><strong>Contact:</strong> {event.contact}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.location.href = `tel:${event.contact}`}
+                                  className="h-6 w-6 p-0"
+                                  title={`Call ${event.contact}`}
+                                >
+                                  <Phone className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                            {event.comment && (
+                              <p className="text-sm" style={{ color: "var(--text-primary)" }}>
+                                <strong>Description:</strong> {event.comment}
+                              </p>
+                            )}
+                            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+                              <strong>Participants:</strong> {event.participantCount || 0} participants
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

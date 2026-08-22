@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
 import { Trophy, Target, MapPin, Waves, Star } from "@phosphor-icons/react";
 
 interface UserMilestone {
@@ -26,7 +27,7 @@ interface MilestoneStats {
 }
 
 interface MilestoneBadgesProps {
-  stats?: MilestoneStats;
+  className?: string;
 }
 
 const getTypeIcon = (type: string) => {
@@ -55,127 +56,37 @@ const getTypeLabel = (type: string) => {
   }
 };
 
-export function MilestoneBadges({ stats }: MilestoneBadgesProps) {
-  // Mock milestone data - in production this would come from API
-  const milestones: UserMilestone[] = [
-    {
-      id: "1",
-      userId: "user1",
-      milestoneName: "First Steps",
-      milestoneType: "island_visits",
-      milestoneLevel: 1,
-      targetValue: 1,
-      progress: 1,
-      badgeIcon: "🏝️",
-      badgeColor: "#10B981",
-      description: "Check in to your first island",
-      achievedAt: "2024-01-15T10:30:00Z",
-    },
-    {
-      id: "2",
-      userId: "user1",
-      milestoneName: "Island Hopper",
-      milestoneType: "island_visits",
-      milestoneLevel: 2,
-      targetValue: 5,
-      progress: 3,
-      badgeIcon: "🏝️🏝️",
-      badgeColor: "#3B82F6",
-      description: "Visit 5 different islands",
-      achievedAt: undefined,
-    },
-    {
-      id: "3",
-      userId: "user1",
-      milestoneName: "Explorer",
-      milestoneType: "island_visits",
-      milestoneLevel: 3,
-      targetValue: 10,
-      progress: 3,
-      badgeIcon: "🏝️🏝️🏝️",
-      badgeColor: "#8B5CF6",
-      description: "Visit 10 different islands",
-      achievedAt: undefined,
-    },
-    {
-      id: "4",
-      userId: "user1",
-      milestoneName: "Atoll Pioneer",
-      milestoneType: "atolls_visited",
-      milestoneLevel: 1,
-      targetValue: 1,
-      progress: 1,
-      badgeIcon: "🌊",
-      badgeColor: "#06B6D4",
-      description: "Visit your first atoll",
-      achievedAt: "2024-01-15T10:30:00Z",
-    },
-    {
-      id: "5",
-      userId: "user1",
-      milestoneName: "Atoll Navigator",
-      milestoneType: "atolls_visited",
-      milestoneLevel: 2,
-      targetValue: 3,
-      progress: 2,
-      badgeIcon: "🌊🌊",
-      badgeColor: "#0EA5E9",
-      description: "Visit 3 different atolls",
-      achievedAt: undefined,
-    },
-    {
-      id: "6",
-      userId: "user1",
-      milestoneName: "Atoll Master",
-      milestoneType: "atolls_visited",
-      milestoneLevel: 3,
-      targetValue: 5,
-      progress: 2,
-      badgeIcon: "🌊🌊🌊",
-      badgeColor: "#3B82F6",
-      description: "Visit 5 different atolls",
-      achievedAt: undefined,
-    },
-    {
-      id: "7",
-      userId: "user1",
-      milestoneName: "Frequent Visitor",
-      milestoneType: "total_visits",
-      milestoneLevel: 1,
-      targetValue: 5,
-      progress: 5,
-      badgeIcon: "⭐",
-      badgeColor: "#F59E0B",
-      description: "Complete 5 total check-ins",
-      achievedAt: "2024-02-20T14:00:00Z",
-    },
-    {
-      id: "8",
-      userId: "user1",
-      milestoneName: "Dedicated Explorer",
-      milestoneType: "total_visits",
-      milestoneLevel: 2,
-      targetValue: 20,
-      progress: 8,
-      badgeIcon: "⭐⭐",
-      badgeColor: "#F97316",
-      description: "Complete 20 total check-ins",
-      achievedAt: undefined,
-    },
-    {
-      id: "9",
-      userId: "user1",
-      milestoneName: "Legendary Voyager",
-      milestoneType: "total_visits",
-      milestoneLevel: 3,
-      targetValue: 50,
-      progress: 8,
-      badgeIcon: "⭐⭐⭐",
-      badgeColor: "#EF4444",
-      description: "Complete 50 total check-ins",
-      achievedAt: undefined,
-    },
-  ];
+export function MilestoneBadges({ className }: MilestoneBadgesProps) {
+  const { data: milestones = [], isLoading } = useQuery<UserMilestone[]>({
+    queryKey: ['/api/milestones'],
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  const { data: stats } = useQuery<MilestoneStats>({
+    queryKey: ['/api/milestones/stats'],
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  if (isLoading) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="w-5 h-5" style={{ color: "var(--warning)" }} />
+            Milestones & Achievements
+          </CardTitle>
+          <CardDescription>Your exploration progress and badges</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center" style={{ color: "var(--text-tertiary)" }}>Loading achievements...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Defensive deduplication: Remove duplicates by milestone name, keep highest level
   const uniqueMilestones = milestones.reduce((acc, current) => {
@@ -184,9 +95,19 @@ export function MilestoneBadges({ stats }: MilestoneBadgesProps) {
     if (!existing) {
       acc.push(current);
     } else {
+      // Keep the one with higher milestone level (more advanced/correct)
       if (current.milestoneLevel > existing.milestoneLevel) {
         const index = acc.findIndex(m => m.milestoneName === existing.milestoneName && m.milestoneType === existing.milestoneType);
         acc[index] = current;
+        console.warn(`Duplicate milestone name detected: ${current.milestoneName}`, {
+          kept: current,
+          discarded: existing
+        });
+      } else {
+        console.warn(`Duplicate milestone name detected: ${current.milestoneName}`, {
+          kept: existing,
+          discarded: current
+        });
       }
     }
     return acc;
@@ -201,10 +122,10 @@ export function MilestoneBadges({ stats }: MilestoneBadgesProps) {
     .sort((a, b) => a.targetValue - b.targetValue);
 
   return (
-    <Card className="card-auth">
+    <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" style={{ color: "var(--warning)" }} />
+          <Trophy className="w-5 h-5" style={{ color: "var(--warning)" }} />
           Milestones & Achievements
         </CardTitle>
         <CardDescription>
@@ -271,15 +192,16 @@ export function MilestoneBadges({ stats }: MilestoneBadgesProps) {
 interface MilestoneBadgeProps {
   milestone: UserMilestone;
   isAchieved: boolean;
+  className?: string;
 }
 
-function MilestoneBadge({ milestone, isAchieved }: MilestoneBadgeProps) {
+function MilestoneBadge({ milestone, isAchieved, className = '' }: MilestoneBadgeProps) {
   const progressPercentage = Math.min((milestone.progress / milestone.targetValue) * 100, 100);
 
   if (isAchieved) {
     return (
       <div
-        className="relative p-4 rounded-lg border-2 shadow-sm hover:shadow-md transition-shadow"
+        className={`relative p-4 rounded-lg border-2 shadow-sm hover:shadow-md transition-shadow ${className}`}
         style={{ borderColor: milestone.badgeColor, background: `linear-gradient(135deg, ${milestone.badgeColor}15, ${milestone.badgeColor}05)` }}
       >
         <div className="flex items-start gap-3">
@@ -309,14 +231,17 @@ function MilestoneBadge({ milestone, isAchieved }: MilestoneBadgeProps) {
   }
 
   return (
-    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors" style={{ borderColor: "var(--border-subtle)", background: "var(--card-bg)" }}>
+    <div
+      className={`p-4 rounded-lg border hover:bg-muted/50 transition-colors ${className}`}
+      style={{ borderColor: "var(--border-subtle)", background: "var(--card-bg)" }}
+    >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--hover-bg)", color: "var(--text-tertiary)" }}>
           {milestone.badgeIcon}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h5 className="font-semibold text-sm text-gray-700 truncate" style={{ color: "var(--text-primary)" }}>{milestone.milestoneName}</h5>
+            <h5 className="font-semibold text-sm truncate" style={{ color: "var(--text-primary)" }}>{milestone.milestoneName}</h5>
             <Badge variant="default" className="text-xs px-2 py-0.5" style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}>
               Level {milestone.milestoneLevel}
             </Badge>
@@ -338,8 +263,22 @@ function MilestoneBadge({ milestone, isAchieved }: MilestoneBadgeProps) {
   );
 }
 
-export function MilestoneQuickStats({ stats, achievedCount }: { stats?: MilestoneStats; achievedCount?: number }) {
-  if (!stats) {
+export function MilestoneQuickStats() {
+  const { data: stats, isLoading } = useQuery<MilestoneStats>({
+    queryKey: ['/api/milestones/stats'],
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  const { data: milestones = [] } = useQuery<UserMilestone[]>({
+    queryKey: ['/api/milestones'],
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  if (isLoading || !stats) {
     return (
       <div className="flex gap-4" style={{ flexWrap: "wrap" }}>
         <div className="text-center flex-1 min-w-[80px]">
@@ -358,6 +297,8 @@ export function MilestoneQuickStats({ stats, achievedCount }: { stats?: Mileston
     );
   }
 
+  const achievedMilestones = milestones.filter(m => m.progress >= m.targetValue);
+
   return (
     <div className="flex gap-4" style={{ flexWrap: "wrap" }}>
       <div className="text-center flex-1 min-w-[80px]">
@@ -369,7 +310,7 @@ export function MilestoneQuickStats({ stats, achievedCount }: { stats?: Mileston
         <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>Atolls</div>
       </div>
       <div className="text-center flex-1 min-w-[80px]">
-        <div className="text-2xl font-bold" style={{ color: "var(--warning)" }}>{achievedCount || 0}</div>
+        <div className="text-2xl font-bold" style={{ color: "var(--warning)" }}>{achievedMilestones.length}</div>
         <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>Badges</div>
       </div>
     </div>

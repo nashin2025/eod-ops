@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { MapPin, CheckCircle, CaretDown, CaretUp, Users, Package, Wrench, MagnifyingGlass, Clock, Calendar, MapPin as MapPinIcon, Clock as ClockIcon } from "@phosphor-icons/react";
 import { format } from "date-fns";
 
@@ -31,15 +35,27 @@ interface Equipment {
   description?: string;
   atoll: string;
   island?: string;
+  status?: string;
 }
 
 interface IslandVisit {
   id: string;
   visitedAt?: string;
   equipmentUsed?: string[];
+  islandId?: string;
+  userId?: string;
+  visitType?: string;
+  island_visit_equipment?: Array<{
+    equipment_id: string;
+    equipment?: { name: string };
+  }>;
 }
 
-export function IslandCheckIn() {
+interface IslandCheckInProps {
+  className?: string;
+}
+
+export function IslandCheckIn({ className }: IslandCheckInProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showEquipmentDialog, setShowEquipmentDialog] = useState(false);
   const [selectedIslandForCheckIn, setSelectedIslandForCheckIn] = useState<Island | null>(null);
@@ -47,91 +63,80 @@ export function IslandCheckIn() {
   const [selectedAtoll, setSelectedAtoll] = useState<string>("");
   const [selectedIslandId, setSelectedIslandId] = useState<string>("");
   const [showVisitHistory, setShowVisitHistory] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Mock data - in production this would come from API
-  const islands: Island[] = [
-    { id: "1", name: "Dhiffushi", atoll: "Kaafu Atoll", hasVisited: true, lastVisited: "2024-11-15", participantCount: 12 },
-    { id: "2", name: "Guraidhoo", atoll: "Kaafu Atoll", hasVisited: false, participantCount: 8 },
-    { id: "3", name: "Maafushi", atoll: "Kaafu Atoll", hasVisited: true, lastVisited: "2024-10-20", participantCount: 15 },
-    { id: "4", name: "Thulusdhoo", atoll: "Kaafu Atoll", hasVisited: false, participantCount: 10 },
-    { id: "5", name: "Fulhadhoo", atoll: "Baa Atoll", hasVisited: true, lastVisited: "2024-12-01", participantCount: 20 },
-    { id: "6", name: "Goidhoo", atoll: "Baa Atoll", hasVisited: false, participantCount: 6 },
-    { id: "7", name: "Kamadhoo", atoll: "Baa Atoll", hasVisited: false, participantCount: 5 },
-    { id: "8", name: "Dharavandhoo", atoll: "Baa Atoll", hasVisited: true, lastVisited: "2024-09-10", participantCount: 18 },
-    { id: "9", name: "Hulhudhoo", atoll: "Addu Atoll", hasVisited: false, participantCount: 25 },
-    { id: "10", name: "Meedhoo", atoll: "Addu Atoll", hasVisited: true, lastVisited: "2024-11-28", participantCount: 22 },
-  ];
+  // Fetch islands data
+  const { data: islands = [], isLoading: isLoadingIslands } = useQuery<Island[]>({
+    queryKey: ["/api/islands"],
+  });
 
-  const equipment: Equipment[] = [
-    { id: "eq1", name: "Snorkel Set", type: "Water Gear", condition: "Good", quantity: 10, description: "Full face mask and fins", atoll: "Kaafu Atoll", island: "Dhiffushi" },
-    { id: "eq2", name: "Dive Tank", type: "Diving", condition: "Excellent", quantity: 5, description: "12L aluminum tank", atoll: "Kaafu Atoll", island: "Maafushi" },
-    { id: "eq3", name: "Underwater Camera", type: "Photography", condition: "Good", quantity: 3, description: "GoPro Hero 11 with housing", atoll: "Baa Atoll", island: "Fulhadhoo" },
-    { id: "eq4", name: "Marine GPS", type: "Navigation", condition: "Excellent", quantity: 4, description: "Garmin GPSMAP 86sci", atoll: "Baa Atoll", island: "Dharavandhoo" },
-    { id: "eq5", name: "First Aid Kit", type: "Safety", condition: "Good", quantity: 8, description: "Marine-rated waterproof kit", atoll: "Addu Atoll", island: "Hulhudhoo" },
-    { id: "eq6", name: "Reef Survey Kit", type: "Research", condition: "Excellent", quantity: 2, description: "Transect tapes, quadrats, slates", atoll: "Addu Atoll", island: "Meedhoo" },
-  ];
+  // Fetch equipment data - only available equipment with quantity > 0
+  const { data: equipment = [], isLoading: isLoadingEquipment } = useQuery<Equipment[]>({
+    queryKey: ["/api/equipment"],
+    select: (data) => data.filter((eq: any) => eq.status === "available" && eq.quantity > 0),
+  });
 
-  // Mock visit history
-  const visitHistory: Record<string, IslandVisit[]> = {
-    "1": [
-      { id: "v1", visitedAt: "2024-11-15T10:30:00Z", equipmentUsed: ["Snorkel Set", "Underwater Camera"] },
-      { id: "v2", visitedAt: "2024-10-01T09:00:00Z", equipmentUsed: ["Snorkel Set"] },
-    ],
-    "3": [
-      { id: "v3", visitedAt: "2024-10-20T14:00:00Z", equipmentUsed: ["Dive Tank", "Reef Survey Kit"] },
-    ],
-    "5": [
-      { id: "v4", visitedAt: "2024-12-01T11:00:00Z", equipmentUsed: ["Underwater Camera", "Marine GPS"] },
-    ],
-    "8": [
-      { id: "v5", visitedAt: "2024-09-10T08:00:00Z", equipmentUsed: ["Dive Tank", "First Aid Kit", "Marine GPS"] },
-    ],
-    "10": [
-      { id: "v6", visitedAt: "2024-11-28T16:00:00Z", equipmentUsed: ["Reef Survey Kit", "Underwater Camera"] },
-    ],
-  };
-
-  // Get unique atolls for dropdown
-  const uniqueAtolls = Array.from(new Set(islands.map(island => island.atoll))).sort();
-
-  // Get islands for selected atoll
-  const islandsInSelectedAtoll = selectedAtoll
-    ? islands.filter(island => island.atoll === selectedAtoll).sort((a, b) => a.name.localeCompare(b.name))
-    : [];
-
-  // Get selected island object
-  const selectedIsland = selectedIslandId
-    ? islands.find(island => island.id === selectedIslandId)
-    : null;
-
-  // Get visit history for selected island
-  const selectedIslandVisitHistory = selectedIslandId ? visitHistory[selectedIslandId] || [] : [];
-
-  // Group equipment by atoll and island
-  const groupEquipmentByLocation = (equipmentList: Equipment[]) => {
-    const grouped = equipmentList.reduce((acc, eq) => {
-      const key = eq.island ? `${eq.atoll} - ${eq.island}` : eq.atoll;
-      if (!acc[key]) {
-        acc[key] = [];
+  // Fetch visit history for selected island
+  const { data: visitHistory = [], isLoading: isLoadingHistory } = useQuery<Array<IslandVisit & { equipmentUsed: string[] }>>({
+    queryKey: ["/api/island-visits", selectedIslandId],
+    queryFn: async () => {
+      if (!selectedIslandId) return [];
+      const response = await fetch(`/api/island-visits?islandId=${selectedIslandId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch visit history');
       }
-      acc[key].push(eq);
-      return acc;
-    }, {} as Record<string, Equipment[]>);
+      return response.json();
+    },
+    enabled: !!selectedIslandId,
+  });
 
-    return Object.keys(grouped)
-      .sort()
-      .map(location => ({
-        location,
-        equipment: grouped[location]
-      }));
-  };
-
-  const equipmentByLocation = groupEquipmentByLocation(equipment);
+  // Check-in mutation
+  const checkInMutation = useMutation({
+    mutationFn: async ({ islandId, equipmentIds }: { islandId: string; equipmentIds: string[] }) => {
+      const response = await apiRequest('POST', `/api/islands/${islandId}/check-in`, { equipmentIds });
+      return response.json();
+    },
+    onSuccess: (result: any) => {
+      // Invalidate islands cache
+      queryClient.invalidateQueries({ queryKey: ['/api/islands'] });
+      
+      // Invalidate ALL equipment queries (including those with query params)
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          return Array.isArray(queryKey) && queryKey[0] === '/api/equipment';
+        }
+      });
+      
+      // Invalidate milestone caches so badges update immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/milestones'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/milestones/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/milestones/history'] });
+      
+      // Invalidate visit history for this island
+      queryClient.invalidateQueries({ queryKey: ['/api/island-visits', selectedIslandForCheckIn?.id] });
+      
+      toast({
+        title: "Check-in Successful! 🏝️",
+        description: result.message,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Check-in Failed",
+        description: error?.message || "Failed to check in to island",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleCheckIn = (island: Island) => {
     setSelectedIslandForCheckIn(island);
     setSelectedEquipment(new Set());
-    // In a real app, check user permissions here
+    
+    // If user can't check in with equipment (attachment role), proceed directly without equipment selection
+    // In our case, we'll show the dialog for all users
     setShowEquipmentDialog(true);
   };
 
@@ -139,8 +144,12 @@ export function IslandCheckIn() {
     if (!selectedIslandForCheckIn) return;
 
     const equipmentIds = Array.from(selectedEquipment);
-    // In production: call API to check in
-    console.log("Checking in to:", selectedIslandForCheckIn.name, "with equipment:", equipmentIds);
+    checkInMutation.mutate(
+      { 
+        islandId: selectedIslandForCheckIn.id, 
+        equipmentIds 
+      }
+    );
 
     setShowEquipmentDialog(false);
     setSelectedIslandForCheckIn(null);
@@ -163,11 +172,26 @@ export function IslandCheckIn() {
     setSelectedEquipment(newSelection);
   };
 
+  // Get unique atolls for dropdown
+  const uniqueAtolls = Array.from(new Set(islands.map(island => island.atoll))).sort();
+  
+  // Get islands for selected atoll
+  const islandsInSelectedAtoll = selectedAtoll
+    ? islands.filter(island => island.atoll === selectedAtoll).sort((a, b) => a.name.localeCompare(b.name))
+    : [];
+
+  // Get selected island object
+  const selectedIsland = selectedIslandId
+    ? islands.find(island => island.id === selectedIslandId)
+    : null;
+
+  // Handle atoll selection
   const handleAtollChange = (atoll: string) => {
     setSelectedAtoll(atoll);
     setSelectedIslandId(""); // Clear island selection when atoll changes
   };
 
+  // Handle island selection and trigger check-in
   const handleIslandSelect = (islandId: string) => {
     setSelectedIslandId(islandId);
     const island = islands.find(i => i.id === islandId);
@@ -176,8 +200,44 @@ export function IslandCheckIn() {
     }
   };
 
+  // Group equipment by atoll and island for better organization
+  const groupEquipmentByLocation = (equipmentList: Equipment[]) => {
+    const grouped = equipmentList.reduce((acc, eq) => {
+      const key = eq.island ? `${eq.atoll} - ${eq.island}` : eq.atoll;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(eq);
+      return acc;
+    }, {} as Record<string, Equipment[]>);
+    
+    // Sort locations alphabetically
+    return Object.keys(grouped)
+      .sort()
+      .map(location => ({
+        location,
+        equipment: grouped[location]
+      }));
+  };
+
+  const equipmentByLocation = groupEquipmentByLocation(equipment);
+
+  if (isLoadingIslands) {
+    return (
+      <Card className={className}>
+        <CardContent className="p-4">
+          <div className="animate-pulse">
+            <div className="h-4 bg-muted rounded mb-2"></div>
+            <div className="h-4 bg-muted rounded mb-2"></div>
+            <div className="h-4 bg-muted rounded"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="card-auth">
+    <Card className={className}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
@@ -290,7 +350,7 @@ export function IslandCheckIn() {
                 </div>
 
                 {/* Visit History Section */}
-                {selectedIsland.hasVisited && selectedIslandVisitHistory.length > 0 && (
+                {selectedIsland.hasVisited && visitHistory.length > 0 && (
                   <div className="rounded-lg border" style={{ background: "var(--card-bg)", borderColor: "var(--border-subtle)" }}>
                     <Collapsible open={showVisitHistory} onOpenChange={setShowVisitHistory}>
                       <CollapsibleTrigger asChild>
@@ -300,10 +360,10 @@ export function IslandCheckIn() {
                           className="w-full p-3 h-auto justify-between text-left hover:bg-muted/50"
                         >
                           <div className="flex items-center gap-2">
-                            <ClockIcon className="h-4 w-4" style={{ color: "var(--accent)" }} />
+                            <Clock className="h-4 w-4" style={{ color: "var(--accent)" }} />
                             <span className="font-medium">Visit History</span>
                             <Badge variant="default" className="ml-1">
-                              {selectedIslandVisitHistory.length} {selectedIslandVisitHistory.length === 1 ? 'visit' : 'visits'}
+                              {visitHistory.length} {visitHistory.length === 1 ? 'visit' : 'visits'}
                             </Badge>
                           </div>
                           {showVisitHistory ? <CaretUp className="h-4 w-4" /> : <CaretDown className="h-4 w-4" />}
@@ -311,41 +371,50 @@ export function IslandCheckIn() {
                       </CollapsibleTrigger>
                       <CollapsibleContent className="px-3 pb-3">
                         <Separator className="mb-3" />
-                        <ScrollArea className="max-h-48">
-                          <div className="space-y-3">
-                            {selectedIslandVisitHistory.map((visit) => (
-                              <div key={visit.id} className="p-3 rounded-lg" style={{ background: "var(--hover-bg)" }}>
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <Calendar className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} />
-                                      <span className="text-sm font-medium">
-                                        {visit.visitedAt ? format(new Date(visit.visitedAt), 'MMM dd, yyyy') : 'Unknown date'}
-                                      </span>
-                                      <Clock className="h-3 w-3 ml-2" style={{ color: "var(--text-tertiary)" }} />
-                                      <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                                        {visit.visitedAt ? format(new Date(visit.visitedAt), 'h:mm a') : 'Unknown time'}
-                                      </span>
-                                    </div>
-                                    {visit.equipmentUsed && visit.equipmentUsed.length > 0 && (
-                                      <div className="mt-2">
-                                        <div className="text-xs mb-1" style={{ color: "var(--text-tertiary)" }}>Equipment brought:</div>
-                                        <div className="flex flex-wrap gap-1">
-                                          {visit.equipmentUsed.map((eq, index) => (
-                                            <Badge key={index} variant="default" className="text-xs gap-1">
-                                              <Package className="h-2 w-2" />
-                                              {eq}
-                                            </Badge>
-                                          ))}
-                                        </div>
+                        {isLoadingHistory ? (
+                          <div className="text-center py-4">
+                            <div className="animate-pulse">
+                              <div className="h-4 bg-muted rounded mb-2"></div>
+                              <div className="h-4 bg-muted rounded mb-2"></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <ScrollArea className="max-h-48">
+                            <div className="space-y-3">
+                              {visitHistory.map((visit) => (
+                                <div key={visit.id} className="p-3 rounded-lg" style={{ background: "var(--hover-bg)" }}>
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <Calendar className="h-3 w-3" style={{ color: "var(--text-tertiary)" }} />
+                                        <span className="text-sm font-medium">
+                                          {visit.visitedAt ? format(new Date(visit.visitedAt), 'MMM dd, yyyy') : 'Unknown date'}
+                                        </span>
+                                        <Clock className="h-3 w-3 ml-2" style={{ color: "var(--text-tertiary)" }} />
+                                        <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                                          {visit.visitedAt ? format(new Date(visit.visitedAt), 'h:mm a') : 'Unknown time'}
+                                        </span>
                                       </div>
-                                    )}
+                                      {visit.equipmentUsed && visit.equipmentUsed.length > 0 && (
+                                        <div className="mt-2">
+                                          <div className="text-xs mb-1" style={{ color: "var(--text-tertiary)" }}>Equipment brought:</div>
+                                          <div className="flex flex-wrap gap-1">
+                                            {visit.equipmentUsed.map((eq, index) => (
+                                              <Badge key={index} variant="default" className="text-xs gap-1">
+                                                <Package className="h-2 w-2" />
+                                                {eq}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        </ScrollArea>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        )}
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
@@ -380,10 +449,10 @@ export function IslandCheckIn() {
           <div className="py-4">
             <ScrollArea className="h-72">
               <div className="space-y-3">
-                {equipment.length === 0 ? (
+                {equipment.length === 0 || isLoadingEquipment ? (
                   <div className="text-center py-8" style={{ color: "var(--text-tertiary)" }}>
                     <Wrench className="h-8 w-8 mx-auto mb-2" style={{ opacity: 0.5 }} />
-                    <p className="text-sm">No equipment available</p>
+                    <p className="text-sm">{isLoadingEquipment ? "Loading equipment..." : "No equipment available"}</p>
                   </div>
                 ) : (
                   equipmentByLocation.map((locationGroup) => (
@@ -421,7 +490,7 @@ export function IslandCheckIn() {
           </div>
 
           <div className="flex justify-between gap-2">
-            <Button variant="outline" onClick={handleCancelCheckIn}>
+            <Button variant="outline" onClick={handleCancelCheckIn} disabled={checkInMutation.isPending}>
               Cancel
             </Button>
             <div className="flex gap-2">
@@ -431,11 +500,12 @@ export function IslandCheckIn() {
                   setSelectedEquipment(new Set());
                   handleConfirmCheckIn();
                 }}
+                disabled={checkInMutation.isPending}
               >
                 Check In Without Equipment
               </Button>
-              <Button onClick={handleConfirmCheckIn}>
-                {selectedEquipment.size > 0 ? `Check In (${selectedEquipment.size} items)` : "Check In"}
+              <Button onClick={handleConfirmCheckIn} disabled={checkInMutation.isPending}>
+                {checkInMutation.isPending ? "Checking In..." : `${selectedEquipment.size > 0 ? `Check In (${selectedEquipment.size} items)` : "Check In"}`}
               </Button>
             </div>
           </div>
