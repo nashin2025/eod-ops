@@ -1,6 +1,8 @@
 "use client";
 
 import { KPICard, AreaChart, DonutChart, DataTable, ActivityFeed, QuickActions } from "@/components/dashboard/DashboardComponents";
+import { IslandCheckIn } from "@/components/dashboard/IslandCheckIn";
+import { MilestoneBadges, MilestoneQuickStats } from "@/components/dashboard/MilestoneBadges";
 import { CurrencyDollar, Users as UsersIcon, MapPin, Calendar, Clock, CheckCircle, Flag, TrendUp, TrendDown, Plus } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,8 @@ interface DashboardClientProps {
   totalRevenue: number;
   islandVisits: number;
   atollsVisited: number;
+  totalVisits: number;
+  achievedCount: number;
   recentEvents: Array<{ id: string; title: string; status: string; date: string; location?: string }>;
   upcomingEvents: Array<{ id: string; title: string; date: string; location?: string }>;
   usersData: Array<{ id: string; email: string; firstName?: string; lastName?: string; role: string; createdAt: string }>;
@@ -92,6 +96,8 @@ export default function DashboardClient({
   totalRevenue,
   islandVisits,
   atollsVisited,
+  totalVisits,
+  achievedCount,
   recentEvents,
   upcomingEvents,
   usersData,
@@ -123,7 +129,7 @@ export default function DashboardClient({
       value: islandVisits.toLocaleString(),
       delta: atollsVisited,
       deltaLabel: "atolls",
-      icon: <Calendar className="h-5 w-5" />,
+      icon: <MapPin className="h-5 w-5" />,
       trend: "up" as const,
       sparkline: Array.from({ length: 9 }, () => Math.floor(Math.random() * 10) + 1),
       iconColor: "var(--warning)",
@@ -193,19 +199,40 @@ export default function DashboardClient({
         ))}
       </div>
 
+      {/* Milestone Quick Stats */}
+      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
+        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "400ms" }}>
+          <MilestoneQuickStats stats={{ totalIslands: islandVisits, totalVisits, uniqueAtolls: atollsVisited }} achievedCount={achievedCount} />
+        </div>
+      </div>
+
+      {/* Island Check-in Section */}
+      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
+        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "440ms" }}>
+          <IslandCheckIn />
+        </div>
+      </div>
+
+      {/* Milestone Badges Section */}
+      <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
+        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "480ms" }}>
+          <MilestoneBadges stats={{ totalIslands: islandVisits, totalVisits, uniqueAtolls: atollsVisited }} />
+        </div>
+      </div>
+
       {/* Charts Section - 2 column grid */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "480ms" }}>
+        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "560ms" }}>
           <AreaChart data={revenueChartData} color="var(--accent)" />
         </div>
-        <div className="col-span-4" style={{ minWidth: 0, animationDelay: "560ms" }}>
+        <div className="col-span-4" style={{ minWidth: 0, animationDelay: "640ms" }}>
           <DonutChart data={trafficSourceData} colors={trafficSourceData.map(d => d.color)} />
         </div>
       </div>
 
       {/* Data Table Section */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "640ms" }}>
+        <div className="col-span-12" style={{ minWidth: 0, animationDelay: "720ms" }}>
           <DataTable
             transactions={[
               ...upcomingData,
@@ -217,10 +244,10 @@ export default function DashboardClient({
 
       {/* Secondary Row - Activity Feed + Quick Actions */}
       <div className="grid-12" style={{ gap: "var(--layout-card-gap)" }}>
-        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "720ms" }}>
+        <div className="col-span-8" style={{ minWidth: 0, animationDelay: "800ms" }}>
           <ActivityFeed items={activityItems} />
         </div>
-        <div className="col-span-4" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)", minWidth: 0, animationDelay: "800ms" }}>
+        <div className="col-span-4" style={{ display: "flex", flexDirection: "column", gap: "var(--layout-card-gap)", minWidth: 0, animationDelay: "880ms" }}>
           <QuickActions />
         </div>
       </div>

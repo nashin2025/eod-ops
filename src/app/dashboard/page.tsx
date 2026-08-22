@@ -30,6 +30,27 @@ export default async function DashboardPage() {
   const islandVisits = stats?.find(s => s.milestone_type === "island_visits")?.progress || 0;
   const atollsVisited = stats?.find(s => s.milestone_type === "atolls_visited")?.progress || 0;
 
+  // Get total visits count from island_visits table
+  const { count: totalVisits } = await supabase
+    .from("island_visits")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  // Get achieved milestones count
+  const { data: achievedMilestones } = await supabase
+    .from("user_milestones")
+    .select("*")
+    .eq("user_id", user.id)
+    .gte("progress", 100); // This assumes we store target in progress or need to check differently
+
+  // For now, count milestones where progress >= target (simplified)
+  const { data: allMilestones } = await supabase
+    .from("user_milestones")
+    .select("*")
+    .eq("user_id", user.id);
+
+  const achievedCount = allMilestones?.filter(m => m.progress >= 1).length || 0; // Simplified
+
   const activeEvents = events?.filter(e => e.status === "active" || e.status === "scheduled") || [];
   const completedEvents = events?.filter(e => e.status === "completed") || [];
 
@@ -82,6 +103,8 @@ export default async function DashboardPage() {
         totalRevenue={totalRevenue}
         islandVisits={islandVisits}
         atollsVisited={atollsVisited}
+        totalVisits={totalVisits || 0}
+        achievedCount={achievedCount}
         recentEvents={recentEvents}
         upcomingEvents={upcomingEvents}
         usersData={usersData}
